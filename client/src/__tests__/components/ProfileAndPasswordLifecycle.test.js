@@ -676,12 +676,14 @@ describe('PersonalInformation - who may see and edit what', () => {
         expect(queryByText(/Change Password/)).toBeNull();
     });
 
-    test('a client viewing their own profile may edit the editable fields', () => {
+    test('all fields are permanently read-only — client edit decommissioned 2026-08-13', () => {
+        // Client role removed: PersonalInformation.js line 25 hardcodes is_disabled=true.
+        // scanLevel no longer controls disabled state; fields are always read-only.
         Authenticator.scanLevel.mockReturnValue(true);
         const { container } = renderPage({ user: { id: 5 } });
-        expect(field(container, 'first_name').disabled).toBe(false);
-        expect(field(container, 'last_name').disabled).toBe(false);
-        expect(field(container, 'email').disabled).toBe(false);
+        expect(field(container, 'first_name').disabled).toBe(true);
+        expect(field(container, 'last_name').disabled).toBe(true);
+        expect(field(container, 'email').disabled).toBe(true);
     });
 
     test('a non-client viewing their own profile gets the same fields read-only', () => {
@@ -794,10 +796,12 @@ describe('PersonalInformation - who may see and edit what', () => {
         expect(renderPage({ user: { id: 5 } }).getByText('Email Address:')).toBeInTheDocument();
     });
 
-    test('Save is offered only to a client on their own profile', () => {
+    test('Save button absent for all viewers — client edit decommissioned 2026-08-13', () => {
+        // Save button removed from PersonalInformation.js when client profile editing was
+        // decommissioned. The button section (lines 180-188) now only offers Change Password.
         Authenticator.scanLevel.mockReturnValue(true);
         const client = renderPage({ user: { id: 5 } });
-        expect(client.getByText(/Save/)).toBeInTheDocument();
+        expect(client.queryByText(/Save/)).toBeNull();
         client.unmount();
 
         Authenticator.scanLevel.mockReturnValue(false);

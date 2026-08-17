@@ -55,6 +55,14 @@ class SyncBhrUsersSendCommandTest extends TestCase
         $statement->shouldReceive('nextRowset')
             ->andReturn(false);
 
+        // E3 fix: pdo_helper.php line 33 calls $stmt->closeCursor() OUTSIDE the fetchAll
+        // try/catch. Without this mock, Mockery throws BadMethodCallException for an
+        // unconfigured method. The exception is caught by handle()'s outer catch, which
+        // short-circuits before get_changed_users() is ever called. Mockery::close() in
+        // tearDown then fails the ->once() expectation → test marked ERROR.
+        $statement->shouldReceive('closeCursor')
+            ->andReturn(true);
+
         $fetchCount = 0;
 
         $statement->shouldReceive('fetchAll')

@@ -332,9 +332,9 @@ class RepositoryCrudFinishTest extends TestCase
             'not as a quiet null. Actual return: ' . var_export($result, true)
         );
         $this->assertStringContainsStringIgnoringCase(
-            'undefined variable',
+            'undefined method',
             $thrown->getMessage(),
-            'FINDING USR-PERM-1: the refusal is an undefined-variable error, not an authorization error'
+            'FINDING USR-PERM-1: assign_permissions_to_user() was deleted — refusal is now "Call to undefined method"'
         );
     }
 

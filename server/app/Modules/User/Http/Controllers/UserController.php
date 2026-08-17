@@ -16,7 +16,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel; 
 use App\Modules\Payroll\Models\Holiday; 
-use App\Modules\User\Resources\RoleResource;
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\User\Resources\HolidayResource;
 use App\Modules\User\Resources\UserListResource;
@@ -859,19 +858,6 @@ class UserController extends Controller
         }
     }
 
-    # This function returns roles
-    public function get_roles( ){   
-        try {
-            log_activity( trans('messages.list_role_attempt') );
-                    return success_response(
-                        trans('messages.list_role_success'),  
-                        RoleResource::collection( Role::with('permissions')->get() ) 
-                    );
-
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
-    }
 
       # This function returns roles
       public function get_features( ){   

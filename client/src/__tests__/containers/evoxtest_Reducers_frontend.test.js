@@ -1306,10 +1306,13 @@ describe('assignRoleReducers', () => {
     expect(result.payroll).toBe('monthly');
   });
 
-  test('FETCH_USER_ROLE_AND_PERMISSION sets userRole', () => {
+  test('FETCH_USER_ROLE_AND_PERMISSION — case removed from reducer, returns unchanged state', () => {
+    // The FETCH_USER_ROLE_AND_PERMISSION case was removed from assignRoleReducers when
+    // Spatie laravel-permission was dropped from the backend. The action now falls through
+    // to `default` and the state is returned unchanged (userRole stays null).
     const result = assignRoleReducers(undefined, { type: 'FETCH_USER_ROLE_AND_PERMISSION', userRole: ['admin'], userPermission: ['read'] });
-    expect(result.userRole).toEqual(['admin']);
-    expect(result.isUserRolesPermissionsLoaded).toBe(true);
+    expect(result.userRole).toBeNull();
+    expect(result.isUserRolesPermissionsLoaded).toBe(false);
   });
 
   test('FETCH_USER_FEATURES sets userFeatures', () => {

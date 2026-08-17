@@ -102,7 +102,7 @@ class TeamAttendanceSummaryModelTest extends TestCase
         $this->assertLessThanOrEqual(1, $result['total_headcount']);
         $this->assertGreaterThanOrEqual(0, $result['attendance']['total_count']);
         // every bucket count is bounded by the dtr rows actually read
-        $dtrCount = count($result['dtr_collection']);
+        $dtrCount = collect($result['dtr_collection'])->count();
         foreach (['attendance', 'unplanned_leaves', 'planned_leaves'] as $bucket) {
             $this->assertLessThanOrEqual($dtrCount, $result[$bucket]['total_count']);
         }
@@ -118,7 +118,7 @@ class TeamAttendanceSummaryModelTest extends TestCase
 
         $this->assertSummaryShape($result);
         // no DTR exists two years out: the clamp keeps the read bounded and empty
-        $this->assertCount(0, $result['dtr_collection']);
+        $this->assertCount(0, collect($result['dtr_collection']));
     }
 
     // ---------------------------------------------------------------- eligibility gates

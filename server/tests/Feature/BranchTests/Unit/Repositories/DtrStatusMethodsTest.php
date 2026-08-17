@@ -649,7 +649,10 @@ class DtrStatusMethodsTest extends TestCase
     public function a_change_schedule_approved_after_the_temporary_one_becomes_the_days_schedule()
     {
         $userId = $this->sandboxUserId();
-        $date = '1990-06-15';
+        // F15 fix: SANDBOX_FROM/TO are 2099-06-*; using 1990-06-15 meant the date was never
+        // between valid_from and valid_to of the created fixtures → getBestSchedule() skipped
+        // both and returned the default schedule instead of the test-created change schedule.
+        $date = '2099-06-15';
         $this->assertSandboxScheduleWindowIsClear($userId, $date);
 
         $temporary = Schedule::create([
@@ -706,7 +709,8 @@ class DtrStatusMethodsTest extends TestCase
     public function a_temporary_schedule_keeps_precedence_when_it_is_the_more_recent_decision()
     {
         $userId = $this->sandboxUserId();
-        $date = '1990-06-15';
+        // F16 fix: same date-window mismatch as F15 — must use a date inside SANDBOX_FROM/SANDBOX_TO.
+        $date = '2099-06-15';
         $this->assertSandboxScheduleWindowIsClear($userId, $date);
 
         $temporary = Schedule::create([
@@ -762,7 +766,8 @@ class DtrStatusMethodsTest extends TestCase
     public function without_a_temporary_or_change_schedule_the_day_falls_back_to_the_default_schedule()
     {
         $userId = $this->sandboxUserId();
-        $date = '1990-06-15';
+        // Consistency fix: use the same SANDBOX window as the sibling tests above.
+        $date = '2099-06-15';
         $this->assertSandboxScheduleWindowIsClear($userId, $date);
 
         $dtr = new Dtr();

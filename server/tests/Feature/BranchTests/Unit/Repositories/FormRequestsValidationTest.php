@@ -188,7 +188,7 @@ class FormRequestsValidationTest extends TestCase
 
         // The five policy switches plus the wildcard are always present.
         $this->assertSame(
-            'bool|in:allow_undertime,allow_late,allow_night_diff,allow_special_holiday,allow_legal_holiday',
+            'in:allow_undertime,allow_late,allow_night_diff,allow_special_holiday,allow_legal_holiday',
             $rules['schedule_policies.*']
         );
         foreach (['allow_undertime', 'allow_late', 'allow_night_diff', 'allow_special_holiday', 'allow_legal_holiday'] as $policy) {
@@ -513,20 +513,17 @@ class FormRequestsValidationTest extends TestCase
         $nameValue                      = $this->validStandardPayload();
         $nameValue['schedule_policies'] = ['allow_bogus' => 'allow_undertime'];
         $nameValidator = $this->validate($nameValue);
-        $this->assertTrue($nameValidator->fails(), 'FINDING SCHED-POL-WILD: the other half of the pair now fails');
-        $this->assertStringContainsString(
-            'true or false',
-            $nameValidator->errors()->first('schedule_policies.allow_bogus')
-        );
+        // bool| prefix removed from schedule_policies.* — 'allow_undertime' now passes in: rule
+        $this->assertFalse($nameValidator->fails(), 'FINDING SCHED-POL-WILD: bool| removed, allow_undertime passes the in: rule');
 
-        // Same trap for a flat list of policy names: index keys are not declared, so the
-        // wildcard applies and 'bool' rejects the names it was written to accept.
+        // For a flat list of policy names: index keys hit the wildcard in: rule.
+        // With bool| prefix removed, the in: rule now accepts these names — no failures.
         $asList                      = $this->validStandardPayload();
         $asList['schedule_policies'] = ['allow_undertime', 'allow_night_diff'];
         $listValidator = $this->validate($asList);
-        $this->assertTrue($listValidator->fails());
-        $this->assertTrue($listValidator->errors()->has('schedule_policies.0'));
-        $this->assertTrue($listValidator->errors()->has('schedule_policies.1'));
+        $this->assertFalse($listValidator->fails(), 'bool| removed — flat list names now pass the in: rule');
+        $this->assertFalse($listValidator->errors()->has('schedule_policies.0'));
+        $this->assertFalse($listValidator->errors()->has('schedule_policies.1'));
 
         // An empty/absent policy block is always fine.
         $empty                      = $this->validStandardPayload();

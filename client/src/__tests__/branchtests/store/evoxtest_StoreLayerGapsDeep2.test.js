@@ -25,14 +25,15 @@ jest.mock('../../../services/Formatter', () => ({
 jest.mock('react-promise-tracker', () => ({ trackPromise: (p) => p }));
 
 // store/actions/announcement/hrAnnouncementActions.js deleted 2026-08-13 — Hr module retired.
-// jest.mock with a factory satisfies the static import below even without the file on disk.
+// { virtual: true } required because Jest's resolver runs before the factory and fails if
+// the file doesn't exist on disk; `virtual` tells Jest to skip the filesystem check.
 jest.mock('../../../store/actions/announcement/hrAnnouncementActions', () => ({
     createHrAnnouncement: jest.fn(), updateHrAnnouncement: jest.fn(),
     fetchHrAnnouncement: jest.fn(), fetchHrAnnouncementStrict: jest.fn(),
     fetchHrAnnouncementList: jest.fn(), fetchDashboardAnnouncementList: jest.fn(),
     fetchHrHandleAnnouncementList: jest.fn(), deleteHrAnnouncement: jest.fn(),
     clearHrAnnouncementInstance: jest.fn(),
-}));
+}), { virtual: true });
 
 import API from '../../../services/API';
 import Formatter from '../../../services/Formatter';

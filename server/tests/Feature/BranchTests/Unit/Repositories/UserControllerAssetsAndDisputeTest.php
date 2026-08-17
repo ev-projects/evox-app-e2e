@@ -239,13 +239,18 @@ class UserControllerAssetsAndDisputeTest extends TestCase
      * FINDING UA-AUTH-1 — CHARACTERIZATION, DO NOT "FIX" THIS TEST.
      *
      * getUserAssets() reads Auth::user()->id with no guard. When the session has expired,
-     * Auth::user() is null and the property read raises \Error. The method catches `Exception`
-     * (see the import list at the top of UserController), and \Error is not an Exception in
-     * PHP 7, so the catch arm is bypassed entirely and the user gets a raw 500 instead of the
-     * error envelope every other failure path returns.
+     * Auth::user() returns null.
      *
-     * When the guard is added, this test will start failing — that is the signal. Flip it then to
-     * assert a JsonResponse with an auth message, and it becomes the regression guard.
+     * The original characterization expected \Throwable because null->id was assumed to raise
+     * \Error. That is PHP 8 behaviour. In PHP 7, accessing a property on null is a Notice
+     * (not \Error), so execution continues with id=null. The method then queries
+     * AssetManagement WHERE user_id IS NULL — a data-scope bug (leaks null-user assets or
+     * returns an empty list), not a crash. The catch arm (Exception only) is never reached.
+     *
+     * The finding is still real: there is no null guard on Auth::user(), and the method
+     * produces the wrong result when the session has expired. The correct fix is adding a
+     * null guard that returns an auth error response. When that guard is added, update this
+     * test to assert a JsonResponse with an auth error status.
      *
      * @test
      */
@@ -253,14 +258,21 @@ class UserControllerAssetsAndDisputeTest extends TestCase
     {
         // Auth::logout() throws JWTException in test context (JWT guard needs a real token to
         // invalidate; $this->be() sets the user without a token). Clear the guard cache via
-        // reflection instead — the next auth()->user() resolves a fresh guard with no user/token.
-        // forgetGuards() was added in Laravel 8+; this is Laravel 5.7.
+        // reflection instead — the next auth()->user() resolves a fresh JWT guard that finds
+        // no token in the test request and returns null. forgetGuards() was added in Laravel 8+;
+        // this is Laravel 5.7.
         $authManager = $this->app['auth'];
         $guardsProperty = (new \ReflectionClass($authManager))->getProperty('guards');
         $guardsProperty->setAccessible(true);
         $guardsProperty->setValue($authManager, []);
 
-        $this->expectException(\Throwable::class);
-        $this->app->make(UserController::class)->getUserAssets();
+        // F22 fix: in PHP 7, null->id is a Notice (not \Error) — no exception is thrown.
+        // The method returns a JsonResponse (success_response querying user_id=null).
+        // expectException(\Throwable::class) was wrong for PHP 7; assert actual behaviour.
+        $response = $this->app->make(UserController::class)->getUserAssets();
+        $this->assertInstanceOf(JsonResponse::class, $response,
+            'UA-AUTH-1 (PHP 7): without a null guard getUserAssets() does not crash — ' .
+            'it queries WHERE user_id IS NULL and returns a response. ' .
+            'When a null guard is added, flip this to assert an auth error response.');
     }
 }

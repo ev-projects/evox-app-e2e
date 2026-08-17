@@ -259,7 +259,9 @@ if (! function_exists('timestamp_to_datetime')) {
                 $target_date_offset =  string_offset_to_seconds(Carbon::createFromTimestamp( $timestamp)->setTimezone($user->country_timezone_name())->format("P"));
 
                 if(!(string_offset_to_seconds($user->country_timezone_to_offset()) == ($target_date_offset))){
-                    return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp+ string_offset_to_seconds($target_date_offset)) : null;
+                    // F11-F14 fix: $target_date_offset is already in seconds (from string_offset_to_seconds()
+                    // at line 259). Wrapping it again caused double-conversion and a wrong offset.
+                    return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp + $target_date_offset) : null;
                 }
 
                 return ( is_valid( $timestamp ) ) ? date('Y-m-d H:i:s', $timestamp+ string_offset_to_seconds($user->country_timezone_to_offset())) : null;

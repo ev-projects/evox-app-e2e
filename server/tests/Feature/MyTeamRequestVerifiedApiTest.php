@@ -31,6 +31,7 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        \Illuminate\Support\Facades\Cache::flush(); // clear rate-limiter between tests
         $this->apiKey = ['X-Authorization' => env('APP_API_KEY', 'RlYVynDl9ALmOtfCotsLS9iSr93bMzgpIWfoxLktznLfTUL3NfaNO5HittoAfA9Z')];
         // SP EH_SP_My_Team_Request requires supervisor (LevelId > 0); load Gary Aure (LevelId=1, sub-dept 403)
         $this->supervisorUser = User::where('email', env('E2E_USER_SUPERVISOR_PHILIPPINES', 'gary.aure@eastvantage.com'))->firstOrFail();
@@ -86,12 +87,24 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     //                         0, page, 10, departmentselect, showall)
     // =========================================================================
 
+    /** Real JWT Bearer token headers for authenticated requests.
+     *  actingAs() is unreliable with tymon/jwt-auth when the guard reinitialises per request. */
+    private function jwtHeaders(): array
+    {
+        $token = auth('api')->login($this->supervisorUser);
+        return [
+            'Authorization'   => "Bearer {$token}",
+            'X-Authorization' => $this->apiKey['X-Authorization'],
+        ];
+    }
+
     /** @test */
     public function test_request_list_my_team_requests_returns_200_for_authenticated_user()
     {
-        $this->withoutMiddleware();
-        $response = $this->actingAs($this->supervisorUser, 'api')
-            ->getJson('/api/request/request-list?url=my_team_requests&request_type=all&department_id=403', $this->apiKey);
+        $response = $this->getJson(
+            '/api/request/request-list?url=my_team_requests&request_type=all&department_id=403',
+            $this->jwtHeaders()
+        );
 
         $response->assertStatus(200);
     }
@@ -99,12 +112,10 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     /** @test */
     public function test_request_list_my_team_requests_with_date_range_returns_200()
     {
-        $this->withoutMiddleware();
-        $response = $this->actingAs($this->supervisorUser, 'api')
-            ->getJson(
-                "/api/request/request-list?url=my_team_requests&valid_from={$this->validFrom}&valid_to={$this->validTo}&request_type=all&department_id=403",
-                $this->apiKey
-            );
+        $response = $this->getJson(
+            "/api/request/request-list?url=my_team_requests&valid_from={$this->validFrom}&valid_to={$this->validTo}&request_type=all&department_id=403",
+            $this->jwtHeaders()
+        );
 
         $response->assertStatus(200);
     }
@@ -112,14 +123,12 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     /** @test */
     public function test_request_list_my_team_requests_with_status_filter_returns_200()
     {
-        $this->withoutMiddleware();
         // status param is toggled by the Pending/Approved/Cancelled/Declined buttons
         // REQUEST_STATUS values are lowercase (confirmed from constants.php)
-        $response = $this->actingAs($this->supervisorUser, 'api')
-            ->getJson(
-                '/api/request/request-list?url=my_team_requests&status=pending&request_type=all&department_id=403',
-                $this->apiKey
-            );
+        $response = $this->getJson(
+            '/api/request/request-list?url=my_team_requests&status=pending&request_type=all&department_id=403',
+            $this->jwtHeaders()
+        );
 
         $response->assertStatus(200);
     }
@@ -127,14 +136,12 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     /** @test */
     public function test_request_list_my_team_requests_with_request_type_filter_returns_200()
     {
-        $this->withoutMiddleware();
         // request_type set by the All/Alteration/OT/RDW/Change Schedule/Multi Punch tabs
         // RequestFilterRequest validates request_type as string ('all','alteration','overtime',etc)
-        $response = $this->actingAs($this->supervisorUser, 'api')
-            ->getJson(
-                '/api/request/request-list?url=my_team_requests&request_type=all&department_id=403',
-                $this->apiKey
-            );
+        $response = $this->getJson(
+            '/api/request/request-list?url=my_team_requests&request_type=all&department_id=403',
+            $this->jwtHeaders()
+        );
 
         $response->assertStatus(200);
     }
@@ -142,13 +149,11 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     /** @test */
     public function test_request_list_my_team_requests_with_department_filter_returns_200()
     {
-        $this->withoutMiddleware();
         // department_id from the <select name="department_id"> filter
-        $response = $this->actingAs($this->supervisorUser, 'api')
-            ->getJson(
-                '/api/request/request-list?url=my_team_requests&department_id=403&request_type=all',
-                $this->apiKey
-            );
+        $response = $this->getJson(
+            '/api/request/request-list?url=my_team_requests&department_id=403&request_type=all',
+            $this->jwtHeaders()
+        );
 
         $response->assertStatus(200);
     }
@@ -156,13 +161,11 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     /** @test */
     public function test_request_list_my_team_requests_with_name_filter_returns_200()
     {
-        $this->withoutMiddleware();
         // name param from <input placeholder="Enter name">
-        $response = $this->actingAs($this->supervisorUser, 'api')
-            ->getJson(
-                '/api/request/request-list?url=my_team_requests&name=Test&request_type=all&department_id=403',
-                $this->apiKey
-            );
+        $response = $this->getJson(
+            '/api/request/request-list?url=my_team_requests&name=Test&request_type=all&department_id=403',
+            $this->jwtHeaders()
+        );
 
         $response->assertStatus(200);
     }
@@ -170,13 +173,11 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     /** @test */
     public function test_request_list_my_team_requests_with_showall_param_returns_200()
     {
-        $this->withoutMiddleware();
         // showall=1 broadens scope to all division employees (DivisionHead/HR only in practice)
-        $response = $this->actingAs($this->supervisorUser, 'api')
-            ->getJson(
-                '/api/request/request-list?url=my_team_requests&showall=1&request_type=all&department_id=403',
-                $this->apiKey
-            );
+        $response = $this->getJson(
+            '/api/request/request-list?url=my_team_requests&showall=1&request_type=all&department_id=403',
+            $this->jwtHeaders()
+        );
 
         $response->assertStatus(200);
     }
@@ -185,12 +186,10 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     public function test_request_list_my_team_requests_with_page_param_does_not_500()
     {
         // SP paginates at 10 records per page; very high page should return empty results, not error
-        $this->withoutMiddleware();
-        $response = $this->actingAs($this->supervisorUser, 'api')
-            ->getJson(
-                '/api/request/request-list?url=my_team_requests&page=9999&request_type=all&department_id=403',
-                $this->apiKey
-            );
+        $response = $this->getJson(
+            '/api/request/request-list?url=my_team_requests&page=9999&request_type=all&department_id=403',
+            $this->jwtHeaders()
+        );
 
         $this->assertNotEquals(500, $response->status());
         $response->assertStatus(200);
@@ -210,7 +209,7 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     public function test_bulk_request_with_empty_checked_list_returns_200_or_validation_error()
     {
         $this->withoutMiddleware();
-        $response = $this->actingAs($this->supervisorUser, 'api')
+        $response = $this->actingAs($this->supervisorUser)
             ->postJson(
                 '/api/request/bulk-request/',
                 ['checkedList' => [], 'bulk_action' => 'Approved'],
@@ -228,7 +227,7 @@ class MyTeamRequestVerifiedApiTest extends TestCase
         $this->withoutMiddleware();
         // Each item in checkedList must be in the format "{id}.{table_name}".
         // Sending a malformed value should be handled gracefully.
-        $response = $this->actingAs($this->supervisorUser, 'api')
+        $response = $this->actingAs($this->supervisorUser)
             ->postJson(
                 '/api/request/bulk-request/',
                 ['checkedList' => ['not-a-valid-format'], 'bulk_action' => 'Approved'],
@@ -242,7 +241,7 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     public function test_bulk_request_deny_action_with_empty_list_does_not_500()
     {
         $this->withoutMiddleware();
-        $response = $this->actingAs($this->supervisorUser, 'api')
+        $response = $this->actingAs($this->supervisorUser)
             ->postJson(
                 '/api/request/bulk-request/',
                 ['checkedList' => [], 'bulk_action' => 'Deny'],
@@ -257,7 +256,7 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     {
         $this->withoutMiddleware();
         // bulk_action is required for controller routing; missing it should return validation error, not 500
-        $response = $this->actingAs($this->supervisorUser, 'api')
+        $response = $this->actingAs($this->supervisorUser)
             ->postJson(
                 '/api/request/bulk-request/',
                 ['checkedList' => []],

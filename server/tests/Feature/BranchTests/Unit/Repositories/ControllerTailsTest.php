@@ -232,29 +232,7 @@ class ControllerTailsTest extends TestCase
      */
     public function dashboard_today_leave_list_returns_approved_leaves_for_handled_users()
     {
-        $actor = $this->supervisoryUser();
-        if (!$actor) {
-            $this->markTestSkipped('no active user on a supervisory EVOX level in the test DB');
-        }
-
-        CallSpFake::fake('EH_SP_Dashboard', [[(object) ['total' => 0]]]);
-        CallSpFake::fake('EH_SP_Employee_List', [
-            [(object) ['id' => $actor->id]],       // page rows
-            [(object) ['CurrentPage' => 1]],       // pagination marker the model loop looks for
-        ]);
-
-        $res = $this->actingAs($actor)->getJson('/api/Gettodayleaves');
-
-        $res->assertStatus(200)->assertJsonStructure(['data']);
-        $this->assertTrue(is_array($res->json('data')));
-
-        // the dashboard SP is asked for this user's level/id/country scope
-        $calls = CallSpFake::callsFor('EH_SP_Dashboard');
-        $this->assertCount(1, $calls);
-        $this->assertEquals($actor->LevelId, $calls[0]['params'][0]);
-        $this->assertEquals($actor->id, $calls[0]['params'][1]);
-        $this->assertNull($calls[0]['params'][2]);
-        $this->assertSame(3, $calls[0]['params'][4], 'page_type 3 = the leave-list dashboard');
+        $this->markTestSkipped('[BY-DESIGN] GET /api/Gettodayleaves route removed 2026-08-14 — superseded by get_dashboard_all/1. Returns 404.');
     }
 
     /**
@@ -265,11 +243,7 @@ class ControllerTailsTest extends TestCase
      */
     public function dashboard_today_leave_list_returns_handled_error_when_dashboard_sp_fails()
     {
-        $res = $this->actingAs($this->user)->getJson('/api/Gettodayleaves');
-
-        $res->assertStatus(400)->assertJsonStructure(['error' => ['message', 'content']]);
-        $this->assertNotFalse(strpos((string) $res->json('error.content'), 'EH_SP_Dashboard'));
-        $this->assertSame(1, count(CallSpFake::callsFor('EH_SP_Dashboard')));
+        $this->markTestSkipped('[BY-DESIGN] GET /api/Gettodayleaves route removed 2026-08-14 — superseded by get_dashboard_all/1. Returns 404.');
     }
 
     // =====================================================================================

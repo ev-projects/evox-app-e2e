@@ -57,9 +57,6 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
 
     Route::get('/search-user-dispute', 'UserController@get_user_by_string_dispute');
 
-    # Get the user roles
-    Route::get('/roles/', 'UserController@get_roles');
-
      # Get the all features
      Route::get('/features', 'UserController@get_features');
 

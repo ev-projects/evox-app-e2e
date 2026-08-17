@@ -292,6 +292,14 @@ jest.mock('../../store/actions/redirectActions', () => ({ setRedirect: jest.fn()
 // keyed proxy so two different route names cannot look identical
 global.links = new Proxy({}, { get: (t, k) => '/x/' + String(k) + '/' });
 
+// HR module retired 2026-08-13: HrAnnouncementsForm.js and PostAnnouncements.js deleted.
+// { virtual: true } tells Jest to skip the filesystem check so the require() below resolves
+// against the mock registry instead of the deleted files.
+jest.mock('../../container/Hr/HrAnnouncementsForm/HrAnnouncementsForm',
+    () => ({ __esModule: true, default: () => null }), { virtual: true });
+jest.mock('../../container/Hr/PostAnnouncements/PostAnnouncements',
+    () => ({ __esModule: true, default: () => null }), { virtual: true });
+
 const HrAnnouncementsForm =
     require('../../container/Hr/HrAnnouncementsForm/HrAnnouncementsForm').default;
 const PostAnnouncements =
@@ -376,7 +384,7 @@ const submitHrForm = async (getByText) => {
     await settle();
 };
 
-describe('HR announcement form - mount and render gate', () => {
+describe.skip('HR announcement form - mount and render gate', () => { // CAT-3: HrAnnouncementsForm.js deleted 2026-08-13
 
     test('opening_the_create_screen_wipes_the_cached_instance_and_never_asks_the_server_for_a_record', async () => {
         const { actions, getByTestId, queryByTestId } = renderHrForm();
@@ -441,7 +449,7 @@ describe('HR announcement form - mount and render gate', () => {
     });
 });
 
-describe('HR announcement form - validation', () => {
+describe.skip('HR announcement form - validation', () => { // CAT-3: HrAnnouncementsForm.js deleted 2026-08-13
 
     test('submitting_with_no_title_is_rejected_and_nothing_is_sent_to_the_server', async () => {
         const { getByText, getAllByText, actions } = renderHrForm();
@@ -510,7 +518,7 @@ describe('HR announcement form - validation', () => {
     });
 });
 
-describe('HR announcement form - submit payload', () => {
+describe.skip('HR announcement form - submit payload', () => { // CAT-3: HrAnnouncementsForm.js deleted 2026-08-13
 
     const fillValidHrForm = (getByTestId) => {
         fireEvent.change(getByTestId('input-title'), { target: { name: 'title', value: 'Q4 town hall' } });
@@ -650,7 +658,7 @@ describe('HR announcement form - submit payload', () => {
     });
 });
 
-describe('HR announcement form - thumbnail picker', () => {
+describe.skip('HR announcement form - thumbnail picker', () => { // CAT-3: HrAnnouncementsForm.js deleted 2026-08-13
 
     test('choosing_a_thumbnail_stores_the_file_and_swaps_the_preview_image_to_the_chosen_one', async () => {
         const { ref, getByTestId, container } = renderHrForm();
@@ -775,7 +783,7 @@ const renderPost = ({ params = {}, hrAnnouncement = {}, actions = postActions() 
     return { ...utils, ref, actions };
 };
 
-describe('HR post announcement screen - mount and prefill', () => {
+describe.skip('HR post announcement screen - mount and prefill', () => { // CAT-3: PostAnnouncements.js deleted 2026-08-13
 
     test('opening_the_post_screen_clears_the_cached_announcement_and_does_not_fetch_anything', async () => {
         const { actions } = renderPost();
@@ -841,7 +849,7 @@ describe('HR post announcement screen - mount and prefill', () => {
     });
 });
 
-describe('HR post announcement screen - validation and submit', () => {
+describe.skip('HR post announcement screen - validation and submit', () => { // CAT-3: PostAnnouncements.js deleted 2026-08-13
 
     const fillPost = (getByTestId, container) => {
         fireEvent.change(getByTestId('input-title'), { target: { name: 'title', value: 'Release 3.2' } });

@@ -44,6 +44,7 @@ class ChangeScheduleValidationApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        \Illuminate\Support\Facades\Cache::flush(); // clear rate-limiter between tests
 
         $this->apiKey = [
             'X-Authorization' => env(

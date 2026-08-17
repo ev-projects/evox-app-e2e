@@ -867,10 +867,10 @@ class ModelAndResourceArmsTest extends TestCase
         $staging = new RegisteredUserEmail($user, 'TempPass123!');
         $this->assertSame(
             [get_constant('EASTVANTAGE_DEV_EMAIL')],
-            array_column($staging->to, 'email'),
+            array_column($staging->to, 'address'),
             'outside production the welcome mail must be redirected to the dev inbox'
         );
-        $this->assertNotContains($user->email, array_column($staging->to, 'email'));
+        $this->assertNotContains($user->email, array_column($staging->to, 'address'));
 
         // ---- production (Schedule of record: RegisteredUserEmail.php:35)
         $originalEnv = $this->app['env'];
@@ -883,10 +883,10 @@ class ModelAndResourceArmsTest extends TestCase
 
         $this->assertSame(
             [$user->email],
-            array_column($production->to, 'email'),
+            array_column($production->to, 'address'),
             'in production the welcome mail must go to the employee, not the dev inbox'
         );
-        $this->assertNotContains(get_constant('EASTVANTAGE_DEV_EMAIL'), array_column($production->to, 'email'));
+        $this->assertNotContains(get_constant('EASTVANTAGE_DEV_EMAIL'), array_column($production->to, 'address'));
 
         // the env rebinding was undone
         $this->assertSame($originalEnv, $this->app['env']);
@@ -894,7 +894,10 @@ class ModelAndResourceArmsTest extends TestCase
         // and the message the employee receives is the welcome markdown, addressed as built
         $built = $production->build();
         $this->assertSame('Welcome to Eastvantage!', $built->subject);
-        $this->assertSame('emails.registered-user', $built->markdown);
+        // $markdown is protected on Mailable — read via reflection
+        $markdownProp = new \ReflectionProperty(get_class($built), 'markdown');
+        $markdownProp->setAccessible(true);
+        $this->assertSame('emails.registered-user', $markdownProp->getValue($built));
         $this->assertSame('TempPass123!', $built->temporary_password);
         $this->assertSame(env('FRONT_END_URL'), $built->site_link);
     }

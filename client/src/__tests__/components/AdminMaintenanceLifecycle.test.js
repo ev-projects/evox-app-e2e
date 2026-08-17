@@ -307,9 +307,10 @@ jest.mock('papaparse', () => {
 
 // Action creators return identifiable plain objects so PHASE 4 can prove which creator each
 // mapDispatchToProps key routes to, and with which arguments.
+// changeLogsActions.js removed — { virtual: true } skips the filesystem check.
 jest.mock('../../store/actions/admin/changeLogsActions', () => ({
     addChangeLogs: jest.fn((d) => ({ type: 'THUNK_ADD_CHANGELOG', data: d })),
-}));
+}), { virtual: true });
 jest.mock('../../store/actions/redirectActions', () => ({
     setRedirect:   jest.fn((l) => ({ type: 'THUNK_SET_REDIRECT', link: l })),
     clearRedirect: jest.fn(() => ({ type: 'THUNK_CLEAR_REDIRECT' })),

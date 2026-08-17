@@ -129,14 +129,10 @@ class MailablesBuildTest extends TestCase
     /** @test */
     public function registration_and_forgot_password_emails_build_with_the_temp_password()
     {
-        $this->markTestSkipped(
-            '[CAT-4] RegisteredUserEmail::build() and ForgotPasswordRequestEmail::build() ' .
-            'do not call $this->bcc() — the non-prod BCC arm is present in all other Mailables ' .
-            'but was omitted from these two. assertBuilds() asserts $built->bcc is non-empty, ' .
-            'so both calls fail with "non-prod BCC arm did not run". ' .
-            'Fix: add the App::environment() / $this->bcc(get_constant(...)) block to each ' .
-            'build() method — the same pattern used in OvertimeRequestEmail and AlterLogRequestEmail.'
-        );
+        // F8 fixed: BCC block added to both build() methods — same pattern as OvertimeRequestEmail.
+        $password = 'temp_pass_123';
+        $this->assertBuilds(new RegisteredUserEmail($this->user, $password));
+        $this->assertBuilds(new ForgotPasswordRequestEmail($this->user, $password));
     }
 
     // -------------------------------------------------------------- supervisor reminders

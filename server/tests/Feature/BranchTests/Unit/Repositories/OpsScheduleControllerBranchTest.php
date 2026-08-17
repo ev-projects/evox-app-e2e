@@ -159,7 +159,10 @@ class OpsScheduleControllerBranchTest extends TestCase
         $res->assertStatus(200);
         $rows = collect($res->json('content'))->where('department', $this->dept['name']);
         $this->assertNotEmpty($rows);
-        $formRow = $rows->firstWhere('type', 'Form');
+        // Use the unique name from storeForm() to find the test's row, not a pre-existing seed row
+        // (dept 4 already has id=189 with scope='PH'; firstWhere('type','Form') would return that
+        // row and fail the assertSame(['PH','IN'], ...) assertion).
+        $formRow = $rows->firstWhere('name', 'Ops Seam Row');
         $this->assertSame('Mon - Fri', $formRow['work_days']);       // range formatting arm
         $this->assertSame(['PH', 'IN'], $formRow['scope']);
         $this->assertSame('8am - 5pm', $formRow['start_end_time']);

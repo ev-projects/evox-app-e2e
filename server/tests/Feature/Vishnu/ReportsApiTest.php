@@ -409,7 +409,8 @@ class ReportsApiTest extends TestCase
             '/api/report/dtr_summary/new_export?valid_from=2026-06-01&valid_to=2026-06-15',
             $this->apiKey
         );
-        $this->assertNotEquals(500, $response->status());
+        // ->status() fails on BinaryFileResponse; getStatusCode() is available on all response types
+        $this->assertNotEquals(500, $response->getStatusCode());
     }
 
     /** @test */

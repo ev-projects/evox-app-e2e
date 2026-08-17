@@ -109,17 +109,13 @@ class AdminUsersApiTest extends TestCase
     /** @test */
     public function test_post_client_assign_without_token_returns_401()
     {
-        $response = $this->postJson('/api/client/assign/', [], $this->apiKey);
-        $response->assertStatus(401);
-        $this->assertEquals('token_absent', $response->json('error.content.code'));
+        $this->markTestSkipped('[BY-DESIGN] Client module removed 2026-08-10 — /api/client/assign/ returns 404.');
     }
 
     /** @test */
     public function test_get_user_roles_without_token_returns_401()
     {
-        $response = $this->getJson('/api/user/roles', $this->apiKey);
-        $response->assertStatus(401);
-        $this->assertEquals('token_absent', $response->json('error.content.code'));
+        $this->markTestSkipped('[BY-DESIGN] /api/user/roles removed — Spatie permissions package was removed.');
     }
 
     /** @test */
@@ -250,7 +246,7 @@ class AdminUsersApiTest extends TestCase
             'first_name'          => 'AutoTest',
             'last_name'           => 'User' . time(),
             'email'               => 'autotest_' . time() . '@example.com',
-            'roles'               => ['client'],
+            'roles'               => ['employee'],
             'departments_handled' => [1],
         ];
         $response = $this->actingAs($this->user)->postJson('/api/user/register', $payload, $this->apiKey);
@@ -489,46 +485,24 @@ class AdminUsersApiTest extends TestCase
     /** @test */
     public function test_post_client_assign_empty_payload_returns_422()
     {
-        $this->withoutMiddleware();
-        $response = $this->actingAs($this->user)->postJson('/api/client/assign/', [], $this->apiKey);
-        $this->assertEquals(422, $response->status());
+        $this->markTestSkipped('[BY-DESIGN] Client module removed 2026-08-10 — /api/client/assign/ returns 404.');
     }
 
     /** @test */
     public function test_post_client_assign_missing_client_id_returns_422()
     {
-        $this->withoutMiddleware();
-        $payload = [
-            'department_id'     => 1,
-            'employee_user_id'  => [],
-        ];
-        $response = $this->actingAs($this->user)->postJson('/api/client/assign/', $payload, $this->apiKey);
-        $this->assertEquals(422, $response->status());
+        $this->markTestSkipped('[BY-DESIGN] Client module removed 2026-08-10 — /api/client/assign/ returns 404.');
     }
 
     /** @test */
     public function test_post_client_assign_missing_department_id_returns_422()
     {
-        $this->withoutMiddleware();
-        $payload = [
-            'client_id'        => 1,
-            'employee_user_id' => [],
-        ];
-        $response = $this->actingAs($this->user)->postJson('/api/client/assign/', $payload, $this->apiKey);
-        $this->assertEquals(422, $response->status());
+        $this->markTestSkipped('[BY-DESIGN] Client module removed 2026-08-10 — /api/client/assign/ returns 404.');
     }
 
     /** @test */
     public function test_post_client_assign_valid_payload_returns_201()
     {
-        $this->withoutMiddleware();
-        $payload = [
-            'client_id'        => $this->user->id,
-            'department_id'    => 1,
-            'employee_user_id' => [],
-        ];
-        $response = $this->actingAs($this->user)->postJson('/api/client/assign/', $payload, $this->apiKey);
-        // Backend returns 200 or 201 depending on env
-        $this->assertContains($response->status(), [200, 201]);
+        $this->markTestSkipped('[BY-DESIGN] Client module removed 2026-08-10 — /api/client/assign/ returns 404.');
     }
 }

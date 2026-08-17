@@ -16,6 +16,7 @@ class RoleResourceTest extends TestCase
 {
     public function test_maps_id_name_and_wraps_permissions_collection()
     {
+        $this->markTestSkipped('RoleResource deleted — Spatie laravel-permission removed (Phase A)');
         $role = (object) [
             'id' => 4,
             'name' => 'Manager',

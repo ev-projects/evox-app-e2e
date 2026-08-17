@@ -113,6 +113,7 @@ class UserAssetsMiscTest extends TestCase
                 'department_id' => null,
                 'emp_name'      => null,
             ], $this->apiKey);
-        $this->assertNotEquals(500, $response->status());
+        // ->status() fails on BinaryFileResponse; getStatusCode() is available on all response types
+        $this->assertNotEquals(500, $response->getStatusCode());
     }
 }

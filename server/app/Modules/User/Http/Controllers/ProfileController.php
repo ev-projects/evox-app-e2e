@@ -37,7 +37,6 @@ use App\Modules\User\Resources\DpaUserListResourceCollection;
 use App\Modules\User\Resources\LeaveCreditsListResource;
 use App\Modules\User\Resources\LeavesListResource;
 use App\Modules\User\Resources\PersonalInformationResource;
-use App\Modules\User\Resources\RoleResource;
 use Illuminate\Database\Eloquent\Collection;
 
 class ProfileController extends Controller

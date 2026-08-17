@@ -40,17 +40,17 @@ describe('assignRoleReducers', () => {
         expect(next).toEqual({ payroll: 'JAN' });
     });
 
-    it('handles FETCH_USER_ROLE_AND_PERMISSION', () => {
+    it('FETCH_USER_ROLE_AND_PERMISSION — case removed from reducer, returns unchanged state', () => {
+        // Role/permission tracking removed from Redux when Spatie laravel-permission was
+        // dropped. The action now falls through to default and the state is returned unchanged.
         const next = assignRoleReducers(initState, {
             type: 'FETCH_USER_ROLE_AND_PERMISSION',
             userRole: ['admin'],
             userPermission: ['full_access'],
         });
-        expect(next).toEqual({
-            userRole: ['admin'],
-            userPermission: ['full_access'],
-            isUserRolesPermissionsLoaded: true,
-        });
+        expect(next).toBe(initState);
+        expect(next.userRole).toBeNull();
+        expect(next.isUserRolesPermissionsLoaded).toBe(false);
     });
 
     it('handles FETCH_USER_FEATURES', () => {

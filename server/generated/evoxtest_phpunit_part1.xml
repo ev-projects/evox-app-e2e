@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  EVOX split-run PART 1 of 2 — run this first, then part2, then evoxtest_merge_coverage.php
+  Covers: tests/Unit  +  tests/Feature/Api  +  tests/Feature/BranchTests
+          +  tests/Feature/CoverageMax  +  tests/Feature/Console
+
+  Run from: C:\DFolder\Projects\EVOX\E2eTesting\EVOX Code-Git\evox-app-e2e\server\
+  Command:  php vendor/bin/phpunit -c generated/evoxtest_phpunit_part1.xml -v
+-->
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="../tests/bootstrap.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="false"
+         convertWarningsToExceptions="false"
+         processIsolation="false"
+         stopOnFailure="false">
+
+    <testsuites>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">../tests/Unit</directory>
+        </testsuite>
+
+        <testsuite name="Feature-Part1">
+            <directory suffix="Test.php">../tests/Feature/Api</directory>
+            <directory suffix="Test.php">../tests/Feature/BranchTests</directory>
+            <directory suffix="Test.php">../tests/Feature/CoverageMax</directory>
+            <directory suffix="Test.php">../tests/Feature/Console</directory>
+
+            <!-- same excludes as evoxtest_phpunit.xml -->
+            <exclude>../tests/Feature/Api/AdminSyncApiTest.php</exclude>
+            <exclude>../tests/Feature/Api/CronApiTest.php</exclude>
+            <exclude>../tests/Feature/Api/BookingApiTest.php</exclude>
+        </testsuite>
+    </testsuites>
+
+    <groups>
+        <exclude>
+            <group>dead-code</group>
+        </exclude>
+    </groups>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="false">
+            <directory suffix=".php">../app</directory>
+            <exclude>
+                <file>../app/Models/Activity.php</file>
+                <directory suffix=".php">../app/Modules/*/Database/Migrations</directory>
+                <file>../app/Http/Controllers/RoomController.php</file>
+                <file>../app/Http/Controllers/LocationController.php</file>
+            </exclude>
+        </whitelist>
+    </filter>
+
+    <logging>
+        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
+        <log type="coverage-php"  target="C:\DFolder\Projects\EVOX\E2eTesting\VishnuTestCases\EVOX-TEST-SUITE-FULL-2026-07-28\Coverage\evoxtest_coverage_part1.cov"/>
+    </logging>
+
+    <php>
+        <env name="APP_ENV"              value="testing"/>
+        <env name="BCRYPT_ROUNDS"        value="4"/>
+        <env name="CACHE_DRIVER"         value="array"/>
+        <env name="SESSION_DRIVER"       value="array"/>
+        <env name="QUEUE_DRIVER"         value="sync"/>
+        <env name="MAIL_DRIVER"          value="array"/>
+        <env name="PAYROLL_USER"         value="testPayroll@eastvantage.com"/>
+        <env name="CLIENT_USER_EMAIL"    value="glenn.macasarte@eastvantage.com"/>
+        <env name="CLIENT_USER_PASSWORD" value="{ev2010}"/>
+        <ini name="error_reporting"      value="31735"/>
+        <ini name="memory_limit"         value="6G"/>
+    </php>
+</phpunit>

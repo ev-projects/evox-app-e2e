@@ -10,8 +10,10 @@ use Tests\Support\CallSpFake;
 use Tests\Support\BhrApiFake;
 use Mockery;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\User\Models\User;
@@ -34,6 +36,12 @@ class UserControllerProfileBranchTest extends TestCase
     /** @var User */
     private $user;
 
+    /** @var string JWT Bearer token for this->user */
+    private $jwtToken;
+
+    /** @var string Raw API key value (inserted per-test, rolled back by DatabaseTransactions) */
+    private $rawApiKey;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -42,11 +50,36 @@ class UserControllerProfileBranchTest extends TestCase
         Mail::fake();
         Queue::fake();
         Excel::fake();
-        $this->withoutMiddleware();
+        // withoutMiddleware() is NOT set here — we use a real JWT token so that
+        // the JWT auth middleware populates auth()->user() correctly.
+        // actingAs() is unreliable with tymon/jwt-auth when the guard reinitialises per-request.
 
-        $this->user = User::whereNotNull('LevelId')->whereNotNull('bhr_num')
-            ->where('is_active', 1)->orderBy('id', 'desc')->first();
-        if (!$this->user) $this->markTestSkipped('no active bhr-numbered user in test DB');
+        // Use Gary Aure — known-good: has LevelId=1, bhr_num, country_id, complete profile data.
+        $this->user = User::where('email', env('E2E_USER_SUPERVISOR_PHILIPPINES', 'gary.aure@eastvantage.com'))->first();
+        if (!$this->user) $this->markTestSkipped('E2E_USER_SUPERVISOR_PHILIPPINES not found in test DB');
+
+        // Runtime API key — DatabaseTransactions rolls it back after each test.
+        // Raw DB::table() used (not ApiKey::generate()) to avoid admin event logs.
+        $this->rawApiKey = Str::random(64);
+        DB::table('api_keys')->insert([
+            'name'       => 'evox_e2e_userprofilebranch_' . now()->format('His'),
+            'key'        => $this->rawApiKey,
+            'active'     => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // Real JWT token — valid for this test's duration.
+        $this->jwtToken = auth('api')->login($this->user);
+    }
+
+    /** Returns headers for authenticated JSON requests (JWT + API key). */
+    private function jwtHeaders(): array
+    {
+        return [
+            'Authorization'   => 'Bearer ' . $this->jwtToken,
+            'X-Authorization' => $this->rawApiKey,
+        ];
     }
 
     protected function tearDown(): void
@@ -62,8 +95,14 @@ class UserControllerProfileBranchTest extends TestCase
     public function profile_returns_the_resource_with_the_bhr_photo()
     {
         BhrApiFake::fake('photo/medium', 'RAW-IMAGE-BYTES');
+        // UserProfileResource::toArray() calls evox_departments_handled/strict which both
+        // invoke EH_SP_Get_Department_By_UserId; return empty first result set → empty array.
+        CallSpFake::fake('EH_SP_Get_Department_By_UserId', [[]]);
+        // UserProfileResource::toArray() also calls isUserNhoValid() → EV_SP_NHO_Validate_User.
+        // Must be faked or CallSpFake seam throws → controller catch → 400.
+        CallSpFake::fake('EV_SP_NHO_Validate_User', [[['Result' => 0]]]);
 
-        $res = $this->actingAs($this->user)->getJson("/api/user/{$this->user->id}/profile");
+        $res = $this->getJson("/api/user/{$this->user->id}/profile", $this->jwtHeaders());
 
         $res->assertStatus(200);
         $this->assertSame(base64_encode('RAW-IMAGE-BYTES'), $res->json('content.profile_picture'));
@@ -78,14 +117,14 @@ class UserControllerProfileBranchTest extends TestCase
         BhrApiFake::fake('?fields=', (object) [
             'id' => $this->user->bhr_num, 'firstName' => 'Alice', 'lastName' => 'Tester',
         ]);
-        BhrApiFake::fake('tables/jobInfo', (object) ['rows' => []]);
+        // job_information() calls get_user_job_information twice: tables/employmentStatus AND
+        // tables/jobInfo. A single 'tables/' prefix covers both via BhrApiFake substring match.
+        BhrApiFake::fake('tables/', (object) ['rows' => []]);
 
-        $this->actingAs($this->user)
-            ->getJson("/api/user/{$this->user->id}/personal_information")
+        $this->getJson("/api/user/{$this->user->id}/personal_information", $this->jwtHeaders())
             ->assertStatus(200);
 
-        $this->actingAs($this->user)
-            ->getJson("/api/user/{$this->user->id}/job_information")
+        $this->getJson("/api/user/{$this->user->id}/job_information", $this->jwtHeaders())
             ->assertStatus(200);
     }
 
@@ -94,7 +133,7 @@ class UserControllerProfileBranchTest extends TestCase
     {
         BhrApiFake::fake('time_off/calculator', [(object) ['name' => 'VL', 'balance' => 5]]);
 
-        $res = $this->actingAs($this->user)->getJson("/api/user/{$this->user->id}/leave_credits");
+        $res = $this->getJson("/api/user/{$this->user->id}/leave_credits", $this->jwtHeaders());
 
         $res->assertStatus(200);
         $this->assertNotEmpty(BhrApiFake::callsFor('time_off/calculator'));
@@ -104,7 +143,7 @@ class UserControllerProfileBranchTest extends TestCase
     public function bhr_failure_is_converted_into_an_error_response()
     {
         // no fake registered -> the seam throws -> controller catch arm
-        $res = $this->actingAs($this->user)->getJson("/api/user/{$this->user->id}/profile");
+        $res = $this->getJson("/api/user/{$this->user->id}/profile", $this->jwtHeaders());
 
         $res->assertStatus(400);
         $this->assertArrayHasKey('error', $res->json());
@@ -114,7 +153,10 @@ class UserControllerProfileBranchTest extends TestCase
     /** @test */
     public function user_info_returns_the_payload_for_self()
     {
-        $res = $this->actingAs($this->user)->getJson("/api/user/{$this->user->id}/info");
+        // EH_SP_Direct_Supervisor: called by direct_supervisor_temp() from App\Modules\User\Models
+        // namespace (intercepted by CallSpFake). Empty first result set → is_under_supervisee=false.
+        CallSpFake::fake('EH_SP_Direct_Supervisor', [[]]);
+        $res = $this->getJson("/api/user/{$this->user->id}/info", $this->jwtHeaders());
 
         $res->assertStatus(200);
         // is_under_supervisee(self) is true for privileged levels; for others the finding below applies
@@ -129,11 +171,12 @@ class UserControllerProfileBranchTest extends TestCase
     /** @test */
     public function user_info_for_a_non_supervisee_is_silently_empty_USR_INFO_1()
     {
+        CallSpFake::fake('EH_SP_Direct_Supervisor', [[]]);
         $other = User::where('id', '!=', $this->user->id)->where('is_active', 1)
             ->orderBy('id')->first();
         if (!$other) $this->markTestSkipped('need a second user in test DB');
 
-        $res = $this->actingAs($this->user)->getJson("/api/user/{$other->id}/info");
+        $res = $this->getJson("/api/user/{$other->id}/info", $this->jwtHeaders());
 
         // Characterized: permission failure yields 200 with null/empty content, never a 403.
         $res->assertStatus(200);
@@ -153,11 +196,11 @@ class UserControllerProfileBranchTest extends TestCase
             [(object) ['TotalCount' => 1, 'PerPage' => 10, 'CurrentPage' => 1]],
         ]);
 
-        $res = $this->actingAs($this->user)->getJson('/api/user/get_dpa_list');
+        $res = $this->getJson('/api/user/get_dpa_list', $this->jwtHeaders());
         $res->assertStatus(200);
         $this->assertSame(1, $res->json('content.pagination.total'));
 
-        $res = $this->actingAs($this->user)->get('/api/user/export_dpa_list');
+        $res = $this->get('/api/user/export_dpa_list', $this->jwtHeaders());
         $res->assertStatus(200);
         Excel::assertDownloaded('dtrlogs.csv');
     }
@@ -166,7 +209,7 @@ class UserControllerProfileBranchTest extends TestCase
     public function dpa_list_sp_failure_returns_not_found()
     {
         // unfaked SP -> seam throws -> catch arm returns 404 for this endpoint
-        $res = $this->actingAs($this->user)->getJson('/api/user/get_dpa_list');
+        $res = $this->getJson('/api/user/get_dpa_list', $this->jwtHeaders());
 
         $res->assertStatus(404);
     }
@@ -195,13 +238,11 @@ class UserControllerProfileBranchTest extends TestCase
     /** @test */
     public function tick_dpa_marks_the_user_and_is_idempotent()
     {
-        $res = $this->actingAs($this->user)
-            ->postJson("/api/user/{$this->user->id}/tick_dpa", ['dpa' => 1]);
+        $res = $this->postJson("/api/user/{$this->user->id}/tick_dpa", ['dpa' => 1], $this->jwtHeaders());
 
         if ($res->status() === 200) {
             $this->assertNotNull(User::find($this->user->id)->dpa_ticked_at);
-            $this->actingAs($this->user)
-                ->postJson("/api/user/{$this->user->id}/tick_dpa", ['dpa' => 1])
+            $this->postJson("/api/user/{$this->user->id}/tick_dpa", ['dpa' => 1], $this->jwtHeaders())
                 ->assertStatus(200);                                  // second tick still fine
         } else {
             $this->assertContains($res->status(), [400, 404, 405]);

@@ -40,9 +40,11 @@ jest.mock('../../store/actions/lookup/lookupListActions', () => ({
 jest.mock('../../store/actions/admin/assignDepartmentHandlersActions', () => ({
     assignDepartmentHandlers: jest.fn(),
 }));
+// assignEmployeesClientActions.js deleted 2026-08-10 — client module retired.
+// { virtual: true } required so Jest skips the filesystem check for the deleted file.
 jest.mock('../../store/actions/admin/assignEmployeesClientActions', () => ({
     assignEmployeesClient: jest.fn(),
-}));
+}), { virtual: true });
 jest.mock('../../store/actions/redirectActions', () => ({
     setRedirect: jest.fn(),
 }));

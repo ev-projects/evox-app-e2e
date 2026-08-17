@@ -55,6 +55,7 @@ class MiscProtectedApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        \Illuminate\Support\Facades\Cache::flush(); // clear rate-limiter between tests
 
         $this->apiKey = [
             'X-Authorization' => env(
@@ -190,9 +191,9 @@ class MiscProtectedApiTest extends TestCase
     public function test_post_profile_without_token_returns_401()
     {
         // Route removed 2026-08-13: POST /api/user/{id}/profile no longer exists.
-        // ProfileController@store was never implemented. Laravel returns 404 before any middleware runs.
+        // The PUT route exists, so POST returns 405 Method Not Allowed (not 404).
         $response = $this->postJson("/api/user/{$this->user->id}/profile", [], $this->apiKey);
-        $response->assertStatus(404);
+        $response->assertStatus(405);
     }
 
     /** @test */

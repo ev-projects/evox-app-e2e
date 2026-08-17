@@ -111,6 +111,12 @@ jest.mock('../../services/API', () => ({ call: jest.fn() }));
 // keyed proxy so two different link names cannot look identical (FINDING HAL-EDIT-1)
 global.links = new Proxy({}, { get: (t, k) => '/x/' + String(k) + '/' });
 
+// HR module retired 2026-08-13: HrAnnouncementsList.js deleted; only the .css remains.
+// { virtual: true } tells Jest to skip the filesystem check so the require() resolves
+// against this stub instead of the deleted file.
+jest.mock('../../container/Hr/HrAnnouncementsList/HrAnnouncementsList',
+    () => ({ __esModule: true, default: () => null }), { virtual: true });
+
 const DepartmentAnnouncementsList =
     require('../../container/DepartmentAnnouncements/DepartmentAnnouncementsList/DepartmentAnnouncementsList').default;
 const HrAnnouncementsList =
@@ -364,7 +370,7 @@ describe('Manage my Departments Announcements - page lifecycle', () => {
  * Manage my HR Announcements
  * ============================================================================== */
 
-describe('Manage my HR Announcements - page lifecycle', () => {
+describe.skip('Manage my HR Announcements - page lifecycle', () => { // CAT-3: HrAnnouncementsList.js deleted 2026-08-13
 
     /* ---------------------------------------------------- PHASE 1 - MOUNT/LOAD */
 
