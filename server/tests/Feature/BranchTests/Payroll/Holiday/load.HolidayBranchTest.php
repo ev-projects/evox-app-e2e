@@ -221,6 +221,16 @@ class HolidayLoadBranchTest extends TestCase
 
         $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $collection);
 
+        // An empty collection satisfies the loop below without exercising the rule at all, and the
+        // assertInstanceOf above only restates the return type. Stop rather than report a green run
+        // that asserted nothing.
+        if ($collection->isEmpty()) {
+            $this->markTestSkipped(
+                'get_holidays() returned no row for the 1990 window — with nothing to iterate the '
+                . 'predefined-or-in-range rule cannot be exercised'
+            );
+        }
+
         foreach ($collection as $holiday) {
             $date = Carbon::parse($holiday->date)->format('Y-m-d');
 

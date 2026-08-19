@@ -458,17 +458,29 @@ class FreshServiceMockedCurlIntegrationTest extends TestCase
     }
 
     // Disallowed extension: validate() throws BEFORE any staging or transport work.
+    // The ValidationException arm answers with ONE combined sentence covering both the size rule and
+    // the type rule, so the assertion pins the TYPE clause — the rule this scenario actually broke.
     /** @test */
     public function an_attachment_with_a_disallowed_extension_is_rejected_before_any_upload()
     {
         $file = $this->realUpload('payload.exe', 'MZ');
         $before = $this->stagedUploads();
+        Curl::shouldReceive('to')->never();          // rejection must precede any outbound call
 
         $res = $this->post('/api/freshservice/tickets/attachments',
             ['attachment' => $file, 'workspace_id' => 4], ['Accept' => 'application/json']);
 
         $res->assertStatus(400);
-        $this->assertStringContainsString('not more than 5MB', $res->json('error.message'));
+        $this->assertSame(
+            'Could not upload your attachment, please make sure it is not more than 5MB in size. '
+            . 'The file must be a type of: jpeg, jpg, png, gif, bmp, webp, pdf, doc, docx, xls, '
+            . 'xlsx, txt, or csv.',
+            $res->json('error.message')
+        );
+        $this->assertStringContainsString(
+            'must be a type of: jpeg, jpg, png, gif, bmp, webp, pdf, doc, docx, xls, xlsx, txt, or csv',
+            $res->json('error.message')
+        );
         $this->assertSame($before, $this->stagedUploads());
     }
 
@@ -478,6 +490,8 @@ class FreshServiceMockedCurlIntegrationTest extends TestCase
     /** @test */
     public function user_suggestions_render_each_match_as_name_email_and_job_title()
     {
+        Curl::shouldReceive('to')->never();          // the directory is local; FreshService is not asked
+
         $res = $this->getJson('/api/freshservice/users/suggestions?keyword=' . urlencode($this->user->email));
 
         $res->assertStatus(200);
@@ -493,6 +507,8 @@ class FreshServiceMockedCurlIntegrationTest extends TestCase
     /** @test */
     public function user_suggestions_return_an_empty_list_when_nothing_matches()
     {
+        Curl::shouldReceive('to')->never();          // a miss must not fall back to a remote lookup
+
         $res = $this->getJson('/api/freshservice/users/suggestions?keyword=zzz-no-such-mailbox-zzz');
 
         $res->assertStatus(200);

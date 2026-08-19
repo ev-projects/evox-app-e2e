@@ -538,6 +538,10 @@ class DepartmentAndAnnouncementResourceContractsTest extends TestCase
      */
     public function a_null_announcement_is_fatal_in_both_resources_FINDING_ANN_NULL_DEAD_1()
     {
+        // Narrowed from any-\Throwable: the failure must be the property read on the null resource
+        // (PHP raises it as a notice on 7.4 / a warning on 8.x; PHPUnit converts both into
+        // PHPUnit\Framework\Error\Error subclasses under convertNoticesToExceptions). Accepting any
+        // throwable would let an unrelated fault keep this characterisation green.
         $loose = null;
         try {
             (new AnnouncementResource(null))->toArray($this->request);
@@ -545,6 +549,8 @@ class DepartmentAndAnnouncementResourceContractsTest extends TestCase
             $loose = $e;
         }
         $this->assertNotNull($loose, 'AnnouncementResource null guard is reachable again — flip this test');
+        $this->assertInstanceOf(\PHPUnit\Framework\Error\Error::class, $loose);
+        $this->assertStringContainsString('release_date', $loose->getMessage());
 
         $strict = null;
         try {
@@ -553,5 +559,7 @@ class DepartmentAndAnnouncementResourceContractsTest extends TestCase
             $strict = $e;
         }
         $this->assertNotNull($strict, 'AnnouncementStrictResource null guard is reachable again — flip this test');
+        $this->assertInstanceOf(\PHPUnit\Framework\Error\Error::class, $strict);
+        $this->assertStringContainsString('release_date', $strict->getMessage());
     }
 }

@@ -287,7 +287,11 @@ class OvertimeRepositoryCompleteTest extends TestCase
         if (!$overtime) $this->markTestSkipped('no Overtime owned by somebody other than the probe employee');
         $this->be($employee);
 
+        // Pinned to the exact fatal: users_handled() returns [] for a non-privileged level, and
+        // get_authenticated_user() calls findOrFail() on that array. Any OTHER \Error here would be a
+        // different defect wearing this test's name.
         $this->expectException(\Error::class);
+        $this->expectExceptionMessage('Call to a member function findOrFail() on array');
         $this->repo->update([
             'date'   => (string) $overtime->date,
             'amount' => '02:00',
