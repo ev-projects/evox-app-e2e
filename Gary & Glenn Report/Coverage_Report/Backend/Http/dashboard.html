@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for C:\DFolder\Projects\EVOX\E2eTesting\EVOX Code-Git\evox-app-e2e\server\app\Http</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../.css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="../.css/nv.d3.min.css" rel="stylesheet" type="text/css">
+  <link href="../.css/style.css" rel="stylesheet" type="text/css">
+  <link href="../.css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">C:\DFolder\Projects\EVOX\E2eTesting\EVOX Code-Git\evox-app-e2e\server\app</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Http</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Controllers/Auth/ForgotPasswordController.php.html#8">App\Http\Controllers\Auth\ForgotPasswordController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controllers/Auth/RegisterController.php.html#11">App\Http\Controllers\Auth\RegisterController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controllers/Auth/ResetPasswordController.php.html#8">App\Http\Controllers\Auth\ResetPasswordController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controllers/Auth/VerificationController.php.html#9">App\Http\Controllers\Auth\VerificationController</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Middleware/CoverageMiddleware.php.html#7">App\Http\Middleware\CoverageMiddleware</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Middleware/PermissionMiddleware.php.html#8">App\Http\Middleware\PermissionMiddleware</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controllers/Auth/LoginController.php.html#14">App\Http\Controllers\Auth\LoginController</a></td><td class="text-right">43%</td></tr>
+       <tr><td><a href="Controllers/RedisController.php.html#9">App\Http\Controllers\RedisController</a></td><td class="text-right">64%</td></tr>
+       <tr><td><a href="Controllers/PoliciesDocumentController.php.html#11">App\Http\Controllers\PoliciesDocumentController</a></td><td class="text-right">70%</td></tr>
+       <tr><td><a href="Controllers/NeoController.php.html#11">App\Http\Controllers\NeoController</a></td><td class="text-right">72%</td></tr>
+       <tr><td><a href="Controllers/EvaController.php.html#11">App\Http\Controllers\EvaController</a></td><td class="text-right">84%</td></tr>
+       <tr><td><a href="Controllers/DashboardController.php.html#17">App\Http\Controllers\DashboardController</a></td><td class="text-right">85%</td></tr>
+       <tr><td><a href="Controllers/DisputeController.php.html#15">App\Http\Controllers\DisputeController</a></td><td class="text-right">86%</td></tr>
+       <tr><td><a href="Controllers/FreshServiceController.php.html#15">App\Http\Controllers\FreshServiceController</a></td><td class="text-right">89%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Controllers/FreshServiceController.php.html#15">App\Http\Controllers\FreshServiceController</a></td><td class="text-right">52</td></tr>
+       <tr><td><a href="Controllers/NeoController.php.html#11">App\Http\Controllers\NeoController</a></td><td class="text-right">46</td></tr>
+       <tr><td><a href="Controllers/Auth/LoginController.php.html#14">App\Http\Controllers\Auth\LoginController</a></td><td class="text-right">32</td></tr>
+       <tr><td><a href="Controllers/PoliciesDocumentController.php.html#11">App\Http\Controllers\PoliciesDocumentController</a></td><td class="text-right">32</td></tr>
+       <tr><td><a href="Middleware/CoverageMiddleware.php.html#7">App\Http\Middleware\CoverageMiddleware</a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Controllers/DashboardController.php.html#17">App\Http\Controllers\DashboardController</a></td><td class="text-right">27</td></tr>
+       <tr><td><a href="Controllers/DisputeController.php.html#15">App\Http\Controllers\DisputeController</a></td><td class="text-right">18</td></tr>
+       <tr><td><a href="Controllers/EvaController.php.html#11">App\Http\Controllers\EvaController</a></td><td class="text-right">10</td></tr>
+       <tr><td><a href="Controllers/RedisController.php.html#9">App\Http\Controllers\RedisController</a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="Middleware/PermissionMiddleware.php.html#8">App\Http\Middleware\PermissionMiddleware</a></td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Controllers/Auth/ForgotPasswordController.php.html#28"><abbr title="App\Http\Controllers\Auth\ForgotPasswordController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controllers/Auth/ResetPasswordController.php.html#35"><abbr title="App\Http\Controllers\Auth\ResetPasswordController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Middleware/CoverageMiddleware.php.html#9"><abbr title="App\Http\Middleware\CoverageMiddleware::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controllers/Auth/VerificationController.php.html#36"><abbr title="App\Http\Controllers\Auth\VerificationController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Middleware/PermissionMiddleware.php.html#17"><abbr title="App\Http\Middleware\PermissionMiddleware::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controllers/Auth/RegisterController.php.html#64"><abbr title="App\Http\Controllers\Auth\RegisterController::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controllers/Auth/RegisterController.php.html#38"><abbr title="App\Http\Controllers\Auth\RegisterController::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controllers/Auth/RegisterController.php.html#49"><abbr title="App\Http\Controllers\Auth\RegisterController::validator">validator</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Controllers/Auth/LoginController.php.html#123"><abbr title="App\Http\Controllers\Auth\LoginController::handleMSCallback">handleMSCallback</abbr></a></td><td class="text-right">10%</td></tr>
+       <tr><td><a href="Controllers/NeoController.php.html#34"><abbr title="App\Http\Controllers\NeoController::get_neo_onboarding_users">get_neo_onboarding_users</abbr></a></td><td class="text-right">55%</td></tr>
+       <tr><td><a href="Controllers/NeoController.php.html#212"><abbr title="App\Http\Controllers\NeoController::get_file">get_file</abbr></a></td><td class="text-right">58%</td></tr>
+       <tr><td><a href="Controllers/DisputeController.php.html#168"><abbr title="App\Http\Controllers\DisputeController::UpdateDispute">UpdateDispute</abbr></a></td><td class="text-right">60%</td></tr>
+       <tr><td><a href="Controllers/DisputeController.php.html#181"><abbr title="App\Http\Controllers\DisputeController::getpayrollcutoff">getpayrollcutoff</abbr></a></td><td class="text-right">60%</td></tr>
+       <tr><td><a href="Controllers/PoliciesDocumentController.php.html#138"><abbr title="App\Http\Controllers\PoliciesDocumentController::downloadPolicy">downloadPolicy</abbr></a></td><td class="text-right">60%</td></tr>
+       <tr><td><a href="Controllers/DisputeController.php.html#155"><abbr title="App\Http\Controllers\DisputeController::getEmployeeDispute">getEmployeeDispute</abbr></a></td><td class="text-right">60%</td></tr>
+       <tr><td><a href="Controllers/RedisController.php.html#11"><abbr title="App\Http\Controllers\RedisController::get_redis_notifications">get_redis_notifications</abbr></a></td><td class="text-right">64%</td></tr>
+       <tr><td><a href="Controllers/PoliciesDocumentController.php.html#150"><abbr title="App\Http\Controllers\PoliciesDocumentController::get_user_departments">get_user_departments</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Controllers/PoliciesDocumentController.php.html#126"><abbr title="App\Http\Controllers\PoliciesDocumentController::updatestatus">updatestatus</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Controllers/FreshServiceController.php.html#361"><abbr title="App\Http\Controllers\FreshServiceController::getUserSuggestions">getUserSuggestions</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Controllers/PoliciesDocumentController.php.html#114"><abbr title="App\Http\Controllers\PoliciesDocumentController::showlist">showlist</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Controllers/PoliciesDocumentController.php.html#13"><abbr title="App\Http\Controllers\PoliciesDocumentController::upload">upload</abbr></a></td><td class="text-right">70%</td></tr>
+       <tr><td><a href="Controllers/FreshServiceController.php.html#291"><abbr title="App\Http\Controllers\FreshServiceController::saveAttachment">saveAttachment</abbr></a></td><td class="text-right">74%</td></tr>
+       <tr><td><a href="Controllers/DisputeController.php.html#28"><abbr title="App\Http\Controllers\DisputeController::store">store</abbr></a></td><td class="text-right">75%</td></tr>
+       <tr><td><a href="Controllers/NeoController.php.html#138"><abbr title="App\Http\Controllers\NeoController::send_onboarding_link">send_onboarding_link</abbr></a></td><td class="text-right">75%</td></tr>
+       <tr><td><a href="Controllers/NeoController.php.html#86"><abbr title="App\Http\Controllers\NeoController::get_users_pending_submissions">get_users_pending_submissions</abbr></a></td><td class="text-right">76%</td></tr>
+       <tr><td><a href="Controllers/NeoController.php.html#117"><abbr title="App\Http\Controllers\NeoController::get_user_submissions_data">get_user_submissions_data</abbr></a></td><td class="text-right">76%</td></tr>
+       <tr><td><a href="Controllers/EvaController.php.html#29"><abbr title="App\Http\Controllers\EvaController::store">store</abbr></a></td><td class="text-right">80%</td></tr>
+       <tr><td><a href="Controllers/EvaController.php.html#79"><abbr title="App\Http\Controllers\EvaController::saveEvaRegistration">saveEvaRegistration</abbr></a></td><td class="text-right">80%</td></tr>
+       <tr><td><a href="Controllers/FreshServiceController.php.html#265"><abbr title="App\Http\Controllers\FreshServiceController::saveTicketImage">saveTicketImage</abbr></a></td><td class="text-right">81%</td></tr>
+       <tr><td><a href="Controllers/PoliciesDocumentController.php.html#91"><abbr title="App\Http\Controllers\PoliciesDocumentController::show">show</abbr></a></td><td class="text-right">81%</td></tr>
+       <tr><td><a href="Controllers/NeoController.php.html#159"><abbr title="App\Http\Controllers\NeoController::approve_submissions">approve_submissions</abbr></a></td><td class="text-right">82%</td></tr>
+       <tr><td><a href="Controllers/NeoController.php.html#185"><abbr title="App\Http\Controllers\NeoController::request_for_resubmission">request_for_resubmission</abbr></a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="Controllers/DisputeController.php.html#63"><abbr title="App\Http\Controllers\DisputeController::show">show</abbr></a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="Controllers/HappinessController.php.html#35"><abbr title="App\Http\Controllers\HappinessController::addHappinessSurvey">addHappinessSurvey</abbr></a></td><td class="text-right">84%</td></tr>
+       <tr><td><a href="Controllers/DashboardController.php.html#19"><abbr title="App\Http\Controllers\DashboardController::get_dashboard_all">get_dashboard_all</abbr></a></td><td class="text-right">85%</td></tr>
+       <tr><td><a href="Controllers/FreshServiceController.php.html#17"><abbr title="App\Http\Controllers\FreshServiceController::getWorkspaces">getWorkspaces</abbr></a></td><td class="text-right">88%</td></tr>
+       <tr><td><a href="Controllers/CodeOfConductController.php.html#35"><abbr title="App\Http\Controllers\CodeOfConductController::store">store</abbr></a></td><td class="text-right">88%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Middleware/CoverageMiddleware.php.html#9"><abbr title="App\Http\Middleware\CoverageMiddleware::handle">handle</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Controllers/DashboardController.php.html#19"><abbr title="App\Http\Controllers\DashboardController::get_dashboard_all">get_dashboard_all</abbr></a></td><td class="text-right">27</td></tr>
+       <tr><td><a href="Controllers/Auth/LoginController.php.html#123"><abbr title="App\Http\Controllers\Auth\LoginController::handleMSCallback">handleMSCallback</abbr></a></td><td class="text-right">23</td></tr>
+       <tr><td><a href="Controllers/NeoController.php.html#34"><abbr title="App\Http\Controllers\NeoController::get_neo_onboarding_users">get_neo_onboarding_users</abbr></a></td><td class="text-right">13</td></tr>
+       <tr><td><a href="Controllers/PoliciesDocumentController.php.html#13"><abbr title="App\Http\Controllers\PoliciesDocumentController::upload">upload</abbr></a></td><td class="text-right">11</td></tr>
+       <tr><td><a href="Controllers/FreshServiceController.php.html#291"><abbr title="App\Http\Controllers\FreshServiceController::saveAttachment">saveAttachment</abbr></a></td><td class="text-right">10</td></tr>
+       <tr><td><a href="Controllers/RedisController.php.html#11"><abbr title="App\Http\Controllers\RedisController::get_redis_notifications">get_redis_notifications</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="Controllers/FreshServiceController.php.html#17"><abbr title="App\Http\Controllers\FreshServiceController::getWorkspaces">getWorkspaces</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="Middleware/PermissionMiddleware.php.html#17"><abbr title="App\Http\Middleware\PermissionMiddleware::handle">handle</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Controllers/EvaController.php.html#29"><abbr title="App\Http\Controllers\EvaController::store">store</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="Controllers/NeoController.php.html#86"><abbr title="App\Http\Controllers\NeoController::get_users_pending_submissions">get_users_pending_submissions</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="Controllers/PoliciesDocumentController.php.html#91"><abbr title="App\Http\Controllers\PoliciesDocumentController::show">show</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="Controllers/DisputeController.php.html#63"><abbr title="App\Http\Controllers\DisputeController::show">show</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="Controllers/HappinessController.php.html#35"><abbr title="App\Http\Controllers\HappinessController::addHappinessSurvey">addHappinessSurvey</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="Controllers/CodeOfConductController.php.html#35"><abbr title="App\Http\Controllers\CodeOfConductController::store">store</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="Controllers/NeoController.php.html#212"><abbr title="App\Http\Controllers\NeoController::get_file">get_file</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Controllers/FreshServiceController.php.html#361"><abbr title="App\Http\Controllers\FreshServiceController::getUserSuggestions">getUserSuggestions</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Controllers/DisputeController.php.html#28"><abbr title="App\Http\Controllers\DisputeController::store">store</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Controllers/NeoController.php.html#138"><abbr title="App\Http\Controllers\NeoController::send_onboarding_link">send_onboarding_link</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Controllers/NeoController.php.html#117"><abbr title="App\Http\Controllers\NeoController::get_user_submissions_data">get_user_submissions_data</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Controllers/EvaController.php.html#79"><abbr title="App\Http\Controllers\EvaController::saveEvaRegistration">saveEvaRegistration</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Controllers/FreshServiceController.php.html#265"><abbr title="App\Http\Controllers\FreshServiceController::saveTicketImage">saveTicketImage</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Controllers/NeoController.php.html#159"><abbr title="App\Http\Controllers\NeoController::approve_submissions">approve_submissions</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Controllers/NeoController.php.html#185"><abbr title="App\Http\Controllers\NeoController::request_for_resubmission">request_for_resubmission</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Controllers/DisputeController.php.html#155"><abbr title="App\Http\Controllers\DisputeController::getEmployeeDispute">getEmployeeDispute</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="Controllers/DisputeController.php.html#181"><abbr title="App\Http\Controllers\DisputeController::getpayrollcutoff">getpayrollcutoff</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="Controllers/PoliciesDocumentController.php.html#138"><abbr title="App\Http\Controllers\PoliciesDocumentController::downloadPolicy">downloadPolicy</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="Controllers/DisputeController.php.html#168"><abbr title="App\Http\Controllers\DisputeController::UpdateDispute">UpdateDispute</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="Controllers/PoliciesDocumentController.php.html#114"><abbr title="App\Http\Controllers\PoliciesDocumentController::showlist">showlist</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="Controllers/PoliciesDocumentController.php.html#126"><abbr title="App\Http\Controllers\PoliciesDocumentController::updatestatus">updatestatus</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="Controllers/PoliciesDocumentController.php.html#150"><abbr title="App\Http\Controllers\PoliciesDocumentController::get_user_departments">get_user_departments</abbr></a></td><td class="text-right">2</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 6.1.4</a> using <a href="https://secure.php.net/" target="_top">PHP 7.4.33</a> with <a href="https://xdebug.org/">Xdebug 3.1.6</a> at Wed Aug 19 10:49:37 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../.js/jquery.min.js" type="text/javascript"></script>
+  <script src="../.js/d3.min.js" type="text/javascript"></script>
+  <script src="../.js/nv.d3.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([6,0,0,0,0,1,0,1,2,4,3,12], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([8,0,1,0,0,0,2,9,6,11,6,17], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[0,1,"<a href=\"Controllers\/Auth\/ForgotPasswordController.php.html#8\">App\\Http\\Controllers\\Auth\\ForgotPasswordController<\/a>"],[43.75,11,"<a href=\"Controllers\/Auth\/LoginController.php.html#14\">App\\Http\\Controllers\\Auth\\LoginController<\/a>"],[0,3,"<a href=\"Controllers\/Auth\/RegisterController.php.html#11\">App\\Http\\Controllers\\Auth\\RegisterController<\/a>"],[0,1,"<a href=\"Controllers\/Auth\/ResetPasswordController.php.html#8\">App\\Http\\Controllers\\Auth\\ResetPasswordController<\/a>"],[0,1,"<a href=\"Controllers\/Auth\/VerificationController.php.html#9\">App\\Http\\Controllers\\Auth\\VerificationController<\/a>"],[92,6,"<a href=\"Controllers\/CodeOfConductController.php.html#11\">App\\Http\\Controllers\\CodeOfConductController<\/a>"],[100,0,"<a href=\"Controllers\/Controller.php.html#10\">App\\Http\\Controllers\\Controller<\/a>"],[85.96491228070175,26,"<a href=\"Controllers\/DashboardController.php.html#17\">App\\Http\\Controllers\\DashboardController<\/a>"],[86.36363636363636,18,"<a href=\"Controllers\/DisputeController.php.html#15\">App\\Http\\Controllers\\DisputeController<\/a>"],[84.84848484848484,10,"<a href=\"Controllers\/EvaController.php.html#11\">App\\Http\\Controllers\\EvaController<\/a>"],[89.64143426294821,50,"<a href=\"Controllers\/FreshServiceController.php.html#15\">App\\Http\\Controllers\\FreshServiceController<\/a>"],[90,7,"<a href=\"Controllers\/HappinessController.php.html#11\">App\\Http\\Controllers\\HappinessController<\/a>"],[100,3,"<a href=\"Controllers\/MastersController.php.html#11\">App\\Http\\Controllers\\MastersController<\/a>"],[72.44094488188976,29,"<a href=\"Controllers\/NeoController.php.html#11\">App\\Http\\Controllers\\NeoController<\/a>"],[92.85714285714286,5,"<a href=\"Controllers\/NewHireOrientationController.php.html#15\">App\\Http\\Controllers\\NewHireOrientationController<\/a>"],[70.6896551724138,21,"<a href=\"Controllers\/PoliciesDocumentController.php.html#11\">App\\Http\\Controllers\\PoliciesDocumentController<\/a>"],[64.70588235294117,6,"<a href=\"Controllers\/RedisController.php.html#9\">App\\Http\\Controllers\\RedisController<\/a>"],[100,0,"<a href=\"Kernel.php.html#7\">App\\Http\\Kernel<\/a>"],[100,1,"<a href=\"Middleware\/Authenticate.php.html#7\">App\\Http\\Middleware\\Authenticate<\/a>"],[100,0,"<a href=\"Middleware\/CheckForMaintenanceMode.php.html#7\">App\\Http\\Middleware\\CheckForMaintenanceMode<\/a>"],[100,1,"<a href=\"Middleware\/ComputeAPIProcessTime.php.html#7\">App\\Http\\Middleware\\ComputeAPIProcessTime<\/a>"],[0,5,"<a href=\"Middleware\/CoverageMiddleware.php.html#7\">App\\Http\\Middleware\\CoverageMiddleware<\/a>"],[100,0,"<a href=\"Middleware\/EncryptCookies.php.html#7\">App\\Http\\Middleware\\EncryptCookies<\/a>"],[100,2,"<a href=\"Middleware\/EnsureUserHasRole.php.html#8\">App\\Http\\Middleware\\EnsureUserHasRole<\/a>"],[0,2,"<a href=\"Middleware\/PermissionMiddleware.php.html#8\">App\\Http\\Middleware\\PermissionMiddleware<\/a>"],[100,2,"<a href=\"Middleware\/RedirectIfAuthenticated.php.html#8\">App\\Http\\Middleware\\RedirectIfAuthenticated<\/a>"],[100,0,"<a href=\"Middleware\/TrimStrings.php.html#7\">App\\Http\\Middleware\\TrimStrings<\/a>"],[100,0,"<a href=\"Middleware\/TrustProxies.php.html#8\">App\\Http\\Middleware\\TrustProxies<\/a>"],[100,0,"<a href=\"Middleware\/VerifyCsrfToken.php.html#7\">App\\Http\\Middleware\\VerifyCsrfToken<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[0,1,"<a href=\"Controllers\/Auth\/ForgotPasswordController.php.html#28\">App\\Http\\Controllers\\Auth\\ForgotPasswordController::__construct<\/a>"],[100,1,"<a href=\"Controllers\/Auth\/LoginController.php.html#41\">App\\Http\\Controllers\\Auth\\LoginController::__construct<\/a>"],[100,1,"<a href=\"Controllers\/Auth\/LoginController.php.html#51\">App\\Http\\Controllers\\Auth\\LoginController::redirectToGoogle<\/a>"],[100,3,"<a href=\"Controllers\/Auth\/LoginController.php.html#61\">App\\Http\\Controllers\\Auth\\LoginController::handleGoogleCallback<\/a>"],[100,1,"<a href=\"Controllers\/Auth\/LoginController.php.html#98\">App\\Http\\Controllers\\Auth\\LoginController::redirectToMS<\/a>"],[10,5,"<a href=\"Controllers\/Auth\/LoginController.php.html#123\">App\\Http\\Controllers\\Auth\\LoginController::handleMSCallback<\/a>"],[0,1,"<a href=\"Controllers\/Auth\/RegisterController.php.html#38\">App\\Http\\Controllers\\Auth\\RegisterController::__construct<\/a>"],[0,1,"<a href=\"Controllers\/Auth\/RegisterController.php.html#49\">App\\Http\\Controllers\\Auth\\RegisterController::validator<\/a>"],[0,1,"<a href=\"Controllers\/Auth\/RegisterController.php.html#64\">App\\Http\\Controllers\\Auth\\RegisterController::create<\/a>"],[0,1,"<a href=\"Controllers\/Auth\/ResetPasswordController.php.html#35\">App\\Http\\Controllers\\Auth\\ResetPasswordController::__construct<\/a>"],[0,1,"<a href=\"Controllers\/Auth\/VerificationController.php.html#36\">App\\Http\\Controllers\\Auth\\VerificationController::__construct<\/a>"],[100,2,"<a href=\"Controllers\/CodeOfConductController.php.html#13\">App\\Http\\Controllers\\CodeOfConductController::index<\/a>"],[88.88888888888889,4,"<a href=\"Controllers\/CodeOfConductController.php.html#35\">App\\Http\\Controllers\\CodeOfConductController::store<\/a>"],[85.96491228070175,26,"<a href=\"Controllers\/DashboardController.php.html#19\">App\\Http\\Controllers\\DashboardController::get_dashboard_all<\/a>"],[100,1,"<a href=\"Controllers\/DisputeController.php.html#17\">App\\Http\\Controllers\\DisputeController::__construct<\/a>"],[75,3,"<a href=\"Controllers\/DisputeController.php.html#28\">App\\Http\\Controllers\\DisputeController::store<\/a>"],[83.33333333333334,4,"<a href=\"Controllers\/DisputeController.php.html#63\">App\\Http\\Controllers\\DisputeController::show<\/a>"],[96.07843137254902,4,"<a href=\"Controllers\/DisputeController.php.html#90\">App\\Http\\Controllers\\DisputeController::showExport<\/a>"],[60,2,"<a href=\"Controllers\/DisputeController.php.html#155\">App\\Http\\Controllers\\DisputeController::getEmployeeDispute<\/a>"],[60,2,"<a href=\"Controllers\/DisputeController.php.html#168\">App\\Http\\Controllers\\DisputeController::UpdateDispute<\/a>"],[60,2,"<a href=\"Controllers\/DisputeController.php.html#181\">App\\Http\\Controllers\\DisputeController::getpayrollcutoff<\/a>"],[100,1,"<a href=\"Controllers\/EvaController.php.html#13\">App\\Http\\Controllers\\EvaController::index<\/a>"],[80,5,"<a href=\"Controllers\/EvaController.php.html#29\">App\\Http\\Controllers\\EvaController::store<\/a>"],[100,1,"<a href=\"Controllers\/EvaController.php.html#69\">App\\Http\\Controllers\\EvaController::getEvaRegistration<\/a>"],[80,3,"<a href=\"Controllers\/EvaController.php.html#79\">App\\Http\\Controllers\\EvaController::saveEvaRegistration<\/a>"],[88.88888888888889,7,"<a href=\"Controllers\/FreshServiceController.php.html#17\">App\\Http\\Controllers\\FreshServiceController::getWorkspaces<\/a>"],[100,8,"<a href=\"Controllers\/FreshServiceController.php.html#65\">App\\Http\\Controllers\\FreshServiceController::getMyTickets<\/a>"],[97.5609756097561,5,"<a href=\"Controllers\/FreshServiceController.php.html#102\">App\\Http\\Controllers\\FreshServiceController::createTicket<\/a>"],[96,5,"<a href=\"Controllers\/FreshServiceController.php.html#154\">App\\Http\\Controllers\\FreshServiceController::getTicket<\/a>"],[96.66666666666667,5,"<a href=\"Controllers\/FreshServiceController.php.html#189\">App\\Http\\Controllers\\FreshServiceController::sendTicketConversation<\/a>"],[96,5,"<a href=\"Controllers\/FreshServiceController.php.html#229\">App\\Http\\Controllers\\FreshServiceController::getTicketConversation<\/a>"],[81.25,3,"<a href=\"Controllers\/FreshServiceController.php.html#265\">App\\Http\\Controllers\\FreshServiceController::saveTicketImage<\/a>"],[74.50980392156863,9,"<a href=\"Controllers\/FreshServiceController.php.html#291\">App\\Http\\Controllers\\FreshServiceController::saveAttachment<\/a>"],[66.66666666666666,3,"<a href=\"Controllers\/FreshServiceController.php.html#361\">App\\Http\\Controllers\\FreshServiceController::getUserSuggestions<\/a>"],[100,3,"<a href=\"Controllers\/HappinessController.php.html#13\">App\\Http\\Controllers\\HappinessController::getHappinessSurvey<\/a>"],[84.61538461538461,4,"<a href=\"Controllers\/HappinessController.php.html#35\">App\\Http\\Controllers\\HappinessController::addHappinessSurvey<\/a>"],[100,3,"<a href=\"Controllers\/MastersController.php.html#26\">App\\Http\\Controllers\\MastersController::departments<\/a>"],[100,2,"<a href=\"Controllers\/NeoController.php.html#22\">App\\Http\\Controllers\\NeoController::get_api_headers<\/a>"],[55.55555555555556,8,"<a href=\"Controllers\/NeoController.php.html#34\">App\\Http\\Controllers\\NeoController::get_neo_onboarding_users<\/a>"],[76.47058823529412,4,"<a href=\"Controllers\/NeoController.php.html#86\">App\\Http\\Controllers\\NeoController::get_users_pending_submissions<\/a>"],[76.92307692307693,3,"<a href=\"Controllers\/NeoController.php.html#117\">App\\Http\\Controllers\\NeoController::get_user_submissions_data<\/a>"],[75,3,"<a href=\"Controllers\/NeoController.php.html#138\">App\\Http\\Controllers\\NeoController::send_onboarding_link<\/a>"],[82.35294117647058,3,"<a href=\"Controllers\/NeoController.php.html#159\">App\\Http\\Controllers\\NeoController::approve_submissions<\/a>"],[83.33333333333334,3,"<a href=\"Controllers\/NeoController.php.html#185\">App\\Http\\Controllers\\NeoController::request_for_resubmission<\/a>"],[58.82352941176471,3,"<a href=\"Controllers\/NeoController.php.html#212\">App\\Http\\Controllers\\NeoController::get_file<\/a>"],[100,1,"<a href=\"Controllers\/NewHireOrientationController.php.html#17\">App\\Http\\Controllers\\NewHireOrientationController::index<\/a>"],[92.3076923076923,4,"<a href=\"Controllers\/NewHireOrientationController.php.html#28\">App\\Http\\Controllers\\NewHireOrientationController::store<\/a>"],[70.83333333333334,9,"<a href=\"Controllers\/PoliciesDocumentController.php.html#13\">App\\Http\\Controllers\\PoliciesDocumentController::upload<\/a>"],[81.81818181818183,4,"<a href=\"Controllers\/PoliciesDocumentController.php.html#91\">App\\Http\\Controllers\\PoliciesDocumentController::show<\/a>"],[66.66666666666666,2,"<a href=\"Controllers\/PoliciesDocumentController.php.html#114\">App\\Http\\Controllers\\PoliciesDocumentController::showlist<\/a>"],[66.66666666666666,2,"<a href=\"Controllers\/PoliciesDocumentController.php.html#126\">App\\Http\\Controllers\\PoliciesDocumentController::updatestatus<\/a>"],[60,2,"<a href=\"Controllers\/PoliciesDocumentController.php.html#138\">App\\Http\\Controllers\\PoliciesDocumentController::downloadPolicy<\/a>"],[66.66666666666666,2,"<a href=\"Controllers\/PoliciesDocumentController.php.html#150\">App\\Http\\Controllers\\PoliciesDocumentController::get_user_departments<\/a>"],[64.70588235294117,6,"<a href=\"Controllers\/RedisController.php.html#11\">App\\Http\\Controllers\\RedisController::get_redis_notifications<\/a>"],[100,1,"<a href=\"Middleware\/Authenticate.php.html#15\">App\\Http\\Middleware\\Authenticate::redirectTo<\/a>"],[100,1,"<a href=\"Middleware\/ComputeAPIProcessTime.php.html#16\">App\\Http\\Middleware\\ComputeAPIProcessTime::handle<\/a>"],[0,5,"<a href=\"Middleware\/CoverageMiddleware.php.html#9\">App\\Http\\Middleware\\CoverageMiddleware::handle<\/a>"],[100,2,"<a href=\"Middleware\/EnsureUserHasRole.php.html#17\">App\\Http\\Middleware\\EnsureUserHasRole::handle<\/a>"],[0,2,"<a href=\"Middleware\/PermissionMiddleware.php.html#17\">App\\Http\\Middleware\\PermissionMiddleware::handle<\/a>"],[100,2,"<a href=\"Middleware\/RedirectIfAuthenticated.php.html#18\">App\\Http\\Middleware\\RedirectIfAuthenticated::handle<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>

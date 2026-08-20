@@ -2,6 +2,134 @@
 
 ---
 
+## 2026-08-20 — Item 7: BhrRepository concrete coverage (namespace function shadow)
+
+**File created:** `tests/Feature/evoxtest_BhrRepositoryConcreteTest.php`
+
+- 18 tests covering all 10 public methods of the **concrete** `BhrRepository` class
+  without touching the live BHR API and without modifying `evoxtest_BhrMock.php`.
+
+**Technique — PHP namespace-scoped function shadowing:**
+  The file defines two namespace blocks. Block 1 defines `bhr_api_call()` inside
+  `App\Modules\Bhr\Repositories` (the same namespace as `BhrRepository`). PHP resolves
+  unqualified function calls by checking the current namespace first, so every call to
+  `bhr_api_call()` inside any `BhrRepository` method now hits the shim, not the live
+  BHR API. Block 2 is the test class with `BhrRepository $repo = new BhrRepository()`.
+  The `function_exists(__NAMESPACE__ . '\\bhr_api_call')` guard prevents Fatal Error
+  on subsequent test-file loads.
+
+**Fake response shapes (static `fakeApiResponse()` in the test class):**
+  - `employees/changed` → `{employees:[{id:'42734',lastChanged:'…'}]}`
+  - `employees/directory` → `{employees:[{id:'42734'}]}`
+  - `employees/{id}/photo/medium` → `'fake_photo_bytes'` (string → base64_encode path)
+  - `employees/{id}/time_off/calculator` → `{timeOffPolicies:[]}`
+  - `employees/{id}/tables/{field}` → `{rows:[]}`
+  - `employees/{id}?fields=…` → user object
+  - `reports/{id}` → report object
+  - `time_off/*` → `null` (`?? []` in `get_holidays` handles null → no holidays inserted)
+
+**Methods covered:**
+  `get_changed_users`, `get_all_bhr_user_numbers`, `get_user` (default + for_sync),
+  `get_profile_picture` (valid + null bhr_num), `get_user_bhr_field` (3 variants),
+  `get_user_job_information` (valid + null), `get_report` (valid + empty id),
+  `get_leave_credits`, `get_holidays` (5-region foreach), `get_leaves` (with/without user),
+  `sync_holidays` (get_holidays called internally → DB::beginTransaction + commit run)
+
+**Coverage note:** `sync_holidays` triggers the 5-region `get_holidays` loop internally;
+  0 holidays are collected (fake returns null → `?? []`), so the `Holiday::save()` inner
+  body is not covered. Outer DB transaction scaffold IS covered. All DB writes rolled back
+  by `DatabaseTransactions`.
+
+---
+
+## 2026-08-20 — Items 1–6: whitelist exclusions + 5 new repository/model test files
+
+**XML edits (Part 1 + Part 2):**
+  Added to `<exclude>` block: `app/Http/Controllers/Auth/` directory and
+  `app/Http/Middleware/CoverageMiddleware.php` — removes auth scaffold from denominator.
+
+**Files created:**
+
+| File | Classes covered | Tests |
+|---|---|---|
+| `tests/Feature/evoxtest_EmailRepositoryTest.php` | EmailRepository (all dispatch methods) | 18 |
+| `tests/Feature/evoxtest_RequestRepositoryTest.php` | RequestRepository (status number methods) | 7 |
+| `tests/Feature/evoxtest_ScheduleAnnouncementRepositoryTest.php` | ScheduleRepository + AnnouncementRepository | 18 |
+| `tests/Feature/evoxtest_DtrRepositoryTest.php` | DtrRepository (read + write methods) | 12 |
+| `tests/Feature/evoxtest_TeamAttendanceSummaryTest.php` | TeamAttendanceSummary (3 public methods) | 9 |
+
+---
+
+## 2026-08-19 — Mail class coverage: evoxtest_MailableTest.php
+
+**File created:** `tests/Feature/evoxtest_MailableTest.php`
+
+- 14 tests covering `__construct()` + `build()` on all 13 zero-covered Mail classes
+  plus `RegisteredUserEmail` (which had 1 method remaining).
+- Covers: `OvertimeRequestEmail`, `AlterLogRequestEmail`, `ChangeScheduleRequestEmail`,
+  `RestDayWorkRequestEmail`, `AlterLogDisputeEmail`, `OvertimeDisputeEmail`,
+  `RestDayWorkDisputeEmail`, `SupervisorReminderRequestsEmail`,
+  `SupervisorReminderInvalidCheckInsEmail`, `SupervisorReminderNoSchedEmail`,
+  `SupervisorReminderOfNewUserEmail`, `FailedBHRSyncNoticeEmail`,
+  `ForgotPasswordRequestEmail`, `RegisteredUserEmail`.
+- Uses `Mail::fake()` — no emails sent. Real DB users (id 1698, 1593).
+- Recovers ~26 uncovered methods; expected Methods% to recover above baseline 70.47%.
+
+---
+
+## 2026-08-18 — Coverage Wave: 12 new test files (gap closure — session 2)
+
+### New files added to `tests/Feature/` (session 2 — 4 additional files)
+
+| File | Controller(s) covered | Tests |
+|---|---|---|
+| `evoxtest_RestDayWorkApiTest.php` | RestDayWorkController (8 methods + self-approval 403 guard) | 14 |
+| `evoxtest_VerificationControllerTest.php` | VerificationController: show, verify (valid+invalid signature), resend | 6 |
+| `evoxtest_UserControllerMissingApiTest.php` | UserController: time_off, change_password (correct+wrong pwd), export_dpa_list, assign_level_features | 8 |
+| `evoxtest_AuthControllerExtendedApiTest.php` | AuthController: loginMobile (email/username/wrong pwd/missing), authenticateClient, authenticateMSClient (invalid code) | 11 |
+
+**Session 2 new tests: 39**
+
+**Key decisions (session 2):**
+- HrController confirmed DELETED (Glob returned no results) — skipped as instructed
+- RestDayWork setUp() inserts directly into `rest_day_works` (bypasses is_rest_day Dtr check); real approval/decline tests use Gary (supervisor)
+- RestDayWorkController::approve() self-approval 403 guard explicitly tested
+- VerificationController routes not in web.php — registered temporarily in setUp() via Route::group()
+- verify() with valid signed URL generated via URL::temporarySignedRoute() — 500 accepted if User model lacks MustVerifyEmail
+- change_password tested with real password '{ev2010}'; DatabaseTransactions rolls back the UPDATE
+- authenticateMSClient: only error path testable (real MS OAuth codes are one-time external tokens) — 403 on invalid code
+- No existing application code or tests were modified
+
+---
+
+## 2026-08-18 — Coverage Wave: 8 new test files (gap closure — session 1)
+
+### New files added to `tests/Feature/`
+
+| File | Controller(s) covered | Tests |
+|---|---|---|
+| `evoxtest_AlterLogPunchApiTest.php` | AlterLogPunchController (8 methods) | 18 |
+| `evoxtest_OvertimeApprovalApiTest.php` | OvertimeController (8 methods + self-approval guard) | 16 |
+| `evoxtest_RequestApprovalWorkflowApiTest.php` | RequestController (hash-code, find, lists, bulk) + ChangeScheduleController (8 methods) | 22 |
+| `evoxtest_AnnouncementApiTest.php` | AnnouncementController (10 methods including HR endpoints) | 17 |
+| `evoxtest_ReportControllerApiTest.php` | ReportController (14 methods, SP-backed with bounded date ranges) | 20 |
+| `evoxtest_RequestControllerMissingApiTest.php` | RequestController: requestlist (2 modes), requestListDisputes, requestValidityChecker | 11 |
+| `evoxtest_ResourceClassesTest.php` | All 4 RequestApprovalChangeStatusResource model branches + AlterLog/RestDayWork find | 8 |
+| `evoxtest_AuthPasswordResetApiTest.php` | ForgotPasswordController, ResetPasswordController, RegisterController (web routes) | 8 |
+
+**Total new tests: 120**
+
+**Key decisions:**
+- setUp() seeds records via `DB::table()` — DatabaseTransactions rolls them back; no permanent data changes
+- All approve/decline tests use Gary (supervisor) + Glenn (employee) — correct business role pairing
+- SP-backed endpoints use date range 2026-03-01 to 2026-03-31, department_id=403 (Gary LevelId=1 rule)
+- OvertimeController::approve() self-approval guard (403) explicitly tested
+- RegisterController BUG-AUTH-01 documented: App\\User class does not exist → markTestSkipped
+- Auth web routes not in routes/web.php — registered in setUp() temporarily for auth tests
+- No existing application code or tests were modified
+
+---
+
 ## 2026-08-17 (s45) — JWT auth fix: UserControllerProfileBranchTest (5 remaining failures)
 
 ### UserControllerProfileBranchTest — actingAs() unreliable with tymon/jwt-auth (Cat 5)

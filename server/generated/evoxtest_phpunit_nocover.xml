@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Temporary no-coverage config — for fast test isolation runs only. No HTML/clover output. -->
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="../tests/bootstrap.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="false"
+         convertWarningsToExceptions="false"
+         processIsolation="false"
+         stopOnFailure="false">
+    <testsuites>
+        <testsuite name="Feature-NoCoverage">
+            <directory suffix="Test.php">../tests/Feature</directory>
+            <exclude>../tests/Feature/Api</exclude>
+            <exclude>../tests/Feature/BranchTests</exclude>
+            <exclude>../tests/Feature/CoverageMax</exclude>
+            <exclude>../tests/Feature/Console</exclude>
+            <exclude>../tests/Feature/FeatureRoot/ExampleTest.php</exclude>
+            <exclude>../tests/Feature/Vishnu</exclude>
+        </testsuite>
+    </testsuites>
+
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="BCRYPT_ROUNDS" value="4"/>
+        <env name="CACHE_DRIVER" value="array"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="QUEUE_DRIVER" value="sync"/>
+        <env name="MAIL_DRIVER" value="array"/>
+        <env name="PAYROLL_USER" value="testPayroll@eastvantage.com"/>
+        <env name="CLIENT_USER_EMAIL" value="glenn.macasarte@eastvantage.com"/>
+        <env name="CLIENT_USER_PASSWORD" value="{ev2010}"/>
+        <ini name="error_reporting" value="31735"/>
+        <ini name="memory_limit" value="1G"/>
+    </php>
+</phpunit>

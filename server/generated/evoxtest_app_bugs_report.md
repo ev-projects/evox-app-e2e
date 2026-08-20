@@ -5,6 +5,20 @@
 
 ---
 
+## BUG-REQWF-01 — Hash-code approval path missing multi_login guard before compute_payroll_items
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code (performance: takes ~7 min per call) |
+| **File** | `app/Modules/Request/Http/Controllers/RequestController.php` |
+| **Method** | `change_request_status_via_hash_code()` |
+| **Symptom** | When approving or declining an overtime via the email hash-code endpoint (`POST /api/request/approval/`), `compute_payroll_items($dtr)` is called unconditionally for every user. For multi_login users (e.g. Glenn Macasarte), this triggers a full payroll SP execution that takes ~7 minutes per request. The same approval flow in `OvertimeController::approve()` correctly skips computation for such users. |
+| **Root Cause** | `OvertimeController::approve()` checks `$user->hasFeature("multi_login")` before calling `compute_payroll_items`. `change_request_status_via_hash_code()` has no such check — line ~430: `$this->dtr->compute_payroll_items( $result['request']->dtr()->first() );` is called unconditionally. |
+| **Likely Fix** | Add `hasFeature("multi_login")` check (and `if ($dtr)` null guard) in `change_request_status_via_hash_code()` before the `compute_payroll_items` call, mirroring the guard in `OvertimeController::approve()`. |
+| **Affected Tests** | `evoxtest_RequestApprovalWorkflowApiTest::hash_code_approve_overtime_via_valid_hash`, `hash_code_decline_overtime_via_valid_hash` — both skipped pending dev-team fix. |
+
+---
+
 ## BUG-122 ✅ FIXED — App code updated 2026-08-14
 
 ### OpsScheduleController::store() replace-image arm uses undefined $new_ops_sched

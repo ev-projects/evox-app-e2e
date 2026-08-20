@@ -16,41 +16,34 @@
         <testsuite name="Feature">
             <directory suffix="Test.php">../tests/Feature</directory>
 
-            <!-- Pre-existing trivial placeholder, not a real test -->
+            <!-- Pre-existing trivial placeholder — markTestIncomplete, not a real test -->
             <exclude>../tests/Feature/FeatureRoot/ExampleTest.php</exclude>
 
-            <!-- External API dependency, known slow/hanging (Api/ version) -->
-            <exclude>../tests/Feature/Api/AdminSyncApiTest.php</exclude>
-            <!-- External API dependency — Vishnu version of the same file -->
-            <exclude>../tests/Feature/Vishnu/AdminSyncApiTest.php</exclude>
+            <!--
+              2026-08-18 cleanup: the following exclusions were stale — those files no longer
+              exist on the test/coverage-bug-fix-20260812 branch. PHPUnit ignores missing paths
+              silently, but keeping them creates false confidence. Documented here so the history
+              is clear if they are ever restored.
 
-            <!-- BHR OOM: calls live sync_users/sync_leaves without IoC mock under Xdebug (Api/ version) -->
-            <exclude>../tests/Feature/Api/CronApiTest.php</exclude>
-            <!-- BHR OOM — Vishnu version -->
-            <exclude>../tests/Feature/Vishnu/CronApiTest.php</exclude>
-
-            <!-- BUG-074: sync_evox_changes_chedule Artisan command no longer registered -->
-            <exclude>../tests/Feature/SchedulerFrequencyTest.php</exclude>
-
-            <!-- Dead code — BookingController, RoomController decommissioned 2026-06-21 -->
-            <exclude>../tests/Feature/Api/BookingApiTest.php</exclude>
-            <exclude>../tests/Feature/Vishnu/MeetingRoomApiTest.php</exclude>
-            <exclude>../tests/Feature/Vishnu/RoomApiTest.php</exclude>
-            <exclude>../tests/Feature/Vishnu/PoliciesCocRoomsApiTest.php</exclude>
-
-            <!-- Intentionally broken test (exercises known-broken payroll web path) -->
-            <exclude>../tests/Feature/CoverageMax/PayrollWebBrokenTest.php</exclude>
+              Removed stale exclusions:
+                - tests/Feature/Api/AdminSyncApiTest.php       (deleted from branch)
+                - tests/Feature/Vishnu/AdminSyncApiTest.php    (deleted from branch)
+                - tests/Feature/Api/CronApiTest.php            (deleted from branch)
+                - tests/Feature/Vishnu/CronApiTest.php         (deleted from branch)
+                - tests/Feature/SchedulerFrequencyTest.php     (deleted from branch — BUG-074)
+                - tests/Feature/Api/BookingApiTest.php         (deleted — dead code)
+                - tests/Feature/Vishnu/MeetingRoomApiTest.php  (deleted — dead code)
+                - tests/Feature/Vishnu/RoomApiTest.php         (deleted — dead code)
+                - tests/Feature/Vishnu/PoliciesCocRoomsApiTest.php (deleted — dead code)
+                - tests/Feature/CoverageMax/PayrollWebBrokenTest.php (deleted — intentionally broken)
+            -->
 
         </testsuite>
     </testsuites>
 
-    <!-- 2026-07-14: feature/e2e-testing-v2 branch removed BookingController, RoomController,
-         and LocationController outright (manual dead-code removal). Tests referencing them are
-         tagged @group dead-code (class-level for files entirely about the removed feature,
-         method-level for files that mix dead-code coverage with still-live functionality) rather
-         than deleted, per the project's "never delete test cases" rule. Excluded here so they
-         don't run or count toward coverage. See server/tests/Feature/Api/evoxtest_change_log.md
-         for the full list of tagged files/methods. -->
+    <!-- Dead-code group exclusion: any test method/class tagged @group dead-code is skipped.
+         No files currently carry this tag (verified 2026-08-18). The group filter stays as a
+         safety net for any future tagging. -->
     <groups>
         <exclude>
             <group>dead-code</group>
@@ -64,15 +57,10 @@
                 <!-- Spatie model: Eloquent alias unavailable outside Laravel boot context -->
                 <file>../app/Models/Activity.php</file>
                 <!--
-                  Migrations are schema history, not application behaviour, and this suite never
-                  runs them: the test database is a live-server backup dump, so migrations are
-                  forbidden outright. 48 classes x 2 methods = 96 methods that no permitted test
-                  can ever cover, depressing the method figure by ~5 points and the class figure
-                  by ~8 for no diagnostic value.
-
-                  This exclusion was added to phpunit.xml on 6 Aug but NOT to this file, which is
-                  the config the 7-Aug run actually used - which is why that run showed methods at
-                  62.93% instead of ~68%. Keep the two in step.
+                  Migrations are schema history, not application behaviour. The test database is
+                  a live-server backup dump — migrations are forbidden outright. 48 classes × 2
+                  methods = 96 methods that no permitted test can ever cover, depressing the
+                  method figure by ~5 points and the class figure by ~8 for no diagnostic value.
                 -->
                 <directory suffix=".php">../app/Modules/*/Database/Migrations</directory>
             </exclude>
@@ -81,8 +69,8 @@
 
     <logging>
         <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
-        <log type="coverage-clover" target="C:\DFolder\Projects\EVOX\E2eTesting\VishnuTestCases\EVOX-TEST-SUITE-FULL-2026-07-28\Coverage\evoxtest_coverage_clover_backend.xml"/>
-        <log type="coverage-html" target="C:\DFolder\Projects\EVOX\E2eTesting\VishnuTestCases\EVOX-TEST-SUITE-FULL-2026-07-28\Coverage\backend"/>
+        <log type="coverage-clover" target="C:\DFolder\Projects\EVOX\E2eTesting\VishnuTestCases\EVOX-TEST-SUITE-FULL-2026-08-18\Coverage\evoxtest_coverage_clover_backend.xml"/>
+        <log type="coverage-html"   target="C:\DFolder\Projects\EVOX\E2eTesting\VishnuTestCases\EVOX-TEST-SUITE-FULL-2026-08-18\Coverage\backend"/>
     </logging>
 
     <php>

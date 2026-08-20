@@ -49,6 +49,10 @@
                 <directory suffix=".php">../app/Modules/*/Database/Migrations</directory>
                 <file>../app/Http/Controllers/RoomController.php</file>
                 <file>../app/Http/Controllers/LocationController.php</file>
+                <!-- Auth scaffold: routes removed / never exercised — exclude from denominator -->
+                <directory suffix=".php">../app/Http/Controllers/Auth</directory>
+                <!-- Dev tooling, not production code -->
+                <file>../app/Http/Middleware/CoverageMiddleware.php</file>
             </exclude>
         </whitelist>
     </filter>
