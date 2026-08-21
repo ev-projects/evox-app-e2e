@@ -78,10 +78,13 @@ class BiometricsLoadBranchTest extends TestCase
         // handle so the next query resolves the new settings. The real MsSQL host is never contacted.
         Config::set('database.connections.biometrix', [
             'driver'   => 'sqlite',
-            'database' => __DIR__ . '/no-such-biometrics-database.sqlite',
+            'database' => ':memory:',
             'prefix'   => '',
         ]);
         DB::purge('biometrix');
+        // An empty in-memory sqlite carries no `checkinout` table, so the query below fails at
+        // execution with a QueryException (no such table) — the failure this suite exercises —
+        // without contacting the real MsSQL host and without leaving a stray database file behind.
     }
 
     protected function tearDown(): void

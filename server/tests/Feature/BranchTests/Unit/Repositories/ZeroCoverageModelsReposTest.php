@@ -13,6 +13,7 @@ use App\Modules\User\Models\UtcTimelog;
 use App\Modules\User\Models\User;
 use App\Modules\User\Repositories\UtcTimeLogRepository;
 use Tests\Feature\Api\evoxtest_BiometricsRepositoryMock;
+use Tests\Feature\BranchTests\Support\BiometrixSqliteTrait;
 
 /**
  * The remaining 0%-coverage models and repositories from the 03-Aug gap analysis:
@@ -26,7 +27,7 @@ use Tests\Feature\Api\evoxtest_BiometricsRepositoryMock;
  */
 class ZeroCoverageModelsReposTest extends TestCase
 {
-    use DatabaseTransactions;
+    use DatabaseTransactions, BiometrixSqliteTrait;
 
     protected function setUp(): void
     {
@@ -34,6 +35,13 @@ class ZeroCoverageModelsReposTest extends TestCase
         $user = User::where('is_active', 1)->whereNotNull('country_id')
             ->orderBy('id', 'desc')->first();
         if ($user) $this->be($user);
+
+        // Reroute the door-scanner connection to an in-memory sqlite fixture so the biometrics
+        // tests run the REAL BiometricsRepository against a local stand-in — never the live SQL
+        // Server host. This preserves the repository's coverage while removing the external call
+        // and its hang risk, and needs no app change (the model names the connection; we repoint
+        // what that name resolves to). See BiometrixSqliteTrait.
+        $this->bootBiometrixSqlite();
 
         // When the SQL Server PDO driver is absent, bind a lightweight mock so the
         // biometrics_repository_applies_the_user_collection_filter test can still
