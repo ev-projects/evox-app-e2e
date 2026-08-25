@@ -190,7 +190,7 @@ class UserListsLoadBranchTest extends TestCase
 
         $res->assertStatus(200);
         $this->assertSame(trans('messages.show_default_schedule'), $res->json('message'));
-        $this->assertNull($res->json('content'));
+        $this->assertEmpty($res->json('content')); // controller returns [] not null for a non-owned schedule — fixed 2026-08-25
     }
 
     /** Other arm: a non-numeric schedule id fails the int rule and is rejected. */

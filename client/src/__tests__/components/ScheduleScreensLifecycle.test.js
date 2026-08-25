@@ -198,7 +198,11 @@ const typeInto = (el, value) => {
     fireEvent.change(el);
 };
 
-const pickDate = (el, iso) => typeInto(el, iso);
+/** drive the datepicker mock: the mock reads e.target.value directly, so we
+ *  use RTL's fireEvent.change which assigns { value } onto the element before
+ *  dispatching.  Avoids the native prototype setter that throws in jsdom when
+ *  the element reference is stale or undefined. */
+const pickDate = (el, iso) => fireEvent.change(el, { target: { value: iso } });
 
 /* ========================================================================== */
 /*  ASSIGN SCHEDULE                                                           */
@@ -234,7 +238,10 @@ const savedStandard = (over = {}) => ({
     ...over,
 });
 
-/** mount the screen and push it past the loading gate with a saved standard schedule */
+/** mount the screen and push it past the loading gate with a saved standard schedule.
+ *  The extra flush() lets Formik's useEffect / useReducer settle after the component
+ *  switches isInitialDataLoaded to true, ensuring the DatePicker inputs are in the
+ *  DOM before any assertion or interaction runs. */
 const openAssign = async (props, extraProps = {}) => {
     const ref = React.createRef();
     const view = render(<ScheduleAssign {...props} ref={ref} />);
@@ -242,6 +249,7 @@ const openAssign = async (props, extraProps = {}) => {
         view.rerender(<ScheduleAssign {...props} ref={ref}
             {...extraProps} default_schedule={savedStandard()} page_reloaded={true} />);
     });
+    await flush(); // let Formik's internal state settle
     return { ...view, ref };
 };
 

@@ -47,8 +47,13 @@ trait DtrFixtureTrait
     /** @var int|null owner offset in seconds */
     protected $fxOffset;
 
-    /** The anchor: 1990-06-11 is a Monday. (A property, not a const — traits cannot hold constants on PHP 7.4.) */
-    protected $fxAnchor = '1990-06-11';
+    /**
+     * The anchor date. (A property, not a const — traits cannot hold constants on PHP 7.4.)
+     * Changed from 1990-06-11 to 1900-01-01 on 2026-08-25: a stale dtrs row for user 13292 on
+     * 1990-06-11 accumulated in the live DB after a crashed test run that did not roll back.
+     * 1900-01-01 is also a Monday and predates all real EVOX data — no collision is possible.
+     */
+    protected $fxAnchor = '1900-01-01';
 
     /**
      * Set true (before the first fixture call) to demand a user who owns NO user-bound schedule.
@@ -242,7 +247,7 @@ trait DtrFixtureTrait
         ScheduleDetail::create(array_merge([
             'schedule_id'      => $schedule->id,
             'day'              => 'all',
-            'name'             => 'fixture detail',
+            // 'name' removed 2026-08-25: schedule_details has no name column (CLAUDE.md standing rule)
             'start_time'       => 8 * 3600,
             'end_time'         => 17 * 3600,
             'start_flexy_time' => null,

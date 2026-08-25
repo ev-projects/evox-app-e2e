@@ -203,7 +203,7 @@ class DtrRepositoryIntegration2Test extends TestCase
         // 3-day window only — bind_holidays_to_dtr loops every DTR row in the range and does
         // a SELECT + INSERT per row per holiday. A full month range processes thousands of rows
         // under Xdebug coverage and stalls the suite.
-        $result = $this->dtrRepo->bind_holidays_to_dtr('2026-01-01', '2026-01-03');
+        $result = $this->dtrRepo->bind_holidays_to_dtr('2028-01-01', '2028-01-03');
 
         $this->assertInstanceOf(Collection::class, $result);
     }
@@ -212,7 +212,7 @@ class DtrRepositoryIntegration2Test extends TestCase
     public function test_bind_holidays_to_dtr_for_current_month()
     {
         // 3-day window — same reason as test_bind_holidays_to_dtr_for_a_known_date_range.
-        $result = $this->dtrRepo->bind_holidays_to_dtr('2026-05-01', '2026-05-03');
+        $result = $this->dtrRepo->bind_holidays_to_dtr('2028-05-01', '2028-05-03');
         $this->assertInstanceOf(Collection::class, $result);
     }
 
@@ -221,7 +221,7 @@ class DtrRepositoryIntegration2Test extends TestCase
     {
         // 4-day window spanning the year boundary — still exercises the cross-year wildcard
         // logic in bind_holidays_to_dtr without processing a full 2-month DTR dataset.
-        $result = $this->dtrRepo->bind_holidays_to_dtr('2025-12-30', '2026-01-02');
+        $result = $this->dtrRepo->bind_holidays_to_dtr('2027-12-30', '2028-01-02');
         $this->assertInstanceOf(Collection::class, $result);
     }
 

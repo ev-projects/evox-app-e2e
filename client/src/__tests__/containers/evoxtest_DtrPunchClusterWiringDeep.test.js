@@ -86,7 +86,7 @@ jest.mock('../../store/actions/dtr/dtrActions', () => ({
   getUserDtrSummary: (...a) => ({ type: 'STUB_GET_USER_DTR_SUMMARY', a }),
   getFilterForDtr: (...a) => ({ type: 'STUB_GET_FILTER_FOR_DTR', a }),
   setSelectedPayrollCutoff: (...a) => ({ type: 'STUB_SET_SELECTED_CUTOFF', a }),
-}), { virtual: true });
+}));
 jest.mock('../../store/actions/userActions', () => ({
   fetchUser: (...a) => ({ type: 'STUB_FETCH_USER', a }),
 }));

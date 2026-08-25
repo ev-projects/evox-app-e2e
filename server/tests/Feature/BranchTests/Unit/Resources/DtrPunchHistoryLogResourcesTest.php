@@ -131,8 +131,9 @@ class DtrPunchHistoryLogResourcesTest extends TestCase
      */
     public function a_day_with_no_punches_and_no_summary_renders_as_an_empty_day()
     {
-        $user = User::where('is_active', 1)->orderBy('id', 'desc')->first();
-        if (!$user) $this->markTestSkipped('no active user in test DB');
+        // whereHas('level') guards: isLevel() -> level_type() crashes when LevelId has no EvoxLevels row
+        $user = User::where('is_active', 1)->whereNotNull('LevelId')->whereHas('level')->orderBy('id', 'desc')->first();
+        if (!$user) $this->markTestSkipped('no active user with a valid EvoxLevels entry in test DB');
         $this->be($user);
 
         $out = (new DtrPunchHistoryLogResources($this->day($user->id, '1990-01-01')))

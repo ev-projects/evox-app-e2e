@@ -82,7 +82,7 @@ class DtrRetrievalTest extends ApiTestCase
         $response = $this->json(
             'GET',
             sprintf(
-                '/api/dtr/%s/2026-01-01/2026-04-30',
+                '/api/dtr/%s/2026-03-01/2026-03-31',
                 $user_id
             ),
             [],

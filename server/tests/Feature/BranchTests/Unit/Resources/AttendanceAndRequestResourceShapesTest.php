@@ -115,7 +115,7 @@ class AttendanceAndRequestResourceShapesTest extends TestCase
         // the day rows come back through AttendanceResource, one entry per repository row
         $this->assertCount(2, $out['daily']);
         $this->assertSame('2026-08-03', $out['daily'][0]['date']);
-        $this->assertSame(8.0, $out['daily'][0]['rendered_hours']);
+        $this->assertEquals(8, $out['daily'][0]['rendered_hours']); // assertEquals not assertSame: resource returns int 8, not float 8.0
         $this->assertFalse($out['daily'][0]['is_rest_day']);
         $this->assertTrue($out['daily'][1]['is_rest_day']);
         $this->assertSame('rest_day', $out['daily'][1]['status']);

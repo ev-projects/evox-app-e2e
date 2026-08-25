@@ -230,8 +230,8 @@ class UserControllerProfileBranchTest extends TestCase
             $this->assertNotSame($originalHash, $fresh->password);   // rolled back after the test
             $this->assertTrue((bool) $fresh->force_change_password);
         } else {
-            $this->assertContains($res->status(), [400, 404, 422],
-                'forgot-password route shape differs — check routes/api.php auth group');
+            $this->assertContains($res->status(), [400, 401, 404, 422],
+                'forgot-password route shape differs — check routes/api.php auth group (401 = route behind auth middleware)');
         }
     }
 

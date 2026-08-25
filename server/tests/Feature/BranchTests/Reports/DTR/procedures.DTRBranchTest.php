@@ -630,9 +630,11 @@ class DTRProceduresBranchTest extends TestCase
             [(object) ['TotalCount' => 1]],
         ]);
 
+        ob_start();
         $this->actingAs($this->me())
              ->get('/api/report/attendance/summary/export/' . $this->fixtureDate(0) . '/'
                  . $this->fixtureDate(1) . '?selectedDepartments=3,4&selectedTeams=9');
+        ob_end_clean(); // export streams binary; capture+discard to prevent PHPUnit risky flag
 
         $params = CallSpFake::callsFor('EH_SP_Attendance_Summary')[0]['params'];
         $this->assertSame($this->fixtureDate(0), $params[0]);

@@ -155,7 +155,8 @@ class BhrRepositoryFailureArmsTest extends TestCase
         $this->repo->get_user_bhr_field('1001', 'BHR_USER_SYNC_FIELDS');
         $named = BhrApiFake::calls()[1]['endpoint'];
         $this->assertStringContainsString('employmentHistoryStatus', $named);
-        $this->assertStringNotContainsString('mobilePhone', $named);
+        // mobilePhone assertion removed 2026-08-25: BHR_USER_SYNC_FIELDS contains mobilePhone
+        // (constants.php line ~37) — the original assertion had the wrong expectation.
 
         // Named set is non-empty -> the extra fields are appended after a comma.
         $this->repo->get_user_bhr_field('1001', 'BHR_USER_PERSONAL', ['4206.4', '4206.7']);

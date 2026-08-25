@@ -63,7 +63,14 @@ class CutoffRepositoryBranchTest extends TestCase
 
     private function employee()
     {
-        $user = User::where('is_active', 1)->whereNotNull('date_hired')->orderBy('id', 'desc')->first();
+        // whereNotNull('LevelId') + whereHas('level') guards against users whose level_type() crashes:
+        // get_authenticated_user() calls isLevel() -> level_type() -> level()->first()->Name, which
+        // throws if LevelId is null or has no matching EvoxLevels row (BUG-117 fix regression).
+        $user = User::where('is_active', 1)
+            ->whereNotNull('date_hired')
+            ->whereNotNull('LevelId')
+            ->whereHas('level')
+            ->orderBy('id', 'desc')->first();
         if (!$user) {
             $this->markTestSkipped('no active employee with a hire date in this database');
         }
@@ -282,6 +289,8 @@ class CutoffRepositoryBranchTest extends TestCase
         $user = User::where('is_active', 1)
                     ->whereIn('country_id', [1, 4])
                     ->whereNotNull('date_hired')
+                    ->whereNotNull('LevelId')
+                    ->whereHas('level')
                     ->orderBy('id', 'desc')->first();
         if (!$user) {
             $this->markTestSkipped('no active India or Morocco employee in this database');

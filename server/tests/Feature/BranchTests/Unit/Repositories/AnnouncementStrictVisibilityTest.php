@@ -4,6 +4,7 @@ namespace Tests\Feature\BranchTests\Unit\Repositories;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\DB;
 use App\Modules\Department\Models\Announcement;
 use App\Modules\Department\Models\EvoxDepartment;
 use App\Modules\Department\Models\EvoxSubDepartment;
@@ -139,10 +140,15 @@ class AnnouncementStrictVisibilityTest extends TestCase
         return $zone ? $zone->country_id : null;
     }
 
-    /** The announcement row the UI writes, with the parts each test varies passed in. */
+    /**
+     * The announcement row the UI writes, with the parts each test varies passed in.
+     * Uses DB::table()->insertGetId() instead of Announcement::create() because 'title' is not in
+     * Announcement::$fillable, which throws MassAssignmentException. Returns a plain object with
+     * an 'id' property — callers only need ->id (for assertions and clone linking).
+     */
     private function announcement(User $author, array $overrides)
     {
-        return Announcement::create(array_merge([
+        $id = DB::table('announcements')->insertGetId(array_merge([
             'title'           => 'strict visibility fixture',
             'category'        => 'Department',
             'content'         => '<p>fixture body</p>',
@@ -162,7 +168,10 @@ class AnnouncementStrictVisibilityTest extends TestCase
             'thumbnail'       => null,
             'created_by'      => $author->id,
             'updated_by'      => $author->id,
+            'created_at'      => now(),
+            'updated_at'      => now(),
         ], $overrides));
+        return (object) ['id' => $id];
     }
 
     /**

@@ -71,7 +71,7 @@ class DtrBiometricsBranchTest extends TestCase
         return $collection;
     }
 
-    private function at($day, $time)
+    private function punchAt($day, $time)
     {
         return $this->fixtureDate($day) . ' ' . $time;
     }
@@ -88,10 +88,10 @@ class DtrBiometricsBranchTest extends TestCase
             'end_datetime'   => $this->fixtureTs(0, 17 * 3600),
         ]);
 
-        $result = $this->repo->sync_biometrics_to_dtr($this->punch('I', $this->at(0, '08:05:00')), $dtr->id);
+        $result = $this->repo->sync_biometrics_to_dtr($this->punch('I', $this->punchAt(0, '08:05:00')), $dtr->id);
 
         $this->assertCount(1, $result);
-        $this->assertEquals((int) strtotime($this->at(0, '08:05:00')), $dtr->fresh()->time_in);
+        $this->assertEquals((int) strtotime($this->punchAt(0, '08:05:00')), $dtr->fresh()->time_in);
         $this->assertNull($dtr->fresh()->time_out);
     }
 
@@ -104,9 +104,9 @@ class DtrBiometricsBranchTest extends TestCase
             'time_in'        => $this->fixtureTs(0, 8 * 3600),
         ]);
 
-        $this->repo->sync_biometrics_to_dtr($this->punch('O', $this->at(0, '17:20:00')), $dtr->id);
+        $this->repo->sync_biometrics_to_dtr($this->punch('O', $this->punchAt(0, '17:20:00')), $dtr->id);
 
-        $this->assertEquals((int) strtotime($this->at(0, '17:20:00')), $dtr->fresh()->time_out);
+        $this->assertEquals((int) strtotime($this->punchAt(0, '17:20:00')), $dtr->fresh()->time_out);
         $this->assertEquals($this->fixtureTs(0, 8 * 3600), $dtr->fresh()->time_in, 'the clock-in was overwritten');
     }
 
@@ -120,11 +120,11 @@ class DtrBiometricsBranchTest extends TestCase
             'end_datetime'   => $this->fixtureTs(0, 17 * 3600),
         ]);
 
-        $this->repo->sync_biometrics_to_dtr($this->punch('P', $this->at(0, '12:00:00')), $dtr->id);
-        $this->assertEquals((int) strtotime($this->at(0, '12:00:00')), $dtr->fresh()->time_out);
+        $this->repo->sync_biometrics_to_dtr($this->punch('P', $this->punchAt(0, '12:00:00')), $dtr->id);
+        $this->assertEquals((int) strtotime($this->punchAt(0, '12:00:00')), $dtr->fresh()->time_out);
 
-        $this->repo->sync_biometrics_to_dtr($this->punch('C', $this->at(0, '13:00:00')), $dtr->id);
-        $this->assertEquals((int) strtotime($this->at(0, '13:00:00')), $dtr->fresh()->time_in);
+        $this->repo->sync_biometrics_to_dtr($this->punch('C', $this->punchAt(0, '13:00:00')), $dtr->id);
+        $this->assertEquals((int) strtotime($this->punchAt(0, '13:00:00')), $dtr->fresh()->time_in);
     }
 
     // =======================================================================================
@@ -153,13 +153,13 @@ class DtrBiometricsBranchTest extends TestCase
             'end_datetime'   => $this->fixtureTs(0, 17 * 3600),
         ]);
 
-        $batch = $this->punch('Z', $this->at(0, '08:00:00'));       // no such direction
-        $batch->push($this->punch('I', $this->at(0, '08:05:00'))->first());
+        $batch = $this->punch('Z', $this->punchAt(0, '08:00:00'));       // no such direction
+        $batch->push($this->punch('I', $this->punchAt(0, '08:05:00'))->first());
 
         $result = $this->repo->sync_biometrics_to_dtr($batch, $dtr->id);
 
         $this->assertCount(1, $result, 'the bad punch took the good one down with it');
-        $this->assertEquals((int) strtotime($this->at(0, '08:05:00')), $dtr->fresh()->time_in);
+        $this->assertEquals((int) strtotime($this->punchAt(0, '08:05:00')), $dtr->fresh()->time_in);
     }
 
     // =======================================================================================
@@ -234,11 +234,11 @@ class DtrBiometricsBranchTest extends TestCase
     {
         $dtr = $this->makeDtr(0);       // deliberately no start_datetime / end_datetime
 
-        $result = $this->repo->sync_biometrics_to_dtr($this->punch('I', $this->at(0, '08:05:00')), $dtr->id);
+        $result = $this->repo->sync_biometrics_to_dtr($this->punch('I', $this->punchAt(0, '08:05:00')), $dtr->id);
 
         $fresh = $dtr->fresh();
         $this->assertCount(1, $result);
-        $this->assertEquals((int) strtotime($this->at(0, '08:05:00')), $fresh->time_in);
+        $this->assertEquals((int) strtotime($this->punchAt(0, '08:05:00')), $fresh->time_in);
         $this->assertNull($fresh->start_datetime, 'the backfill block now runs — flip this finding');
         $this->assertNull($fresh->end_datetime);
         $this->assertNull($fresh->break_time);

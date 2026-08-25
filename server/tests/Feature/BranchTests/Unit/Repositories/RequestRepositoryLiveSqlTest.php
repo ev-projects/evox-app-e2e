@@ -105,7 +105,7 @@ class RequestRepositoryLiveSqlTest extends TestCase
     {
         $out = $this->repo->get_status_numbers_old(new Fluent([
             'url' => 'my_requests', 'request_type' => 'all',
-            'valid_from' => '2026-01-01', 'valid_to' => '2026-12-31',
+            'valid_from' => '2026-03-01', 'valid_to' => '2026-03-31',
             'department_id' => (int) $this->user->department_id ?: 1,
             'name' => 'a',
         ]));

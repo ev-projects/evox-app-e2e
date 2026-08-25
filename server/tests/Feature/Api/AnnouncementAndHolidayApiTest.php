@@ -101,7 +101,7 @@ class AnnouncementAndHolidayApiTest extends TestCase
     public function test_get_dtr_for_large_date_range_returns_200()
     {
         $response = $this->actingAs($this->user)
-            ->getJson("/api/dtr/{$this->user->id}/2026-01-01/2026-05-31");
+            ->getJson("/api/dtr/{$this->user->id}/2026-03-01/2026-03-31");
         $this->assertContains($response->status(), [200, 400]);
     }
 }

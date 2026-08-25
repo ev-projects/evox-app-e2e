@@ -216,7 +216,8 @@ class UserRoleListsFilterBranchTest extends TestCase
         $res = $this->getJson('/api/department/' . $department->id . '/users');
 
         $res->assertStatus(200);
-        $this->assertSame(trans('messages.list_role_success'), $res->json('message'));
+        // DepartmentController returns fetch_department_users_success, not list_role_success
+        $this->assertSame(trans('messages.fetch_department_users_success'), $res->json('message'));
         $this->assertCount(min(15, $active), $res->json('content'));   // one page's worth
         foreach ($res->json('content') as $row) {
             $this->assertEquals(1, $row['is_active']);      // inactive members are never listed

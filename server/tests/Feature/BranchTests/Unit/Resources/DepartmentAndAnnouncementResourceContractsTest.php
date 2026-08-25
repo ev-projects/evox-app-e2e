@@ -549,7 +549,7 @@ class DepartmentAndAnnouncementResourceContractsTest extends TestCase
             $loose = $e;
         }
         $this->assertNotNull($loose, 'AnnouncementResource null guard is reachable again — flip this test');
-        $this->assertInstanceOf(\PHPUnit\Framework\Error\Error::class, $loose);
+        $this->assertInstanceOf(\ErrorException::class, $loose); // PHP 7.4 raises ErrorException for null-property access, not PHPUnit\Framework\Error\Error
         $this->assertStringContainsString('release_date', $loose->getMessage());
 
         $strict = null;
@@ -559,7 +559,7 @@ class DepartmentAndAnnouncementResourceContractsTest extends TestCase
             $strict = $e;
         }
         $this->assertNotNull($strict, 'AnnouncementStrictResource null guard is reachable again — flip this test');
-        $this->assertInstanceOf(\PHPUnit\Framework\Error\Error::class, $strict);
+        $this->assertInstanceOf(\ErrorException::class, $strict); // PHP 7.4 raises ErrorException for null-property access
         $this->assertStringContainsString('release_date', $strict->getMessage());
     }
 }

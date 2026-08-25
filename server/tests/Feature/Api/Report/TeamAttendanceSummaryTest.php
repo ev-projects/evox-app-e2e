@@ -287,10 +287,12 @@ class TeamAttendanceSummaryTest extends ApiTestCase
         $user_id = 404;
         $token = $this->tokenForUserId($user_id);
 
+        ob_start();
         $response = $this->get(
             '/api/report/attendance/summary/export/2026-06-16/2026-06-22?scope_type=week&selectedDepartments=117',
             $this->authHeaders($token)
         );
+        ob_end_clean(); // export streams binary Excel; capture+discard to prevent PHPUnit risky flag
 
         $response->assertStatus(200);
 
@@ -306,10 +308,12 @@ class TeamAttendanceSummaryTest extends ApiTestCase
         $user_id = 404;
         $token = $this->tokenForUserId($user_id);
 
+        ob_start();
         $response = $this->get(
             '/api/report/attendance/summary/export/2026-06-01/2026-06-30?scope_type=month&selectedDepartments=117',
             $this->authHeaders($token)
         );
+        ob_end_clean();
 
         $response->assertStatus(200);
 
@@ -325,10 +329,12 @@ class TeamAttendanceSummaryTest extends ApiTestCase
         $user_id = 404;
         $token = $this->tokenForUserId($user_id);
 
+        ob_start();
         $response = $this->get(
             '/api/report/attendance/summary/export/2026-06-16/2026-06-22?scope_type=day&selectedDepartments=117&selectedTeams=403',
             $this->authHeaders($token)
         );
+        ob_end_clean();
 
         $response->assertStatus(200);
 
@@ -344,10 +350,12 @@ class TeamAttendanceSummaryTest extends ApiTestCase
         $user_id = 404;
         $token = $this->tokenForUserId($user_id);
 
+        ob_start();
         $response = $this->get(
             '/api/report/attendance/summary/export/2026-06-01/2026-06-30?scope_type=month&selectedDepartments=117&selectedTeams=403',
             $this->authHeaders($token)
         );
+        ob_end_clean();
 
         $response->assertStatus(200);
 
@@ -363,10 +371,12 @@ class TeamAttendanceSummaryTest extends ApiTestCase
         $user_id = 404;
         $token = $this->tokenForUserId($user_id);
 
+        ob_start();
         $response = $this->get(
             '/api/report/attendance/summary/export/2026-06-16/2026-06-22?name=glenn&scope_type=day&selectedDepartments=117&selectedTeams=403',
             $this->authHeaders($token)
         );
+        ob_end_clean();
 
         $response->assertStatus(200);
 
@@ -382,10 +392,12 @@ class TeamAttendanceSummaryTest extends ApiTestCase
         $user_id = 404;
         $token = $this->tokenForUserId($user_id);
 
+        ob_start();
         $response = $this->get(
             '/api/report/attendance/summary/export/2026-06-16/2026-06-22?name=glenn&scope_type=month&selectedDepartments=117&selectedTeams=403',
             $this->authHeaders($token)
         );
+        ob_end_clean();
 
         $response->assertStatus(200);
 
