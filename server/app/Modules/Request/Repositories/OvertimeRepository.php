@@ -146,10 +146,14 @@ class OvertimeRepository implements OvertimeRepositoryInterface{
     {
         try {
 
-            $overtime = Overtime::find($id);
-
-            log_to_file('info', 'Success', [$overtime], 'request');
-            return $overtime;
+            $overtime = Overtime::findOrFail($id);
+            if( get_authenticated_user( $overtime->user_id ) ) {
+                log_to_file('info', 'Success', [$overtime], 'request');
+                return $overtime;
+            } else {
+                log_to_file('info', 'Failes', [$overtime], 'request');
+                throw new Exception("You are not allowed to access this record.");
+            }
 
         } catch (Exception $e) {
             log_error($e);
