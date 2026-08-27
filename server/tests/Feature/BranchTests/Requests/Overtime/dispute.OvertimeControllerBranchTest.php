@@ -67,6 +67,7 @@ class OvertimeDisputeBranchTest extends TestCase
         Mail::fake();
         Queue::fake();
         CallSpFake::activate();
+        CallSpFake::fake('EH_SP_Direct_Supervisor', [[]]); // called by OvertimeResource via is_under_supervisee() during response serialisation
         RequestValidityFake::activate('1');             // "inside an open payroll period"
         $this->withoutMiddleware();
 
@@ -152,7 +153,8 @@ class OvertimeDisputeBranchTest extends TestCase
 
         $res->assertStatus(200);
         $this->assertSame(trans('messages.update_overtime_success'), $res->json('message'));
-        $this->assertSame([], CallSpFake::calls());
+        $this->assertCount(0, CallSpFake::callsFor('EV_SP_PD_Autoamtion_Overtimes'),
+            'normal edit must not trigger dispute automation');
     }
 
     // ═════════════════════════════════════════════ approve() when the payroll period is closed

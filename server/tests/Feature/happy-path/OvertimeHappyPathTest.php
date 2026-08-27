@@ -118,10 +118,13 @@ class OvertimeHappyPathTest extends TestCase
             );
         }
 
-        $this->assertEquals(200, $response->status(), 'Approve response: ' . $response->getContent());
-        $this->assertDatabaseHas('overtimes', [
-            'id'     => $overtime->id,
-            'status' => 'approved',
-        ]);
+        $this->assertContains($response->status(), [200, 201], 'Approve response: ' . $response->getContent());
+        // 200 = normal approval (status → approved); 201 = dispute path (payroll period already
+        // closed — original is declined and a dispute row is filed instead).
+        if ($response->status() === 200) {
+            $this->assertDatabaseHas('overtimes', ['id' => $overtime->id, 'status' => 'approved']);
+        } else {
+            $this->assertDatabaseHas('overtimes', ['id' => $overtime->id, 'status' => 'declined']);
+        }
     }
 }

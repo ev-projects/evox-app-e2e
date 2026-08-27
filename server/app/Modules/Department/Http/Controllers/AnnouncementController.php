@@ -54,7 +54,19 @@ class AnnouncementController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(AnnouncementRequest $request)
-    {   
+    {
+        // Explicit backstop: in test context with withoutMiddleware(), FormRequest injection can be
+        // bypassed in Laravel 5.7, silently skipping validation. $this->validate() runs before the
+        // try/catch so ValidationException propagates as 422 through Laravel's exception handler.
+        $this->validate($request, [
+            'release_date'        => 'required|date_format:Y-m-d',
+            'expiry_date'         => 'required|date_format:Y-m-d',
+            'title'               => 'required|string|max:100',
+            'link'                => 'nullable|url',
+            'selectedDepartments' => 'required_if:set_all,0',
+            'country_id'          => 'required_if:set_country_all,0',
+        ]);
+
         try {
             log_activity( trans('messages.create_department_announcement_attempt') );
 

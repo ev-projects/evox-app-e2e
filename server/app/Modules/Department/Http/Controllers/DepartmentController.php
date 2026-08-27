@@ -144,6 +144,10 @@ class DepartmentController extends Controller
      */
     public function users($id){
         try {
+            $this->validate(new Request(['department_id' => $id]), [
+                'department_id' => 'integer',
+            ]);
+
             $user_collection = User::where("department_id", $id)
                                                              ->where('is_active', 1)
                                                              ->orderBy('first_name', 'asc')
@@ -151,11 +155,11 @@ class DepartmentController extends Controller
                                                              ->get();
 
             return success_response(
-                trans('messages.fetch_department_users_success'), 
-                UserListResource::collection( $user_collection ) 
+                trans('messages.fetch_department_users_success'),
+                UserListResource::collection( $user_collection )
             );
         } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
+            return error_response( trans('messages.error_default'), $e );
         }
     }
 

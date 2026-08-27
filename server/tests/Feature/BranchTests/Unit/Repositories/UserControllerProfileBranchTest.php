@@ -10,6 +10,7 @@ use Tests\Support\CallSpFake;
 use Tests\Support\BhrApiFake;
 use Mockery;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
@@ -45,6 +46,7 @@ class UserControllerProfileBranchTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        Cache::flush(); // clear rate-limiter counter before each test (throttle:210,1 runs before jwtauth)
         CallSpFake::activate();
         BhrApiFake::activate();
         Mail::fake();
@@ -53,6 +55,14 @@ class UserControllerProfileBranchTest extends TestCase
         // withoutMiddleware() is NOT set here — we use a real JWT token so that
         // the JWT auth middleware populates auth()->user() correctly.
         // actingAs() is unreliable with tymon/jwt-auth when the guard reinitialises per-request.
+
+        // Global SP fakes that cover the profile/DPA surface for ALL tests in this class.
+        // UserProfileResource::toArray() calls these SPs (via App\Modules\User\Models namespace,
+        // which is shadowed by CallSpFake). Registering them globally prevents unhandled
+        // RuntimeException when a test exercises the profile path without per-test overrides.
+        CallSpFake::fake('EH_SP_Get_Department_By_UserId', [[]]); // evox_departments_handled() + evox_departments_handled_strict()
+        CallSpFake::fake('EV_SP_NHO_Validate_User', [[['Result' => 0]]]); // isUserNhoValid()
+        CallSpFake::fake('EH_SP_Direct_Supervisor', [[]]); // direct_supervisor_temp() via is_under_supervisee()
 
         // Use Gary Aure — known-good: has LevelId=1, bhr_num, country_id, complete profile data.
         $this->user = User::where('email', env('E2E_USER_SUPERVISOR_PHILIPPINES', 'gary.aure@eastvantage.com'))->first();
@@ -94,13 +104,8 @@ class UserControllerProfileBranchTest extends TestCase
     /** @test */
     public function profile_returns_the_resource_with_the_bhr_photo()
     {
+        // EH_SP_Get_Department_By_UserId, EV_SP_NHO_Validate_User already faked in setUp.
         BhrApiFake::fake('photo/medium', 'RAW-IMAGE-BYTES');
-        // UserProfileResource::toArray() calls evox_departments_handled/strict which both
-        // invoke EH_SP_Get_Department_By_UserId; return empty first result set → empty array.
-        CallSpFake::fake('EH_SP_Get_Department_By_UserId', [[]]);
-        // UserProfileResource::toArray() also calls isUserNhoValid() → EV_SP_NHO_Validate_User.
-        // Must be faked or CallSpFake seam throws → controller catch → 400.
-        CallSpFake::fake('EV_SP_NHO_Validate_User', [[['Result' => 0]]]);
 
         $res = $this->getJson("/api/user/{$this->user->id}/profile", $this->jwtHeaders());
 
@@ -153,9 +158,7 @@ class UserControllerProfileBranchTest extends TestCase
     /** @test */
     public function user_info_returns_the_payload_for_self()
     {
-        // EH_SP_Direct_Supervisor: called by direct_supervisor_temp() from App\Modules\User\Models
-        // namespace (intercepted by CallSpFake). Empty first result set → is_under_supervisee=false.
-        CallSpFake::fake('EH_SP_Direct_Supervisor', [[]]);
+        // EH_SP_Direct_Supervisor already faked in setUp (direct_supervisor_temp() / is_under_supervisee()).
         $res = $this->getJson("/api/user/{$this->user->id}/info", $this->jwtHeaders());
 
         $res->assertStatus(200);
@@ -171,7 +174,7 @@ class UserControllerProfileBranchTest extends TestCase
     /** @test */
     public function user_info_for_a_non_supervisee_is_silently_empty_USR_INFO_1()
     {
-        CallSpFake::fake('EH_SP_Direct_Supervisor', [[]]);
+        // EH_SP_Direct_Supervisor already faked in setUp.
         $other = User::where('id', '!=', $this->user->id)->where('is_active', 1)
             ->orderBy('id')->first();
         if (!$other) $this->markTestSkipped('need a second user in test DB');

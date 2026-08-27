@@ -185,7 +185,7 @@ class UserAssetBranchTest extends TestCase
 
         $res = $this->postJson('/api/user/updateasset', [
             'id' => $asset->id,
-            'personal_equipment' => 'Yes',
+            'personal_equipment' => 1,          // tinyint(4) column — use 1 not 'Yes'; MySQL stores 'Yes' as 0
             'equipment_type' => 'Monitor',
             'serial_no' => 'SN-EDITED',
             'asset_tag' => 'TAG-EDITED',
@@ -198,7 +198,7 @@ class UserAssetBranchTest extends TestCase
         $this->assertSame('Monitor', $fresh->equipment_type);
         $this->assertSame('SN-EDITED', $fresh->serial_no);
         $this->assertSame('TAG-EDITED', $fresh->asset_tag);
-        $this->assertSame('Yes', $fresh->personal_equipment);
+        $this->assertEquals(1, $fresh->personal_equipment);    // tinyint — PDO may return string '1', use assertEquals
         $this->assertNotNull($fresh->updated_at);
     }
 

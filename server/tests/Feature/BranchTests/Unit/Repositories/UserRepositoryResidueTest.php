@@ -890,6 +890,7 @@ class UserRepositoryResidueTest extends TestCase
         $user->password = Hash::make('SeamPass-2026!');
         $user->is_active = 1;
         $user->termination_date = null;
+        $user->birthdate = null; // reset so assertNull(birthdate) tests the zero-date guard, not the admin's inherited value
         $user->save();
 
         return $user;

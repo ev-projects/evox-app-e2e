@@ -370,7 +370,7 @@ class UserController extends Controller
     }
 
   
-    public function sub_department_under_department( $id, $department_id ){   
+    public function sub_department_under_department( $id, $department_id ){
         try {
 
                 $user = User::find($id);
@@ -379,10 +379,10 @@ class UserController extends Controller
                 }
                 $sub_dep = $user->evox_sub_departments_handled($department_id);
             return success_response(
-                trans('messages.show_sub_department_list'), 
+                trans('messages.show_sub_department_list'),
                 $sub_dep);
-        } catch(Exception $e){
-        
+        } catch(\Throwable $e){
+
             return error_response( trans('messages.error_default'), $e );
         }
     }

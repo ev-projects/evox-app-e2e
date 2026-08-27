@@ -327,7 +327,7 @@ class User extends Authenticatable implements JWTSubject
 
            
           if( is_valid( $date )  ){
-                return $this->hasMany(DtrPunchHistory::class)->where('date', '==', $date)
+                return $this->hasMany(DtrPunchHistory::class)->where('date', '=', $date)
                 ->where('is_active','=','1');
     
          

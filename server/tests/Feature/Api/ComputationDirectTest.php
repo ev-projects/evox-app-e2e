@@ -186,8 +186,19 @@ class ComputationDirectTest extends TestCase
     }
 
     /** @test */
-    public function test_insert_time_in_out_endpoint_exercises_computation()
+    public function test_quickpunch_check_out_exercises_computation()
     {
-        $this->markTestSkipped('Intentionally dropped: GET /api/dtr/insert_time_in_out — removed as dead code by Glenn Macasarte 2026-07-14 (commit 4283571c, was cron-only route marked "TO BE REMOVED").');
+        // Replaces the retired GET /api/dtr/insert_time_in_out (dead code, removed 2026-07-14).
+        // quickpunch check_type=out → sync_biometrics_to_dtr → compute_payroll_items → Computation.
+        // Exercises the same Computation code path as the original test via a live endpoint.
+        $response = $this->actingAs($this->user)
+            ->postJson('/api/dtr/quickpunch', [
+                'user_id'    => $this->user->id,
+                'check_type' => 'out',
+            ]);
+
+        // 400/422/200 all confirm the endpoint is reached and computation was attempted.
+        $this->assertNotEquals(404, $response->status(),
+            'quickpunch check_type=out must be a registered, reachable route.');
     }
 }

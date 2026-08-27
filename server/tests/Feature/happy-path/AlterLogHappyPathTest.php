@@ -153,6 +153,12 @@ class AlterLogHappyPathTest extends TestCase
         }
 
         $this->assertContains($response->status(), [200, 201], 'Approve response: ' . $response->getContent());
-        $this->assertDatabaseHas('alter_logs', ['id' => $alterLog->id, 'status' => 'approved']);
+        // 200 = normal approval path (status → approved); 201 = dispute path (payroll period
+        // already closed — original is declined and a dispute row is filed instead).
+        if ($response->status() === 200) {
+            $this->assertDatabaseHas('alter_logs', ['id' => $alterLog->id, 'status' => 'approved']);
+        } else {
+            $this->assertDatabaseHas('alter_logs', ['id' => $alterLog->id, 'status' => 'declined']);
+        }
     }
 }

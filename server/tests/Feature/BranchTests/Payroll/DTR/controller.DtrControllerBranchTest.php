@@ -381,22 +381,17 @@ class DtrControllerBranchTest extends TestCase
     }
 
     // =======================================================================================
-    // DEFECT — dtr_single_punch can never return anything
+    // FINDING_PUNCH_CHECK_OPERATOR — Fixed 2026-08-25
     // =======================================================================================
     //
-    // The route resolves to User::target_punch($date), whose filter reads
-    //     ->where('date', '==', $date)
-    // '==' is not one of Eloquent's operators. Laravel's query builder treats an unrecognised
-    // operator as a value, so the clause becomes `date = '=='` — a comparison no row can satisfy.
-    // The endpoint therefore returns 200 with an empty list no matter what the employee punched.
+    // User::target_punch($date) previously used ->where('date', '==', $date).
+    // Laravel's query builder treats '==' as an invalid operator and swaps column + operator,
+    // producing WHERE == = '1900-01-01' — a MySQL syntax error that throws a QueryException
+    // caught as Exception → 400. (Earlier analysis assumed it produced an empty result set;
+    // the actual outcome was a crash.)
     //
-    // This is server-side SQL, so Chrome would see exactly the same thing. No frontend code calls
-    // this route today (the client only uses /dtr/dtrpunch/{user}/{from}/{to}), so there is no
-    // user-visible symptom yet — but the endpoint is live to any authenticated API caller and is a
-    // trap for whoever wires it up next.
-    //
-    // The assertions record TODAY's behaviour, alongside proof that the rows the endpoint should
-    // have returned really are present.
+    // Fixed in app/Modules/User/Models/User.php: '==' corrected to '='.
+    // These tests now verify correct post-fix behaviour.
     /** @test */
     public function the_single_day_punch_endpoint_returns_nothing_even_when_that_day_has_punches_FINDING_PUNCH_CHECK_OPERATOR()
     {
@@ -420,12 +415,15 @@ class DtrControllerBranchTest extends TestCase
                          ->getJson('/api/dtr/dtrpunch/check/' . $owner->id . '/' . $this->fixtureDate(0));
 
         $response->assertStatus(200);
-        $this->assertSame([], $response->json('content'),
-            'the endpoint now returns the punches — flip this finding');
+        $content = $response->json('content');
+        // Post-fix: the inserted punch row is now returned. Resource shape: user_id, date, time_log, payroll_items.
+        $this->assertCount(1, $content, 'the inserted punch row is returned by the endpoint');
+        $this->assertSame((string) $owner->id, (string) ($content[0]['user_id'] ?? null));
+        $this->assertSame($this->fixtureDate(0), $content[0]['date'] ?? null);
     }
 
-    // The same endpoint asked for a date with no punches: indistinguishable from the case above,
-    // which is the practical consequence of the defect.
+    // A date with no punches still returns an empty list — now distinguishable from the case
+    // above because the fix lets dtr_single_punch actually read punch rows.
     /** @test */
     public function the_single_day_punch_endpoint_also_returns_nothing_for_a_day_with_no_punches()
     {

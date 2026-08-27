@@ -21,11 +21,14 @@ class TeamScheduleExport implements FromCollection,WithHeadings
         $summary = Collection::make();
 
         foreach($this->data as $dtr) {
+
+             $user = $dtr->user()->first();
             # General Information
             $row = array();
-            $row['id'] = $dtr->user()->first()->id;
-            $row['name'] =  $dtr->user()->first()->getFullName( 3 );
-            $row['department'] = EvoxSubDepartment::where("Id", $dtr->user()->first()->SubDepartmentID)->first()->Name;
+            $row['id'] = $user->id;
+            $row['name'] =  $user->getFullName( 3 );
+            $subDept = EvoxSubDepartment::where("Id", $user->SubDepartmentID)->first();
+            $row['department'] = $subDept ? $subDept->Name : '';
             $row['date'] = $dtr->date;
             $row['on_duty'] = '';
             $row['off_duty'] = ''; 

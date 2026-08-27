@@ -59,6 +59,7 @@ class RestDayWorkDisputeBranchTest extends TestCase
         Mail::fake();
         Queue::fake();
         CallSpFake::activate();
+        CallSpFake::fake('EH_SP_Direct_Supervisor', [[]]); // called by RestDayWorkResource via is_under_supervisee() during response serialisation
         RequestValidityFake::activate('1');
         $this->withoutMiddleware();
 
@@ -169,7 +170,8 @@ class RestDayWorkDisputeBranchTest extends TestCase
 
         $res->assertStatus(200);
         $this->assertSame(trans('messages.update_rest_day_work_success'), $res->json('message'));
-        $this->assertSame([], CallSpFake::calls());
+        $this->assertCount(0, CallSpFake::callsFor('EV_SP_PD_Autoamtion_RestDay'),
+            'normal edit must not trigger dispute automation');
     }
 
     // ═════════════════════════════════════════════ approve() when the payroll period is closed

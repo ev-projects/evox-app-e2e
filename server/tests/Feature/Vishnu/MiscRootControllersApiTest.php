@@ -393,11 +393,11 @@ class MiscRootControllersApiTest extends TestCase
     /** @test */
     public function test_nho_post_survey_empty_payload_does_not_500()
     {
+        // Empty payload → $request->validate([required fields]) at NHO controller line 30
+        // should return 422. App bug #10 (catch(Exception) missing \Throwable) was fixed
+        // 2026-08-26: catch changed to catch(\Throwable $e).
         $response = $this->postJson('/api/nho_survey', [], $this->authHeaders());
 
-        if ($response->status() === 500) {
-            $this->markTestSkipped('App bug #10: POST /api/nho_survey with empty payload returns 500 — missing validation or try-catch.');
-        }
         $this->assertNotEquals(500, $response->status(),
             'NHO store with empty payload must not crash; any DB error must be caught.');
     }

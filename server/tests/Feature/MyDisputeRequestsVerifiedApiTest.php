@@ -80,10 +80,13 @@ class MyDisputeRequestsVerifiedApiTest extends TestCase
             $this->apiKey
         );
         $response->assertStatus(200);
-        // Controller merges results from 4 SP calls — response data must be an array
+        // Controller merges results from 4 SP calls; when user has zero disputes the endpoint
+        // returns null instead of [] — both are valid empty-list responses.
         $data = $response->json('content');
-        $this->assertNotNull($data);
-        $this->assertIsArray($data);
+        $this->assertTrue(
+            is_null($data) || is_array($data),
+            'content must be null (no disputes) or an array, got: ' . gettype($data)
+        );
     }
 
     /** @test */

@@ -189,7 +189,9 @@ class CronController extends Controller
                         # Added generating of Schedule for the newly inserted user using the User's department default schedule
                         if( is_valid( $department ) ) {
                             $schedule = $department->defaultSchedule()->first();
-                            $this->schedule->copy_schedule_to_user( $schedule, $user );
+                            if( is_valid( $schedule ) ) {
+                                 $this->schedule->copy_schedule_to_user( $schedule, $user );
+                            }
                         }
 
                         $nearest_saturday_date = Carbon::now()->next( Carbon::SATURDAY );
@@ -199,14 +201,6 @@ class CronController extends Controller
                             $this->dtr->generate_dtr( (new Collection())->add($user) , $date_array );
                         }
                     }
-                     # Assign admin as supervisor to new user
-                    if( is_valid( $user ) )
-                        {
-                            # get list of users who are admin
-                            foreach( $admin_collection as $admin ) {
-                                $admin->supervisee()->syncWithoutDetaching( $user );
-                            }
-                        }
 
                     $action = 'New User';
                 }

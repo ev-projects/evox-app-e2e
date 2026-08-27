@@ -175,6 +175,9 @@ class AttendanceApiTest extends TestCase
 
         $response = $this->getJson("/api/attendance/by-geo/{$geoId}", $this->authHeaders());
 
+        // Unconditional guard — prevents PHPUnit Risky test when status ≠ 200
+        $this->assertNotEquals(500, $response->status(), 'by-geo must not crash with a 500.');
+
         if ($response->status() === 200) {
             $response->assertJsonStructure(['message', 'content']);
             $content = $response->json('content');

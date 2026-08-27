@@ -54,7 +54,7 @@ class AlterLogValidationApiTest extends TestCase
     /** @test */
     public function test_alter_log_approve_without_token_returns_401()
     {
-        $response = $this->putJson('/api/request/alter_log/approve/1', [], $this->apiKey);
+        $response = $this->postJson('/api/request/alter_log/approve/1', ['_method' => 'PUT'], $this->apiKey);
         $response->assertStatus(401);
         $this->assertEquals('token_absent', $response->json('error.content.code'));
     }
@@ -62,7 +62,7 @@ class AlterLogValidationApiTest extends TestCase
     /** @test */
     public function test_alter_log_decline_without_token_returns_401()
     {
-        $response = $this->putJson('/api/request/alter_log/decline/1', [], $this->apiKey);
+        $response = $this->postJson('/api/request/alter_log/decline/1', ['_method' => 'PUT'], $this->apiKey);
         $response->assertStatus(401);
         $this->assertEquals('token_absent', $response->json('error.content.code'));
     }
@@ -70,7 +70,7 @@ class AlterLogValidationApiTest extends TestCase
     /** @test */
     public function test_alter_log_cancel_without_token_returns_401()
     {
-        $response = $this->putJson('/api/request/alter_log/cancel/1', [], $this->apiKey);
+        $response = $this->postJson('/api/request/alter_log/cancel/1', ['_method' => 'PUT'], $this->apiKey);
         $response->assertStatus(401);
         $this->assertEquals('token_absent', $response->json('error.content.code'));
     }
@@ -102,7 +102,7 @@ class AlterLogValidationApiTest extends TestCase
     /** @test */
     public function test_alter_log_punch_approve_without_token_returns_401()
     {
-        $response = $this->putJson('/api/request/alter_log_punch/approve/1', [], $this->apiKey);
+        $response = $this->postJson('/api/request/alter_log_punch/approve/1', ['_method' => 'PUT'], $this->apiKey);
         $response->assertStatus(401);
         $this->assertEquals('token_absent', $response->json('error.content.code'));
     }
@@ -110,7 +110,7 @@ class AlterLogValidationApiTest extends TestCase
     /** @test */
     public function test_alter_log_punch_decline_without_token_returns_401()
     {
-        $response = $this->putJson('/api/request/alter_log_punch/decline/1', [], $this->apiKey);
+        $response = $this->postJson('/api/request/alter_log_punch/decline/1', ['_method' => 'PUT'], $this->apiKey);
         $response->assertStatus(401);
         $this->assertEquals('token_absent', $response->json('error.content.code'));
     }
@@ -348,9 +348,9 @@ class AlterLogValidationApiTest extends TestCase
         if (!$alterLog) {
             $this->markTestIncomplete('Cat 1: No AlterLog records in DB — create an alter_log entry first.');
         }
-        $response = $this->actingAs($this->user)->putJson(
+        $response = $this->actingAs($this->user)->postJson(
             '/api/request/alter_log/approve/' . $alterLog->id,
-            [],
+            ['_method' => 'PUT'],
             $this->apiKey
         );
         $this->assertEquals(422, $response->status());
@@ -370,9 +370,9 @@ class AlterLogValidationApiTest extends TestCase
             'new_time_out'  => '2026-06-01 17:00:00',
             'employee_note' => 'Approve test',
         ];
-        $response = $this->actingAs($this->user)->putJson(
+        $response = $this->actingAs($this->user)->postJson(
             '/api/request/alter_log/approve/' . $alterLog->id,
-            $payload,
+            array_merge(['_method' => 'PUT'], $payload),
             $this->apiKey
         );
         $this->assertEquals(422, $response->status());
@@ -390,9 +390,9 @@ class AlterLogValidationApiTest extends TestCase
         if (!$alterLog) {
             $this->markTestIncomplete('Cat 1: No AlterLog records in DB — create an alter_log entry first.');
         }
-        $response = $this->actingAs($this->user)->putJson(
+        $response = $this->actingAs($this->user)->postJson(
             '/api/request/alter_log/decline/' . $alterLog->id,
-            [],
+            ['_method' => 'PUT'],
             $this->apiKey
         );
         $this->assertEquals(422, $response->status());

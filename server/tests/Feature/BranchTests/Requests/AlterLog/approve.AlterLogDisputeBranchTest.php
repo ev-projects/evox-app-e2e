@@ -98,6 +98,7 @@ class AlterLogDisputeApproveBranchTest extends TestCase
         Mail::fake();
         Queue::fake();
         CallSpFake::activate();                     // no stored procedure can reach the database
+        CallSpFake::fake('EH_SP_Direct_Supervisor', [[]]); // called by AlterLogResource via is_under_supervisee() during response serialisation
         $this->withoutMiddleware();                 // past jwtauth / auth.apikey to the controller body
 
         $this->employee = $this->namedActiveUser();
