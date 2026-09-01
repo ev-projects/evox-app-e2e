@@ -57,7 +57,7 @@ jobs:
       - name: Install frontend dependencies
         working-directory: client
         run: |
-          npm ci
+          npm ci --legacy-peer-deps
           npx playwright install chromium
 
       - name: Write client/.env.e2e
