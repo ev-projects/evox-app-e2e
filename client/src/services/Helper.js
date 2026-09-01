@@ -1,4 +1,4 @@
-import baseMoment from 'moment';
+import moment from 'moment';
 import { extendMoment } from 'moment-range';
 
 import { format, getDate } from "date-fns";
@@ -44,10 +44,11 @@ export const getDaysArrayInWeek = function (startDate, endDate) {
 
 export const generateWeekList = (year = +moment().format("YYYY"), month = +moment().format("MM")) => {
     month = month - 1;
+    const momentRange = extendMoment(moment);
     const startDate = moment([year, month]);
     const firstDay = moment(startDate).startOf('month').isoWeekday(1);
     const endDay = moment(startDate).endOf('month')
-    const monthRange = moment.range(firstDay, endDay)
+    const monthRange = momentRange.range(firstDay, endDay)
     const weeks = [];
     const days = Array.from(monthRange.by('day'));
     days.forEach(it => {
@@ -60,7 +61,7 @@ export const generateWeekList = (year = +moment().format("YYYY"), month = +momen
     weeks.forEach(week => {
         const firstWeekDay = moment([year, month]).week(week).day(1)
         const lastWeekDay = moment([year, month]).week(week).day(7)
-        const weekRange = moment.range(firstWeekDay, lastWeekDay)
+        const weekRange = momentRange.range(firstWeekDay, lastWeekDay)
         calendar.push(Array.from(weekRange.by('day')));
     })
 
@@ -85,16 +86,16 @@ export const generateWeekList = (year = +moment().format("YYYY"), month = +momen
         final_weeks.push([day[0], day[day.length - 1]])
     })
 
-
     return { week_list: final_weeks, dates_list: dates_list };
 }
 
 
 export const generateWeekListCustom = (start_date, end_date, scope_type) => {
-    const day_range = moment.range(start_date.startOf('day'), end_date.startOf('day'));
+    const momentRange = extendMoment(moment);
+    const day_range = momentRange.range(start_date.startOf('day'), end_date.startOf('day'));
     const firstDay = moment(start_date).startOf('day');
     const endDay = moment(end_date).startOf('day')
-    const monthRange = moment.range(firstDay, endDay)
+    const monthRange = momentRange.range(firstDay, endDay)
     const weeks = [];
 
     const days = Array.from(monthRange.by('day'));
@@ -109,7 +110,7 @@ export const generateWeekListCustom = (start_date, end_date, scope_type) => {
     weeks.forEach(week => {
         const firstWeekDay = start_date.week(week).day(1)
         const lastWeekDay = end_date.week(week).day(7)
-        const weekRange = moment.range(firstWeekDay, lastWeekDay)
+        const weekRange = momentRange.range(firstWeekDay, lastWeekDay)
         calendar.push(Array.from(weekRange.by('day')));
 
     })
@@ -142,7 +143,7 @@ export const generateWeekListCustom = (start_date, end_date, scope_type) => {
 }
 
 export const getcurrentdate = function () {
-    var currentdate = moment.format("YYYY-MM-DD");
+    var currentdate = moment().format("YYYY-MM-DD");
     return currentdate;
 }
 
