@@ -20,7 +20,7 @@ jobs:
       # -- server/ --------------------------------------------─
       - name: Install backend dependencies
         working-directory: server
-        run: composer install --no-interaction --prefer-dist
+        run: php C:/tools/composer1.phar install --no-interaction --prefer-dist
 
       - name: Write server/.env
         working-directory: server
