@@ -6,6 +6,7 @@ use App\PopupFlags;
 use Illuminate\Http\Request;
 use Auth;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\JsonResponse;
 
 class HappinessController extends Controller
