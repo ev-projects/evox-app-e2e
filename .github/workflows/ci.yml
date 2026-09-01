@@ -1,0 +1,96 @@
+name: EVOX Test Suite
+
+on:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 18 * * *'   # nightly full run - adjust to your timezone
+
+jobs:
+  test:
+    runs-on: [self-hosted]
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # -- server/ --------------------------------------------─
+      - name: Install backend dependencies
+        working-directory: server
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Write server/.env
+        working-directory: server
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          cat >> .env <<EOF
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_PORT=${{ secrets.DB_PORT }}
+          DB_DATABASE=${{ secrets.DB_DATABASE }}
+          DB_USERNAME=${{ secrets.DB_USERNAME }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_EVOX_LOGS_HOST=${{ secrets.DB_EVOX_LOGS_HOST }}
+          DB_EVOX_LOGS_PORT=${{ secrets.DB_EVOX_LOGS_PORT }}
+          DB_EVOX_LOGS_DATABASE=${{ secrets.DB_EVOX_LOGS_DATABASE }}
+          DB_EVOX_LOGS_USERNAME=${{ secrets.DB_EVOX_LOGS_USERNAME }}
+          DB_EVOX_LOGS_PASSWORD=${{ secrets.DB_EVOX_LOGS_PASSWORD }}
+          BIO_DB_HOST=${{ secrets.BIO_DB_HOST }}
+          BIO_DB_PORT=${{ secrets.BIO_DB_PORT }}
+          BIO_DB_DATABASE=${{ secrets.BIO_DB_DATABASE }}
+          BIO_DB_USERNAME=${{ secrets.BIO_DB_USERNAME }}
+          BIO_DB_PASSWORD=${{ secrets.BIO_DB_PASSWORD }}
+          EOF
+
+      # -- client/ --------------------------------------------─
+      - name: Install frontend dependencies
+        working-directory: client
+        run: |
+          npm ci
+          npx playwright install chromium
+
+      - name: Write client/.env.e2e
+        working-directory: client
+        run: |
+          cat > .env.e2e <<EOF
+          PLAYWRIGHT_BASE_URL=https://evoxtest.eastvantage.com
+          E2E_API_KEY=${{ secrets.E2E_API_KEY }}
+          E2E_PASSWORD=${{ secrets.E2E_PASSWORD }}
+          E2E_USER_EMPLOYEE_PHILIPPINES=${{ secrets.E2E_USER_EMPLOYEE_PHILIPPINES }}
+          E2E_USER_SUPERVISOR_PHILIPPINES=${{ secrets.E2E_USER_SUPERVISOR_PHILIPPINES }}
+          E2E_USER_HR_PHILIPPINES=${{ secrets.E2E_USER_HR_PHILIPPINES }}
+          E2E_USER_PAYROLL_PHILIPPINES=${{ secrets.E2E_USER_PAYROLL_PHILIPPINES }}
+          E2E_USER_EMPLOYEE_INDIA=${{ secrets.E2E_USER_EMPLOYEE_INDIA }}
+          E2E_USER_SUPERVISOR_INDIA=${{ secrets.E2E_USER_SUPERVISOR_INDIA }}
+          E2E_USER_HR_INDIA=${{ secrets.E2E_USER_HR_INDIA }}
+          E2E_USER_PAYROLL_INDIA=${{ secrets.E2E_USER_PAYROLL_INDIA }}
+          E2E_USER_EMPLOYEE_MOROCCO=${{ secrets.E2E_USER_EMPLOYEE_MOROCCO }}
+          E2E_USER_SUPERVISOR_MOROCCO=${{ secrets.E2E_USER_SUPERVISOR_MOROCCO }}
+          E2E_USER_HR_MOROCCO=${{ secrets.E2E_USER_HR_MOROCCO }}
+          E2E_USER_PAYROLL_MOROCCO=${{ secrets.E2E_USER_PAYROLL_MOROCCO }}
+          E2E_USER_ADMIN_PHILIPPINES=${{ secrets.E2E_USER_ADMIN_PHILIPPINES }}
+          E2E_USER_HR_HEAD=${{ secrets.E2E_USER_HR_HEAD }}
+          E2E_USER_PAYROLL_HEAD=${{ secrets.E2E_USER_PAYROLL_HEAD }}
+          EOF
+
+      # -- both, via the existing orchestrator ----------------
+      - name: Run full suite (PHPUnit -> Playwright -> Jest)
+        run: bash scripts/run-all-tests.sh
+
+      - name: Publish PHPUnit results
+        if: always()
+        uses: dorny/test-reporter@v1
+        with:
+          name: PHPUnit results
+          path: coverage/phpunit-results.xml
+          reporter: java-junit
+
+      - name: Upload coverage & reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: evox-test-reports
+          path: coverage/
