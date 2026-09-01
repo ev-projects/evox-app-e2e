@@ -25,3 +25,4 @@ yarn-error.log*
 e2e/.auth/
 e2e-report/
 ".env.e2e" 
+".env.e2e" 
