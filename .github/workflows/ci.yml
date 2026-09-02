@@ -3,6 +3,8 @@ name: EVOX Test Suite
 on:
   pull_request:
   workflow_dispatch:
+  push:
+    branches: [master]   # staging deploy trigger — see the deploy job's `if:` below
   schedule:
     - cron: '0 18 * * *'   # nightly full run - adjust to your timezone
 
@@ -109,3 +111,37 @@ jobs:
         with:
           name: evox-test-reports
           path: coverage/
+
+  # -- CD: staging only (EVOX-18 follow-up) -------------------------------
+  # Skeleton stage: proves SSH auth end-to-end before any real deploy logic
+  # is added. `needs: test` means a merge with a failing/red check can never
+  # reach this job. Fires on push to master (auto) or manual dispatch (both
+  # picked deliberately - see conversation). UAT/production are NOT wired up
+  # here; this only ever touches the staging host below.
+  deploy:
+    needs: test
+    if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/master') || github.event_name == 'workflow_dispatch' }}
+    runs-on: [self-hosted]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.STAGING_SSH_PRIVATE_KEY }}" > ~/.ssh/staging_deploy_key
+          chmod 600 ~/.ssh/staging_deploy_key
+          ssh-keyscan -H evoxtest.eastvantage.com >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Verify SSH connectivity (sanity check only)
+        run: |
+          ssh -i ~/.ssh/staging_deploy_key -o StrictHostKeyChecking=yes \
+            "${{ secrets.STAGING_SSH_USER }}@evoxtest.eastvantage.com" \
+            'echo "Connected as $(whoami) on $(hostname)"'
+
+      # -- TODO: real deploy steps go here once staging server facts are
+      # confirmed (existing deploy path vs fresh checkout, Nginx/Apache +
+      # PHP-FPM vs other, whether PHP 7.4/Node 18.20.8 already match CI,
+      # what needs restarting after new code lands, migration handling).
+      # Until then this job only proves connectivity - it does not touch
+      # any code or service on the staging server.
