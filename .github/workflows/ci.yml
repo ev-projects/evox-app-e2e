@@ -134,6 +134,9 @@ jobs:
       run:
         shell: bash
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
@@ -141,15 +144,72 @@ jobs:
           chmod 600 ~/.ssh/staging_deploy_key
           ssh-keyscan -H evoxtest.eastvantage.com >> ~/.ssh/known_hosts 2>/dev/null
 
-      - name: Verify SSH connectivity (sanity check only)
+      - name: Verify SSH connectivity
         run: |
           ssh -i ~/.ssh/staging_deploy_key -o StrictHostKeyChecking=yes \
             "${{ secrets.STAGING_SSH_USER }}@evoxtest.eastvantage.com" \
             'echo "Connected as $(whoami) on $(hostname)"'
 
-      # -- TODO: real deploy steps go here once staging server facts are
-      # confirmed (existing deploy path vs fresh checkout, Nginx/Apache +
-      # PHP-FPM vs other, whether PHP 7.4/Node 18.20.8 already match CI,
-      # what needs restarting after new code lands, migration handling).
-      # Until then this job only proves connectivity - it does not touch
-      # any code or service on the staging server.
+      # Built here (Node 18.20.8 on this runner), not on the server - staging
+      # is on Node 10.18.1, which modern react-scripts / npm run build is not
+      # expected to run on. Only the finished static output gets shipped over.
+      - name: Build frontend (static assets)
+        working-directory: client
+        run: |
+          npm ci --legacy-peer-deps
+          npm run build
+
+      # Force-syncs the server's checkout to exactly origin/master (matches
+      # what CI just tested), then installs backend deps. Guards against the
+      # Composer 2 / Laravel 5.7 PackageManifest.php crash (Issue 4, hit
+      # repeatedly on the CI runner earlier in this project) by checking the
+      # server's composer version first and failing with a clear message
+      # instead of that cryptic crash, since it's unconfirmed which version
+      # is installed there.
+      #
+      # Deliberately NOT run here, by explicit decision:
+      #   - php artisan migrate - migrations are hand-picked per push; some
+      #     existing migration files are outdated or conflict with manual DB
+      #     changes on staging. Stays a manual, separate step.
+      #   - Any service restart (PHP-FPM/Nginx/queue workers) - not normally
+      #     needed after a deploy here, and requires sudo the deploy account
+      #     shouldn't need for routine steps.
+      #   - Anything touching .env - stays manually managed on staging.
+      - name: Deploy backend (sync + composer install)
+        run: |
+          ssh -i ~/.ssh/staging_deploy_key "${{ secrets.STAGING_SSH_USER }}@evoxtest.eastvantage.com" '
+            set -e
+            cd /var/www/evox-app-e2e
+            git fetch origin master
+            git checkout -B master origin/master
+
+            cd server
+            COMPOSER_VERSION_LINE=$(composer --version 2>&1)
+            echo "$COMPOSER_VERSION_LINE"
+            if ! echo "$COMPOSER_VERSION_LINE" | grep -qE "Composer version 1\."; then
+              echo "ERROR: server composer is not v1.x - refusing to run composer install."
+              echo "Laravel 5.7 crashes under Composer 2 (PackageManifest.php: Undefined index name)."
+              echo "Point this account at a Composer 1.x binary (see the CI runner'"'"'s"
+              echo "C:/tools/composer1.phar for the equivalent workaround) before retrying."
+              exit 1
+            fi
+            composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
+          '
+
+      # Atomic-ish swap: builds to build_new alongside the live build/, then
+      # mv's old->build_previous and new->build in one go, so Nginx never
+      # sees a half-copied directory mid-deploy. build_previous is a cheap
+      # one-deploy-deep manual rollback point (mv build_previous build).
+      - name: Deploy frontend (swap in new static build)
+        run: |
+          ssh -i ~/.ssh/staging_deploy_key "${{ secrets.STAGING_SSH_USER }}@evoxtest.eastvantage.com" \
+            'rm -rf /var/www/evox-app-e2e/client/build_new'
+          scp -r -i ~/.ssh/staging_deploy_key client/build \
+            "${{ secrets.STAGING_SSH_USER }}@evoxtest.eastvantage.com:/var/www/evox-app-e2e/client/build_new"
+          ssh -i ~/.ssh/staging_deploy_key "${{ secrets.STAGING_SSH_USER }}@evoxtest.eastvantage.com" '
+            set -e
+            cd /var/www/evox-app-e2e/client
+            rm -rf build_previous
+            [ -d build ] && mv build build_previous
+            mv build_new build
+          '
