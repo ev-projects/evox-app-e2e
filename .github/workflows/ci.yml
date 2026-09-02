@@ -6,6 +6,17 @@ on:
   schedule:
     - cron: '0 18 * * *'   # nightly full run - adjust to your timezone
 
+# Only one self-hosted runner services this repo. Without this, every push to a PR
+# branch queues its own full run behind whatever's already running/queued instead of
+# replacing it — if the runner is ever offline for a while, pushes pile up and get
+# worked through one stale run at a time once it's back. This cancels a still-running
+# or still-queued run for the same workflow+ref as soon as a newer one exists for it.
+# Scheduled (cron) runs get their own ref-independent group so a nightly run is never
+# cancelled by, or cancels, PR activity.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'schedule' && 'nightly' || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: [self-hosted]
