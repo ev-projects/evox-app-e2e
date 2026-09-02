@@ -26,77 +26,11 @@ var formatDate = function (dateString) {
   }
 };
 
-const apiCall = function (endpoint, options) {
-  options = options || {};
-  let fullUrl = process.env.REACT_APP_FRESHSERVICE_API_BASE_URL + endpoint;
-  const urlObj = new URL(fullUrl);
-
-  if (Object.keys(options).length >= 1) {
-    urlObj.searchParams.set('userEmail', options.useremail);
-  }
-  fullUrl = urlObj.toString();
-
-  console.log('🌐 API Call:', fullUrl);
-
-  return fetch(fullUrl, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    credentials: 'omit',
-    method: options.method || 'GET',
-    body: options.body || undefined
-  })
-    .then(function (response) {
-      if (!response.ok) throw new Error('HTTP ' + response.status);
-      return response.json();
-    })
-    .catch(function (error) {
-      console.error('❌ API call failed:', error.message);
-      throw error;
-    });
-};
-
-// Helper function to get user avatar color
-const getUserAvatarClass = function (email) {
-  if (!email) return 'avatar-v';
-  const firstChar = email.charAt(0).toLowerCase();
-  const colorMap = {
-    'm': 'avatar-m', 'v': 'avatar-v', 'h': 'avatar-h', 'c': 'avatar-c',
-    's': 'avatar-s', 'd': 'avatar-d', 'e': 'avatar-e', 'r': 'avatar-r'
-  };
-  return colorMap[firstChar] || 'avatar-v';
-};
-
-// Helper function to get user initials
-const getUserInitials = function (email) {
-  if (!email) return 'U';
-  const parts = email.split('@')[0].split('.');
-  return parts.map(p => p.charAt(0).toUpperCase()).join('').substring(0, 2);
-};
-
 // Utility functions
 const sanitizeInput = function (input) {
   if (typeof input !== 'string') return input;
   return input.trim().replace(/[<>]/g, '').replace(/javascript:/gi, '');
 };
-
-const SafeTextRenderer = function ({ text }) {
-  if (!text) return null;
-  const cleanText = text.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
-  return React.createElement('div', { style: { whiteSpace: 'pre-wrap' } }, cleanText);
-};
-
-const buildSubjectPrefix = function (workspace, subCategory, itemCategory) {
-  if (!workspace) return '';
-  if (!subCategory) return `[${workspace}] | | - `;
-
-  const parts = [workspace, subCategory];
-  if (itemCategory && itemCategory.trim()) parts.push(itemCategory);
-
-  return '[' + parts.join('] | [') + '] | - ';
-};
-
 
 function Pagination({ pagination, onPageChange }) {
   if (!pagination || pagination.totalPages <= 1) {
@@ -318,14 +252,6 @@ const TicketListPage = function (props) {
                       sanitizeInput(ticket.subject || 'No subject')
                     )
                   ),
-                  // React.createElement('td', null,
-                  //   React.createElement('div', { style: { display: 'flex', alignItems: 'center' } },
-                  //     React.createElement('span', {
-                  //       className: 'user-avatar ' + getUserAvatarClass(requesterEmail)
-                  //     }, getUserInitials(requesterEmail)),
-                  //     React.createElement('span', null, requesterEmail.split('@')[0])
-                  //   )
-                  // ),
                   React.createElement('td', null,
                     React.createElement('span', {
                       className: 'state-badge ' + getStateClass(state)
