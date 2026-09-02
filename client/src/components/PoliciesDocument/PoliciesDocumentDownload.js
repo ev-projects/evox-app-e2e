@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { connect,useDispatch } from 'react-redux';
-import PoliciesDocumentModal from './PoliciesDocumentModal';
 import { Table, Accordion, Card, Button } from "react-bootstrap";
 import API from "../../services/API";
 import Formatter from "../../services/Formatter";
@@ -306,7 +305,6 @@ const PoliciesDocumentDownload = (props) => {
         {isId && policiesdocument && 
           <PoliciesDocumentViewer isOpen={isModalOpen} closeModal={closeModal} policiesdocument={policiesdocument} index={isindex} id={isId} />
         }
-        {/* <PoliciesDocumentModal isOpen={isModalOpen} closeModal={closeModal} policiesdocument={policiesdocument} /> */}
       </div>
               
     )
