@@ -142,12 +142,12 @@ jobs:
           mkdir -p ~/.ssh
           printf '%s\n' "${{ secrets.STAGING_SSH_PRIVATE_KEY }}" > ~/.ssh/staging_deploy_key
           chmod 600 ~/.ssh/staging_deploy_key
-          ssh-keyscan -H evoxtest.eastvantage.com >> ~/.ssh/known_hosts 2>/dev/null
+          ssh-keyscan -H "${{ secrets.STAGING_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
 
       - name: Verify SSH connectivity
         run: |
           ssh -i ~/.ssh/staging_deploy_key -o StrictHostKeyChecking=yes \
-            "${{ secrets.STAGING_SSH_USER }}@evoxtest.eastvantage.com" \
+            "${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }}" \
             'echo "Connected as $(whoami) on $(hostname)"'
 
       # Built here (Node 18.20.8 on this runner), not on the server - staging
@@ -177,7 +177,7 @@ jobs:
       #   - Anything touching .env - stays manually managed on staging.
       - name: Deploy backend (sync + composer install)
         run: |
-          ssh -i ~/.ssh/staging_deploy_key "${{ secrets.STAGING_SSH_USER }}@evoxtest.eastvantage.com" '
+          ssh -i ~/.ssh/staging_deploy_key "${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }}" '
             set -e
             cd /var/www/evox-app-e2e
             git fetch origin master
@@ -202,11 +202,11 @@ jobs:
       # one-deploy-deep manual rollback point (mv build_previous build).
       - name: Deploy frontend (swap in new static build)
         run: |
-          ssh -i ~/.ssh/staging_deploy_key "${{ secrets.STAGING_SSH_USER }}@evoxtest.eastvantage.com" \
+          ssh -i ~/.ssh/staging_deploy_key "${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }}" \
             'rm -rf /var/www/evox-app-e2e/client/build_new'
           scp -r -i ~/.ssh/staging_deploy_key client/build \
-            "${{ secrets.STAGING_SSH_USER }}@evoxtest.eastvantage.com:/var/www/evox-app-e2e/client/build_new"
-          ssh -i ~/.ssh/staging_deploy_key "${{ secrets.STAGING_SSH_USER }}@evoxtest.eastvantage.com" '
+            "${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }}:/var/www/evox-app-e2e/client/build_new"
+          ssh -i ~/.ssh/staging_deploy_key "${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }}" '
             set -e
             cd /var/www/evox-app-e2e/client
             rm -rf build_previous
