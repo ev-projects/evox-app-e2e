@@ -6,9 +6,16 @@ EVOX-29 | Phase 3: Test Environment + Anonymized DB
 
 ## Prerequisites
 
-### 1. PHP extension: PCOV (backend coverage driver)
+### 1. PHP extension: PCOV or Xdebug (backend coverage driver)
 
-PCOV is a faster alternative to Xdebug for PHP code coverage. PHPUnit 7 detects it automatically when loaded.
+PCOV is a faster alternative to Xdebug for PHP code coverage, and PHPUnit 7 detects it automatically when loaded.
+
+> **This project's PHP 7.4 CI runner uses Xdebug instead of PCOV** — PCOV is not supported on that install. `run-all-tests.sh` detects either driver automatically (PCOV first, falling back to Xdebug) and passes the same `--coverage-php`/`--coverage-clover` flags either way; no script changes are needed to switch drivers. If using Xdebug, set in `php.ini`:
+> ```ini
+> xdebug.mode = coverage,debug,develop
+> memory_limit = 1G
+> ```
+> (`develop` mode avoids a secondary Xdebug error when reporting fatals; `1G` avoids memory exhaustion — Xdebug's coverage instrumentation uses noticeably more memory than PCOV's.)
 
 **Ubuntu / Debian:**
 ```bash
