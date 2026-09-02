@@ -28,6 +28,9 @@ jobs:
           cp .env.example .env
           php artisan key:generate
           sed -i '/^DB_HOST=/d;/^DB_PORT=/d;/^DB_DATABASE=/d;/^DB_USERNAME=/d;/^DB_PASSWORD=/d;/^DB_EVOX_LOGS_HOST=/d;/^DB_EVOX_LOGS_PORT=/d;/^DB_EVOX_LOGS_DATABASE=/d;/^DB_EVOX_LOGS_USERNAME=/d;/^DB_EVOX_LOGS_PASSWORD=/d;/^BIO_DB_HOST=/d;/^BIO_DB_PORT=/d;/^BIO_DB_DATABASE=/d;/^BIO_DB_USERNAME=/d;/^BIO_DB_PASSWORD=/d' .env
+          # .env.example has no trailing newline, so appending without one first
+          # glues the first key onto the last existing line (e.g. GOOGLE_REDIRECT=...DB_HOST=...)
+          printf '\n' >> .env
           cat >> .env <<EOF
           DB_HOST=${{ secrets.DB_HOST }}
           DB_PORT=${{ secrets.DB_PORT }}
