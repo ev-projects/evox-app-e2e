@@ -31,9 +31,15 @@ jobs:
         uses: actions/checkout@v4
 
       # -- server/ --------------------------------------------─
+      # Plain `composer` here - the Linux staging runner's default composer
+      # is already 1.10.27, unlike the old Windows laptop runner which
+      # needed a separate composer1.phar to avoid Laravel 5.7's Composer 2
+      # PackageManifest.php crash (Issue 4). If this ever moves to a runner
+      # where the default composer is v2, that same crash will resurface -
+      # see the deploy job's version guard for the same check applied there.
       - name: Install backend dependencies
         working-directory: server
-        run: php C:/tools/composer1.phar install --no-interaction --prefer-dist
+        run: composer install --no-interaction --prefer-dist
 
       - name: Write server/.env
         working-directory: server
@@ -113,11 +119,15 @@ jobs:
           path: coverage/
 
   # -- CD: staging only (EVOX-18 follow-up) -------------------------------
-  # Skeleton stage: proves SSH auth end-to-end before any real deploy logic
-  # is added. `needs: test` means a merge with a failing/red check can never
-  # reach this job. Fires on push to master (auto) or manual dispatch (both
+  # Runs directly on the staging box itself - the self-hosted runner lives
+  # on evoxtest.eastvantage.com (10.10.4.24) now, not a separate laptop, so
+  # this is local file operations rather than SSH to another machine. See
+  # git history for the earlier SSH-based version (used while the runner
+  # was still on a Windows laptop, before the runner itself moved here).
+  # `needs: test` means a merge with a failing/red check can never reach
+  # this job. Fires on push to master (auto) or manual dispatch (both
   # picked deliberately - see conversation). UAT/production are NOT wired up
-  # here; this only ever touches the staging host below.
+  # here; this only ever touches the staging deploy path below.
   #
   # `environment: staging` ties this job to the repo's "staging" Environment
   # (Settings -> Environments), which has a required-reviewer rule on it —
@@ -137,35 +147,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up SSH
-        run: |
-          mkdir -p ~/.ssh
-          printf '%s\n' "${{ secrets.STAGING_SSH_PRIVATE_KEY }}" > ~/.ssh/staging_deploy_key
-          chmod 600 ~/.ssh/staging_deploy_key
-          ssh-keyscan -H "${{ secrets.STAGING_SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
-
-      - name: Verify SSH connectivity
-        run: |
-          ssh -i ~/.ssh/staging_deploy_key -o StrictHostKeyChecking=yes \
-            "${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }}" \
-            'echo "Connected as $(whoami) on $(hostname)"'
-
-      # Built here (Node 18.20.8 on this runner), not on the server - staging
-      # is on Node 10.18.1, which modern react-scripts / npm run build is not
-      # expected to run on. Only the finished static output gets shipped over.
+      # Built in the runner's own throwaway checkout (Node 18.20.8, matches
+      # the test job), not in-place in /var/www/evox-app-e2e - keeps this
+      # workspace separate from the live deploy directory so a build never
+      # touches the real app's files until the explicit swap step below.
       - name: Build frontend (static assets)
         working-directory: client
         run: |
           npm ci --legacy-peer-deps
           npm run build
 
-      # Force-syncs the server's checkout to exactly origin/master (matches
-      # what CI just tested), then installs backend deps. Guards against the
-      # Composer 2 / Laravel 5.7 PackageManifest.php crash (Issue 4, hit
-      # repeatedly on the CI runner earlier in this project) by checking the
-      # server's composer version first and failing with a clear message
-      # instead of that cryptic crash, since it's unconfirmed which version
-      # is installed there.
+      # Force-syncs the persistent /var/www/evox-app-e2e checkout to exactly
+      # origin/master (matches what the test job just tested), then installs
+      # backend deps. Guards against the Composer 2 / Laravel 5.7
+      # PackageManifest.php crash (Issue 4) by checking the version actually
+      # in use there first and failing with a clear message instead of that
+      # cryptic crash, in case that ever drifts from the v1.x it is today.
       #
       # Deliberately NOT run here, by explicit decision:
       #   - php artisan migrate - migrations are hand-picked per push; some
@@ -177,39 +174,32 @@ jobs:
       #   - Anything touching .env - stays manually managed on staging.
       - name: Deploy backend (sync + composer install)
         run: |
-          ssh -i ~/.ssh/staging_deploy_key "${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }}" '
-            set -e
-            cd /var/www/evox-app-e2e
-            git fetch origin master
-            git checkout -B master origin/master
+          set -e
+          cd /var/www/evox-app-e2e
+          git fetch origin master
+          git checkout -B master origin/master
 
-            cd server
-            COMPOSER_VERSION_LINE=$(composer --version 2>&1)
-            echo "$COMPOSER_VERSION_LINE"
-            if ! echo "$COMPOSER_VERSION_LINE" | grep -qE "Composer version 1\."; then
-              echo "ERROR: server composer is not v1.x - refusing to run composer install."
-              echo "Laravel 5.7 crashes under Composer 2 (PackageManifest.php: Undefined index name)."
-              echo "Point this account at a Composer 1.x binary (see the CI runner'"'"'s"
-              echo "C:/tools/composer1.phar for the equivalent workaround) before retrying."
-              exit 1
-            fi
-            composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
-          '
+          cd server
+          COMPOSER_VERSION_LINE=$(composer --version 2>&1)
+          echo "$COMPOSER_VERSION_LINE"
+          if ! echo "$COMPOSER_VERSION_LINE" | grep -qE "Composer version 1\."; then
+            echo "ERROR: server composer is not v1.x - refusing to run composer install."
+            echo "Laravel 5.7 crashes under Composer 2 (PackageManifest.php: Undefined index name)."
+            echo "Point this account's composer at a v1.x binary before retrying."
+            exit 1
+          fi
+          composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
 
-      # Atomic-ish swap: builds to build_new alongside the live build/, then
-      # mv's old->build_previous and new->build in one go, so Nginx never
-      # sees a half-copied directory mid-deploy. build_previous is a cheap
-      # one-deploy-deep manual rollback point (mv build_previous build).
+      # Atomic-ish swap: copies the fresh build to build_new alongside the
+      # live build/, then mv's old->build_previous and new->build in one go,
+      # so Nginx never sees a half-copied directory mid-deploy.
+      # build_previous is a cheap one-deploy-deep manual rollback point.
       - name: Deploy frontend (swap in new static build)
         run: |
-          ssh -i ~/.ssh/staging_deploy_key "${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }}" \
-            'rm -rf /var/www/evox-app-e2e/client/build_new'
-          scp -r -i ~/.ssh/staging_deploy_key client/build \
-            "${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }}:/var/www/evox-app-e2e/client/build_new"
-          ssh -i ~/.ssh/staging_deploy_key "${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }}" '
-            set -e
-            cd /var/www/evox-app-e2e/client
-            rm -rf build_previous
-            [ -d build ] && mv build build_previous
-            mv build_new build
-          '
+          set -e
+          rm -rf /var/www/evox-app-e2e/client/build_new
+          cp -r client/build /var/www/evox-app-e2e/client/build_new
+          cd /var/www/evox-app-e2e/client
+          rm -rf build_previous
+          [ -d build ] && mv build build_previous
+          mv build_new build
