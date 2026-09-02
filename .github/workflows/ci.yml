@@ -50,14 +50,6 @@ jobs:
           EOF
 
       # -- client/ --------------------------------------------─
-      - name: Debug PATH
-        working-directory: client
-        run: |
-          echo "PATH is:"
-          echo "$PATH"
-          which npm || echo "npm not found via which"
-          ls -la "/c/Program Files/nodejs/" || echo "nodejs folder not found via bash path"
-          
       - name: Install frontend dependencies
         working-directory: client
         run: |

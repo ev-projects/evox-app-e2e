@@ -56,8 +56,11 @@ else
     if php -m | grep -qi pcov; then
         log "PCOV detected — collecting coverage."
         COVERAGE_FLAGS="--coverage-php $COVERAGE_DIR/phpunit-coverage.php --coverage-clover $COVERAGE_DIR/clover.xml --log-junit $COVERAGE_DIR/phpunit-results.xml"
+    elif php -m | grep -qi xdebug; then
+        log "Xdebug detected — collecting coverage (slower than PCOV, expected on this PHP 7.4 install)."
+        COVERAGE_FLAGS="--coverage-php $COVERAGE_DIR/phpunit-coverage.php --coverage-clover $COVERAGE_DIR/clover.xml --log-junit $COVERAGE_DIR/phpunit-results.xml"
     else
-        log "WARN: PCOV not loaded — running PHPUnit without coverage (see SETUP.md)."
+        log "WARN: no coverage driver (pcov/xdebug) loaded — running PHPUnit without coverage (see SETUP.md)."
         COVERAGE_FLAGS="--log-junit $COVERAGE_DIR/phpunit-results.xml"
     fi
 
@@ -87,7 +90,10 @@ else
     # Use node v18 directly — system node (v12) is too old for Playwright
     NODE18="$NVM_DIR/versions/node/v18.20.8/bin/node"
     [ ! -f "$NODE18" ] && NODE18="$(which node)"
-    log "PLAYWRIGHT_BASE_URL=${PLAYWRIGHT_BASE_URL:-http://localhost:3000}"
+    # Note: playwright.config.ts loads client/.env.e2e itself via dotenv, so this
+    # only reflects this shell's own env var (usually unset) — not what Playwright
+    # actually uses. Logged for visibility only, not a config source of truth.
+    log "PLAYWRIGHT_BASE_URL (shell env, informational only)=${PLAYWRIGHT_BASE_URL:-<unset — see client/.env.e2e>}"
     if "$NODE18" node_modules/.bin/playwright test --config=playwright.config.ts 2>&1 | tee "$COVERAGE_DIR/playwright.log"; then
         log_ok "Playwright PASSED"
     else
