@@ -118,10 +118,18 @@ jobs:
   # reach this job. Fires on push to master (auto) or manual dispatch (both
   # picked deliberately - see conversation). UAT/production are NOT wired up
   # here; this only ever touches the staging host below.
+  #
+  # `environment: staging` ties this job to the repo's "staging" Environment
+  # (Settings -> Environments), which has a required-reviewer rule on it —
+  # the job pauses right here for a manual approval before any step below
+  # runs. GitHub already refuses to let whoever triggered this run (the PR
+  # author, via their merge) approve their own deployment, on top of
+  # whatever reviewer team is configured there.
   deploy:
     needs: test
     if: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/master') || github.event_name == 'workflow_dispatch' }}
     runs-on: [self-hosted]
+    environment: staging
     defaults:
       run:
         shell: bash
