@@ -111,7 +111,10 @@ class OpsScheduleController extends Controller
     public function show($ops_sched_id = null)
     {
         // get ops schedule instance using id from ops_schedules table
-        $ops_sched = OpsSchedule::find($ops_sched_id)->toArray();
+        // OPS-ERR-1 - was find(), which returns null for a missing id; ->toArray() on null then
+        // raises \Error, and the catch(Exception) below cannot see an Error, so the client got a
+        // raw 500 instead of a handled response. findOrFail throws a catchable ModelNotFound.
+        $ops_sched = OpsSchedule::findOrFail($ops_sched_id)->toArray();
         $ops_sched['start_time'] = date('H:i', $ops_sched['start_time']);
         $ops_sched['end_time'] = date('H:i', $ops_sched['end_time']);
 
@@ -157,9 +160,13 @@ class OpsScheduleController extends Controller
                     $imageName = time() . '.' . $request->image->extension();
                     $path = 'public/opsschedules/' . $check_sched->id . '/';
                     $request->image->storeAs($path, $imageName);
-                    $upd_ops_sched = $check_sched->update([
+                    $check_sched->update([
                         'path' => $path . $imageName,
                     ]);
+                    // BUG-122 FIX: $new_ops_sched was never assigned in this branch, causing
+                    // an E_NOTICE (undefined variable) that PHPUnit promotes to an exception
+                    // caught by catch(Exception $e) → 400 instead of 201.
+                    $new_ops_sched = $check_sched;
                 }
                 DB::commit();
             } elseif ($request->type === 'form') {
@@ -275,7 +282,8 @@ class OpsScheduleController extends Controller
     {
         DB::beginTransaction();
         try {
-            $ops_sched = OpsSchedule::find($ops_sched_id);
+            // OPS-ERR-1 - same missing-id hazard as above; fail loudly and catchably.
+            $ops_sched = OpsSchedule::findOrFail($ops_sched_id);
             $ops_sched->delete();
             DB::commit();
 

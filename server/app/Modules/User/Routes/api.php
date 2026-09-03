@@ -57,9 +57,6 @@ Route::group(['prefix' => 'user', 'middleware' => ['jwtauth', 'auth.apikey']], f
 
     Route::get('/search-user-dispute', 'UserController@get_user_by_string_dispute');
 
-    # Get the user roles
-    Route::get('/roles/', 'UserController@get_roles');
-
      # Get the all features
      Route::get('/features', 'UserController@get_features');
 
@@ -127,8 +124,6 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
 
     Route::post('team_list_all/', 'UserController@my_team_list_under_selected_department');
     
-    # Get the Role of the user
-    Route::get('/role_permission/', 'UserController@get_user_role_permission');
      # Get the Role of the user
      Route::get('/features', 'UserController@get_user_feature');
 
@@ -137,9 +132,6 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
 
     # Change Password Post request
     Route::post('change_password', 'UserController@change_password');//->middleware('auth.apikey');
-    
-    # Assign Roles & Permissions Post request
-    Route::post('/assign_roles_permissions/', 'UserController@assign_roles_permissions');
 
     Route::post('/assign_level_features', 'UserController@assign_level_features');
     
@@ -155,10 +147,7 @@ Route::group(['prefix' => 'user/{id}', 'middleware' => ['jwtauth', 'auth.apikey'
     
     Route::group(['prefix' => 'profile', 'middleware' => ['jwtauth', 'auth.apikey']], function () {
         
-        # Gets the User List of Specific Role
-        Route::post('/', 'ProfileController@store');
-
-        # Gets the User List of Specific Role
+        # ProfileController@store removed 2026-08-13 — store() was never implemented (dead code, Client role decommissioned)
         Route::put('/', 'ProfileController@update');
     
     

@@ -175,6 +175,9 @@ class OvertimeController extends Controller
 
                 $overtime = $this->overtime->approve( $request->all(), $id );
 
+                if (!$overtime) {
+                    return error_response('Overtime request not found or could not be approved.', [], JsonResponse::HTTP_NOT_FOUND);
+                }
 
                 $user =  User::find($overtime->user_id);
                 $has_multi =  $user ? $user->hasFeature("multi_login") : false;
@@ -192,11 +195,11 @@ class OvertimeController extends Controller
                     new OvertimeResource( $overtime ) 
                 );
             }
-        } catch(Exception $e){
+        } catch(\Throwable $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);
         }
     }
-    
+
 
     /**
      * Declines an Overtime Request.

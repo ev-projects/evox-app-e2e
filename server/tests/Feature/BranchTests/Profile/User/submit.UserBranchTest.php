@@ -2,7 +2,7 @@
 /**
  * PHASE 3 v2 (latest code) - AUTHORED. Branch tests for UserController::submit arms. Menu=Profile Page=User.
  *
- * Covers POST endpoints: change_password, assign_roles_permissions, forgot_password_request,
+ * Covers POST endpoints: change_password, forgot_password_request,
  * addUserAsset, updateUserAsset. Constructor deps (UserRepositoryInterface, EmailRepositoryInterface)
  * IoC-mocked per test. success_response => 200 {message,content} EXCEPT addUserAsset/updateUserAsset
  * which pass JsonResponse::HTTP_CREATED => 201. error_response default => 400 EXCEPT change_password's
@@ -12,8 +12,6 @@
  *   // SKIPPED-SP: change_password SUCCESS arm returns new UserProfileResource($user), whose toArray()
  *      reaches $user->userFeatures()/isUserNhoValid() -> call_sp against the live-dump DB. Only the
  *      `if(!$user)` 404 arm and the catch/400 arm are authored.
- *   // SKIPPED-SP: assign_roles_permissions SUCCESS arm returns new UserProfileResource($user) ->
- *      userFeatures()/isUserNhoValid() -> call_sp. Only the catch/400 arm is authored.
  *   // SKIPPED-DESTRUCTIVE: addUserAsset / updateUserAsset CATCH arms — AssetManagement is used statically
  *      inside the try with no IoC seam; the only way to force the catch is a live-DB constraint violation.
  *      Not authored.
@@ -24,7 +22,6 @@
  *
  * Routes (module api.php mounted under /api):
  *   POST /api/user/{id}/change_password           -> change_password()
- *   POST /api/user/{id}/assign_roles_permissions  -> assign_roles_permissions()
  *   POST /api/forgot_password_request             -> forgot_password_request()
  *   POST /api/user/addasset                       -> addUserAsset()
  *   POST /api/user/updateasset                    -> updateUserAsset()
@@ -106,24 +103,6 @@ class UserSubmitBranchTest extends TestCase
         $res->assertStatus(400)->assertJsonStructure(['error' => ['message', 'content']]);
     }
     // SKIPPED-SP: change_password SUCCESS arm -> UserProfileResource -> userFeatures() call_sp. Not authored.
-
-    // ================================================== assign_roles_permissions()
-    // AssignUserRolePermissionRequest: roles.*/permissions.* exists rules — empty arrays satisfy them.
-    /** @test */
-    public function assign_roles_permissions__submit__exception__error_400()
-    {
-        $user = $this->mockDep(UserRepositoryInterface::class);
-        // AssignAllUserToAdminJob::dispatch(...) is captured by Queue::fake() and never runs.
-        $user->shouldReceive('assign_roles_to_user')->once()->andThrow(new Exception('boom'));
-
-        $res = $this->postJson("/api/user/{$this->user->id}/assign_roles_permissions", [
-            'roles'       => [],
-            'permissions' => [],
-        ]);
-
-        $res->assertStatus(400)->assertJsonStructure(['error' => ['message', 'content']]);
-    }
-    // SKIPPED-SP: assign_roles_permissions SUCCESS arm -> UserProfileResource -> userFeatures() call_sp. Not authored.
 
     // ================================================= forgot_password_request()
     // ForgotPasswordRequest: email required|exists:users,email — use fixture user's real email.

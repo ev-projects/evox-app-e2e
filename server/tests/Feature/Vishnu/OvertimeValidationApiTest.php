@@ -239,10 +239,14 @@ class OvertimeValidationApiTest extends TestCase
     public function test_get_request_overtime_existing_record_returns_200()
     {
         $this->withoutMiddleware();
-        // Get any existing overtime ID from the DB — falls back to 1 if none found
-        $overtime = \DB::table('overtimes')->whereNull('deleted_at')->first();
+        // OvertimeRepository::find() calls get_authenticated_user($overtime->user_id), which throws
+        // (-> caught -> 404) unless the acting user IS that owner, is an Admin, or supervises them.
+        // $this->user is just "any active user with an email" (see setUp()), so an overtime record
+        // picked with no owner filter almost never belongs to them — scope the lookup to $this->user's
+        // own records so the self-view branch (auth()->user()->id == $user_id) always applies.
+        $overtime = \DB::table('overtimes')->whereNull('deleted_at')->where('user_id', $this->user->id)->first();
         if (!$overtime) {
-            $this->markTestIncomplete('Cat 1: No overtime records in DB — submit an overtime request first.');
+            $this->markTestIncomplete('Cat 1: No overtime records for the test user in DB — submit an overtime request first.');
         }
         $response = $this->actingAs($this->user)->getJson('/api/request/overtime/' . $overtime->id, $this->apiKey);
         $response->assertStatus(200);

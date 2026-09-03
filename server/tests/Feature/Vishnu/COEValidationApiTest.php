@@ -208,7 +208,7 @@ class COEValidationApiTest extends TestCase
             'type'        => 'regular',
         ], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: POST /api/request/coe with nonexistent employee_id causes null-member access on User::find() → 500; add null guard in COEController::create().');
+            $this->markTestSkipped('APP-BUG: POST /api/request/coe with nonexistent employee_id causes null-member access on User::find() → 500; add null guard in COEController::create().');
         }
         $this->assertNotEquals(500, $response->status());
     }

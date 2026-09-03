@@ -119,70 +119,6 @@ describe('RegisterUser component', () => {
 });
 
 // -------------------------------------------------------
-// AssignRolesPermissions component
-// -------------------------------------------------------
-let AssignRolesPermissions;
-try {
-    const m = require('../../container/Admin/AssignRolesPermissions/AssignRolesPermissions');
-    AssignRolesPermissions = m.AssignRolesPermissions || m.default;
-} catch (e) {
-    AssignRolesPermissions = require('../../container/Admin/AssignRolesPermissions/AssignRolesPermissions').default;
-}
-
-const assignRolesDefaultProps = {
-    user:               { id: 1, full_name: 'Test Admin', pov_timezone: 'Asia/Manila' },
-    dispatch:           jest.fn(),
-    history:            { push: jest.fn() },
-    match:              { params: {} },
-    location:           { search: '' },
-    isLoading:          false,
-    isUserListLoaded:            true,   // gate: nameFilter/search UI renders only when loaded
-    isUserRolesPermissionsLoaded: true,
-    roles:              [],
-    userLists:          [],
-    userRole:           [],
-    userPermission:     [],
-    fetchUser:          jest.fn(),
-    fetchRoleList:      jest.fn(),
-    fetchUserRolePermission: jest.fn(),
-    assignRolesPermissions:  jest.fn(),
-};
-
-function renderAssignRoles(props = {}) {
-    return render(
-        <MemoryRouter>
-            <AssignRolesPermissions {...assignRolesDefaultProps} {...props} />
-        </MemoryRouter>
-    );
-}
-
-describe('AssignRolesPermissions component', () => {
-    beforeEach(() => jest.clearAllMocks());
-
-    test('renders without crashing', () => {
-        expect(() => renderAssignRoles()).not.toThrow();
-    });
-
-    test('renders Search Name label', () => {
-        const { getByText } = renderAssignRoles();
-        expect(getByText(/Search Name/i)).toBeInTheDocument();
-    });
-
-    test('renders nameFilter input with placeholder', () => {
-        const { getByPlaceholderText } = renderAssignRoles();
-        expect(getByPlaceholderText(/Enter Name/i)).toBeInTheDocument();
-    });
-
-    test('does not crash during loading state', () => {
-        expect(() => renderAssignRoles({ isLoading: true })).not.toThrow();
-    });
-
-    test('does not crash with empty user list', () => {
-        expect(() => renderAssignRoles({ userLists: [], userRole: [], userPermission: [] })).not.toThrow();
-    });
-});
-
-// -------------------------------------------------------
 // AssignFeature component
 // -------------------------------------------------------
 let AssignFeature;
@@ -378,7 +314,7 @@ try {
     const m = require('../../container/Admin/AssignEmployeesClient/AssignEmployeesClient');
     AssignEmployeesClient = m.AssignEmployeesClient || m.default;
 } catch (e) {
-    AssignEmployeesClient = require('../../container/Admin/AssignEmployeesClient/AssignEmployeesClient').default;
+    AssignEmployeesClient = null; // CLIENT MODULE REMOVED 2026-08-10
 }
 
 const assignEmpClientDefaultProps = {
@@ -409,7 +345,7 @@ function renderAssignEmpClient(props = {}) {
     );
 }
 
-describe('AssignEmployeesClient component', () => {
+describe.skip('AssignEmployeesClient component — CLIENT MODULE REMOVED 2026-08-10', () => {
     beforeEach(() => jest.clearAllMocks());
 
     test('renders without crashing', () => {

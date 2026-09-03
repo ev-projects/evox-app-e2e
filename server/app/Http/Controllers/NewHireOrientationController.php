@@ -71,7 +71,7 @@ class NewHireOrientationController extends Controller
             if ($nho == 1) {
                 return response()->json(['message' => 'Thank you for completing the NHO Survey! Your response has been successfully submitted. Please also consider leaving a Glassdoor review to help us improve our onboarding and workplace culture.', 'status' => 200], 200);
             }
-        } catch(Exception $e) {
+        } catch(\Throwable $e) {
             return error_response( trans('messages.error_default'), $e );
         }
     }

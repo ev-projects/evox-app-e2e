@@ -72,7 +72,10 @@ class syncBhrLeaves extends Command
                         $start_date = $payroll_cutoff->Start_Date;
                         $end_date = $payroll_cutoff->End_Date;
                     } else {
-                        throw new Exception("Could not find Payroll Cut-off for {$country_code} with ID {$cutoff}");
+                        // CMD-VAR-1 - was {$cutoff}, a variable that does not exist in this scope; the id
+                        // lives in $cutoff_id. Every one of these five messages interpolated an undefined
+                        // variable, so the one line telling an operator WHICH cut-off failed came out blank.
+                        throw new Exception("Could not find Payroll Cut-off for {$country_code} with ID {$cutoff_id}");
                     }
                     break;
                 case "MA":
@@ -83,7 +86,7 @@ class syncBhrLeaves extends Command
                         $start_date = $payroll_cutoff->Start_Date;
                         $end_date = $payroll_cutoff->End_Date;
                     } else {
-                        throw new Exception("Could not find Payroll Cut-off for {$country_code} with ID {$cutoff}");
+                        throw new Exception("Could not find Payroll Cut-off for {$country_code} with ID {$cutoff_id}");
                     }
                     break;
                 case "BU":
@@ -93,7 +96,7 @@ class syncBhrLeaves extends Command
                     } else {
                         $payroll_cutoff = $this->payroll_cutoff->find(intval($cutoff_id));
                         if (!is_valid($payroll_cutoff)) {
-                            throw new Exception("Could not find Payroll Cut-off for {$country_code} with ID {$cutoff}");
+                            throw new Exception("Could not find Payroll Cut-off for {$country_code} with ID {$cutoff_id}");
                         }
                     }
                     $start_date = $payroll_cutoff->start_date;
@@ -106,7 +109,7 @@ class syncBhrLeaves extends Command
                     } else {
                         $payroll_cutoff = $this->payroll_cutoff->find(intval($cutoff_id));
                         if (!is_valid($payroll_cutoff)) {
-                            throw new Exception("Could not find Payroll Cut-off for {$country_code} with ID {$cutoff}");
+                            throw new Exception("Could not find Payroll Cut-off for {$country_code} with ID {$cutoff_id}");
                         }
                     }
                     $start_date = $payroll_cutoff->start_date;
@@ -119,7 +122,7 @@ class syncBhrLeaves extends Command
                     } else {
                         $payroll_cutoff = $this->payroll_cutoff->find(intval($cutoff_id));
                         if (!is_valid($payroll_cutoff)) {
-                            throw new Exception("Could not find Payroll Cut-off for {$country_code} with ID {$cutoff}");
+                            throw new Exception("Could not find Payroll Cut-off for {$country_code} with ID {$cutoff_id}");
                         }
                     }
                     $start_date = $payroll_cutoff->start_date;

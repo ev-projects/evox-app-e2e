@@ -56,6 +56,12 @@
         <whitelist processUncoveredFilesFromWhitelist="false">
             <directory suffix=".php">../app</directory>
             <exclude>
+                <!-- Migrations are schema history, never run by this suite (the test DB
+                     forbids them). 48 classes x 2 methods = 96 methods that no permitted
+                     test can cover, worth ~5pp on methods and ~8pp on classes. Keep this
+                     in EVERY phpunit config - patching only some is why the 7-Aug run
+                     reported 62.93% instead of 68.01%. -->
+                <directory suffix=".php">../app/Modules/*/Database/Migrations</directory>
                 <!-- Spatie model: Eloquent alias unavailable outside Laravel boot context -->
                 <file>../app/Models/Activity.php</file>
                 <!-- Decommissioned 2026-06-21 -->

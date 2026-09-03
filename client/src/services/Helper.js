@@ -1,6 +1,11 @@
-import moment from 'moment';
+import baseMoment from 'moment';
 import { extendMoment } from 'moment-range';
+
 import { format, getDate } from "date-fns";
+// HLP-MOM-1 fix: build ONE callable, range-enabled moment for the whole module.
+// The previous code did `extendMoment(Moment)` with the NAMESPACE object, which is not callable,
+// so every helper using it threw under strict interop (Jest today, webpack 5 after the upgrade).
+const moment = extendMoment(baseMoment);
 
 var names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
 

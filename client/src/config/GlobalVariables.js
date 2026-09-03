@@ -79,18 +79,14 @@
     // Admin Links
     payroll_cutoff                  :  "/app/admin/PayrollCutoff/",
     assign_department_handlers      :  "/app/admin/AssignDepartmentHandlers/",
-    assign_employees_client          :  "/app/admin/AssignClientHandlers/",
     assign_employee_supervisors     :  "/app/admin/AssignEmployeeSupervisors/",
     assign_sub_department           :  "/app/admin/AssignSubDepartment/",
     sync_biometrics                 :  "/app/admin/SyncBiometrics/",
     sync_bhr_leaves                 :  "/app/admin/SyncBhrLeaves/",
     sync_utc_adjustment             : "/app/admin/SyncUTCAdjustment/",
     sync_bhr_user_updates           :  "/app/admin/SyncUserUpdates/",
-    assign_role_permission          :  "/app/admin/AssignRolePermission/",
     assign_feature          :  "/app/admin/AssignFeature/",
     register_user                   :  "/app/admin/RegisterUser/",
-    manage_change_logs              :  "/app/admin/ManageChangeLogs/",
-
     department_list                 :  "/app/admin/DepartmentList/",
     admin_announcement_list         :  "/app/admin/AnnouncementList/",
 
@@ -99,9 +95,7 @@
     kpi_upload                      :  "/app/performance/KpiUpload",
     generate_date                   :  "/app/admin/GenerateDate/",
 
-    // HR Links
-    manage_hr_announcements         : "/app/hr/ManageHrAnnouncements/",
-    post_hr_announcements           : "/app/hr/PostHrAnnouncements/",
+    // HR Links — manage_hr_announcements and post_hr_announcements removed 2026-08-13 (feature retired)
 
     meeting_calander                :  "/app/calander/",
     room_master                     :  "/app/createroom/",

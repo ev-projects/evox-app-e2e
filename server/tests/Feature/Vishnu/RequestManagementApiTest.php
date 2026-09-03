@@ -178,13 +178,10 @@ class RequestManagementApiTest extends TestCase
             ->first();
         $from = $cutoff ? $cutoff->start_date : '2026-03-01';
         $to   = $cutoff ? $cutoff->end_date   : '2026-03-31';
-        $response = $this->actingAs($this->user)->getJson(
+        $response = $this->actingAs($this->user, 'api')->getJson(
             "/api/request/request-numbers?url=my_requests&valid_from={$from}&valid_to={$to}&request_type=all&page=1",
             $this->apiKey
         );
-        if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: GET /api/request/request-numbers with valid params returns 500 — Undefined index in RequestController.');
-        }
         $response->assertStatus(200);
         $response->assertJsonStructure(['message', 'content']);
     }

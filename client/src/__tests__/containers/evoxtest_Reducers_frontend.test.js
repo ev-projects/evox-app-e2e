@@ -43,7 +43,6 @@ import requestApprovalReducers from '../../store/reducers/approvals/requestAppro
 import lookupListReducers from '../../store/reducers/lookup/lookupListReducers';
 import assignRoleReducers from '../../store/reducers/admin/assignRoleReducers';
 import departmentListReducers from '../../store/reducers/admin/departmentListReducers';
-import jobOpeningReducers from '../../store/reducers/admin/jobOpeningReducers';
 import payrollCutoffReducers from '../../store/reducers/admin/payrollCutoffReducers';
 import registerUserReducers from '../../store/reducers/admin/registerUserReducers';
 import syncReducers from '../../store/reducers/admin/syncReducers';
@@ -1245,7 +1244,7 @@ describe('lookupListReducers', () => {
     expect(result.department_users).toEqual([{ id: 3 }]);
   });
 
-  test('FETCH_EMPLOYEES_CLIENT_USERS_LIST_SUCCESS sets employees_client_users', () => {
+  test.skip('FETCH_EMPLOYEES_CLIENT_USERS_LIST_SUCCESS sets employees_client_users — CLIENT MODULE REMOVED 2026-08-10: reducer case deleted with client module', () => {
     const result = lookupListReducers(undefined, { type: 'FETCH_EMPLOYEES_CLIENT_USERS_LIST_SUCCESS', list: [{ id: 4 }] });
     expect(result.employees_client_users).toEqual([{ id: 4 }]);
   });
@@ -1306,10 +1305,13 @@ describe('assignRoleReducers', () => {
     expect(result.payroll).toBe('monthly');
   });
 
-  test('FETCH_USER_ROLE_AND_PERMISSION sets userRole', () => {
+  test('FETCH_USER_ROLE_AND_PERMISSION — case removed from reducer, returns unchanged state', () => {
+    // The FETCH_USER_ROLE_AND_PERMISSION case was removed from assignRoleReducers when
+    // Spatie laravel-permission was dropped from the backend. The action now falls through
+    // to `default` and the state is returned unchanged (userRole stays null).
     const result = assignRoleReducers(undefined, { type: 'FETCH_USER_ROLE_AND_PERMISSION', userRole: ['admin'], userPermission: ['read'] });
-    expect(result.userRole).toEqual(['admin']);
-    expect(result.isUserRolesPermissionsLoaded).toBe(true);
+    expect(result.userRole).toBeNull();
+    expect(result.isUserRolesPermissionsLoaded).toBe(false);
   });
 
   test('FETCH_USER_FEATURES sets userFeatures', () => {
@@ -1333,18 +1335,8 @@ describe('departmentListReducers', () => {
   });
 });
 
-// ─── jobOpeningReducers ───────────────────────────────────────────────────────
-
-describe('jobOpeningReducers', () => {
-  test('returns initial state on unknown action', () => {
-    expect(jobOpeningReducers(undefined, {}).isCareerListLoaded).toBe(false);
-  });
-
-  test('FETCH_CAREERS_SUCCESS sets careerlist', () => {
-    const result = jobOpeningReducers(undefined, { type: 'FETCH_CAREERS_SUCCESS', list: [{ title: 'Dev' }] });
-    expect(result.careerlist).toEqual([{ title: 'Dev' }]);
-  });
-});
+// jobOpeningReducers removed (EVOX-721, Careers Dead Code Removal) —
+// store/reducers/admin/jobOpeningReducers.js no longer exists.
 
 // ─── payrollCutoffReducers ────────────────────────────────────────────────────
 

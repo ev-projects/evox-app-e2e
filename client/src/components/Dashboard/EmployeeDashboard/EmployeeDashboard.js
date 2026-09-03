@@ -17,7 +17,6 @@ import DashboardTabs from "../../../components/Dashboard/DashboardTabs";
 import Authenticator from "../../../services/Authenticator";
 import DtrNotifications from "../../../components/Dashboard/DtrNotifications";
 import RecentDtr from "../../../components/Dashboard/RecentDtr";
-import ChangeLogs from "../../../components/Dashboard/ChangeLogs";
 import moment from 'moment';
 import { SummaryDashbord } from "../../Summary/SummaryDashbord";
 

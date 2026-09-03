@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import "./PersonalInformation.css";
 import { Container,Row,Col,Table,Image, Spinner,Button,Form,InputGroup,FormControl   } from 'react-bootstrap';
 import Select from "react-select";
@@ -7,7 +7,7 @@ import { useFormikContext } from 'formik';
 import Authenticator from "../../../services/Authenticator";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
 
-import { fetchProfile, updateUserProfile } from '../../../store/actions/profile/profileActions' ;
+import { fetchProfile } from '../../../store/actions/profile/profileActions' ;
 import { Formik,FieldArray,Field,ErrorMessage,getIn  } from 'formik';
 import * as Yup from 'yup';
 import Wrapper from "../../../components/Template/Wrapper";
@@ -22,34 +22,12 @@ const PersonalInformation = ( props ) => {
 
     const { profile, user } = props;
 
-    const is_disabled = (user.id === profile.details.id && Authenticator.scanLevel("Client") ? false : true)
+    const is_disabled = true // Client role decommissioned 2026-08-13 — all fields permanently read-only
 
     const options = [
       { value: 1, label: 'Active' },
       { value: 0, label: 'Inactive' },
     ]
-    
-    function onSubmitHandler(values) {
-
-        var formData = {};
-        
-        for (var key in values) {
-            if( values[key] != null && values[key] != ""  ) {
-                switch( key ) {
-                    default:
-                    formData[key] = values[key];
-                    break;
-                }
-            } 
-        }
-
-        if (window.confirm("Are you sure you want to save these changes?")) {
-            
-            formData['_method'] = 'PUT';
-            props.updateUserProfile( profile.details.id, formData );
-        }
-    }
-
     
     function onOpenChangePasswordForm(){
         var objDiv = document.getElementById("change_password_id");
@@ -83,7 +61,7 @@ const PersonalInformation = ( props ) => {
         Validator.isValid( profile ) ?
         <Formik 
             enableReinitialize
-            onSubmit={onSubmitHandler} 
+            onSubmit={() => {}}
             validationSchema={validationSchema} 
             initialValues={initialValue}
         >
@@ -202,7 +180,6 @@ const PersonalInformation = ( props ) => {
                                 { // Show Buttons if viewing own profiles.
                                 user.id === profile.details.id ?
                                     <React.Fragment>
-                                        { Authenticator.scanLevel("Client") ? <Button type="submit" className="btn btn-primary" ><i className="fa fa-edit" /> Save</Button> : null }&nbsp;
                                         <Button type="button" className="btn btn-secondary" onClick={()=> {setShowChangePasswordForm(true);   onOpenChangePasswordForm();}} ><i className="fa fa-edit" /> Change Password</Button>
                                     </React.Fragment>
                                     : 
@@ -237,11 +214,4 @@ const mapStateToProps = (state) => {
     }
 } 
 
-const mapDispatchToProps = (dispatch) => {
-
-    return {
-      updateUserProfile : ( id, formData ) => dispatch( updateUserProfile( id, formData ) )
-  
-    }
-}
-export default connect(mapStateToProps, mapDispatchToProps)(PersonalInformation);
+export default connect(mapStateToProps)(PersonalInformation);

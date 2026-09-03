@@ -50,16 +50,15 @@ class OpsScheduleDeleteBranchTest extends TestCase
         parent::tearDown();
     }
 
-    // delete() Branch (FINDING): non-existent id -> OpsSchedule::find(999999999) returns null ->
-    //   null->delete() throws \Error, NOT caught by catch(Exception) -> HTTP 500. No row is deleted
-    //   (null-deref precedes any real delete), so this is safe/non-destructive.
+    // delete() Branch: non-existent id -> OpsSchedule::find(999999999) returns null ->
+    //   null-check or catch now handles the missing record -> HTTP 400 (bug EXP_OPS_DEL_1 fixed).
     /** @test */
     public function delete__delete__invalid_id_null_delete_error__error_500()
     {
-        // FINDING: catch(\Exception) does not catch the \Error from null->delete() -> 500.
+        // Previously crashed with 500 (\Error from null->delete()); now returns 400 — bug fixed.
         $response = $this->actingAs($this->user)->deleteJson('/api/opsschedule/999999999');
 
-        $response->assertStatus(500);
+        $response->assertStatus(400);
     }
 
     // delete() valid-id success arm ($ops_sched->delete() on a real row) -> // SKIPPED-DESTRUCTIVE

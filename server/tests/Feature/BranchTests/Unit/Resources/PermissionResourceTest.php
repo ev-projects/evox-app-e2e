@@ -13,6 +13,7 @@ class PermissionResourceTest extends TestCase
 {
     public function test_maps_permission_fields_including_pivot()
     {
+        $this->markTestSkipped('PermissionResource deleted — Spatie laravel-permission removed (Phase A)');
         $pivot = (object) ['role_id' => 2, 'permission_id' => 9];
         $permission = (object) [
             'id' => 9,
@@ -31,6 +32,7 @@ class PermissionResourceTest extends TestCase
 
     public function test_null_pivot_is_preserved()
     {
+        $this->markTestSkipped('PermissionResource deleted — Spatie laravel-permission removed (Phase A)');
         $permission = (object) [
             'id' => 1,
             'name' => 'edit-user',

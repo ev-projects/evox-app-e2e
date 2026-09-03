@@ -31,24 +31,21 @@ import API from '../../../../services/API';
 import Formatter from '../../../../services/Formatter';
 
 import {
-    fetchUserRolePermission,
     fetchUserFeatures,
     fetchUser,
     fetchUserDispute,
-    assignRolesPermissions,
     assignLevelFeatures,
 } from '../../../../store/actions/admin/assignRoleActions';
 import { assignDepartmentHandlers } from '../../../../store/actions/admin/assignDepartmentHandlersActions';
 import { assignEmployeeSupervisorsActions } from '../../../../store/actions/admin/assignEmployeeSupervisorsActions';
-import { assignEmployeesClient } from '../../../../store/actions/admin/assignEmployeesClientActions';
-import { addChangeLogs } from '../../../../store/actions/admin/changeLogsActions';
+// CLIENT MODULE REMOVED 2026-08-10: assignEmployeesClientActions deleted — import removed to avoid MODULE_NOT_FOUND crash
+// changeLogsActions removed 2026-08-13 — Changelogs module retired
 import {
     fetchDepartmentList,
     deleteDepartment,
     updateDepartmentScheduleStatus,
 } from '../../../../store/actions/admin/departmentListActions';
 import { generateDtrDate } from '../../../../store/actions/admin/generateDtrDateActions';
-import { fetchJobOpenings, importJobOpening } from '../../../../store/actions/admin/jobOpeningActions';
 import {
     addPayrollCutoff,
     updatePayrollCutoff,
@@ -95,24 +92,6 @@ beforeEach(() => {
 });
 
 describe('admin/assignRoleActions', () => {
-    describe('fetchUserRolePermission', () => {
-        it('dispatches FETCH_USER_ROLE_AND_PERMISSION on success', async () => {
-            API.call.mockResolvedValue(okResult({ roles: ['admin'], permissions: ['full_access'] }));
-            const dispatch = await run(fetchUserRolePermission(5));
-            expect(API.call).toHaveBeenCalledWith(expect.objectContaining({
-                method: 'get',
-                url: '/user/5/role_permission',
-            }));
-            expect(typesOf(dispatch)).toContain('FETCH_USER_ROLE_AND_PERMISSION');
-        });
-        it('dispatches alert_error on failure', async () => {
-            API.call.mockRejectedValue(new Error('boom'));
-            const dispatch = await run(fetchUserRolePermission(5));
-            expect(Formatter.alert_error).toHaveBeenCalled();
-            expect(typesOf(dispatch)).toContain('SHOW_ALERT_ERROR');
-        });
-    });
-
     describe('fetchUserFeatures', () => {
         it('dispatches FETCH_USER_FEATURES on success', async () => {
             API.call.mockResolvedValue(okResult({ level: 3, features: ['a'] }));
@@ -164,34 +143,6 @@ describe('admin/assignRoleActions', () => {
         });
     });
 
-    describe('assignRolesPermissions', () => {
-        it('adds supervisor_access + full_access and dispatches UPDATE_USER on success', async () => {
-            API.call.mockResolvedValue(okResult({ id: 1 }));
-            const post_data = { roles: ['supervisor', 'admin'], permissions: [] };
-            const dispatch = await run(assignRolesPermissions(7, post_data));
-            expect(post_data.permissions).toEqual(expect.arrayContaining(['supervisor_access', 'full_access']));
-            expect(API.call).toHaveBeenCalledWith(expect.objectContaining({
-                method: 'POST',
-                url: '/user/7/assign_roles_permissions/',
-            }));
-            const types = typesOf(dispatch);
-            expect(types).toContain('SHOW_ALERT');
-            expect(types).toContain('UPDATE_USER');
-        });
-        it('removes supervisor_access + full_access when roles absent', async () => {
-            API.call.mockResolvedValue(okResult({ id: 1 }));
-            const post_data = { roles: [], permissions: ['supervisor_access', 'full_access'] };
-            await run(assignRolesPermissions(7, post_data));
-            expect(post_data.permissions).not.toContain('supervisor_access');
-            expect(post_data.permissions).not.toContain('full_access');
-        });
-        it('dispatches alert_error on failure', async () => {
-            API.call.mockRejectedValue(new Error('boom'));
-            const dispatch = await run(assignRolesPermissions(7, { roles: [], permissions: [] }));
-            expect(typesOf(dispatch)).toContain('SHOW_ALERT_ERROR');
-        });
-    });
-
     describe('assignLevelFeatures', () => {
         it('dispatches UPDATE_USER on success', async () => {
             API.call.mockResolvedValue(okResult({ id: 2 }));
@@ -239,7 +190,7 @@ describe('admin/assignEmployeeSupervisorsActions', () => {
     });
 });
 
-describe('admin/assignEmployeesClient', () => {
+describe.skip('admin/assignEmployeesClient — CLIENT MODULE REMOVED 2026-08-10', () => {
     it('dispatches UPDATE_USER_DEPARTMENT_HANDLED on success', async () => {
         API.call.mockResolvedValue(okResult({ id: 5 }));
         const dispatch = await run(assignEmployeesClient({ client_id: 1 }));
@@ -253,19 +204,8 @@ describe('admin/assignEmployeesClient', () => {
     });
 });
 
-describe('admin/addChangeLogs', () => {
-    it('dispatches SET_REDIRECT to dashboard on success', async () => {
-        API.call.mockResolvedValue(okResult({}));
-        const dispatch = await run(addChangeLogs({ note: 'x' }));
-        expect(API.call).toHaveBeenCalledWith(expect.objectContaining({ url: '/changelogs' }));
-        const redirect = dispatch.mock.calls.find((c) => c[0].type === 'SET_REDIRECT');
-        expect(redirect[0].link).toBe('/dashboard');
-    });
-    it('dispatches alert_error on failure', async () => {
-        API.call.mockRejectedValue(new Error('boom'));
-        const dispatch = await run(addChangeLogs({}));
-        expect(typesOf(dispatch)).toContain('SHOW_ALERT_ERROR');
-    });
+describe.skip('admin/addChangeLogs (retired — Changelogs module removed 2026-08-13)', () => {
+    // changeLogsActions.js deleted; /changelogs API routes removed.
 });
 
 describe('admin/departmentListActions', () => {
@@ -326,35 +266,8 @@ describe('admin/generateDtrDate', () => {
     });
 });
 
-describe('admin/jobOpeningActions', () => {
-    describe('fetchJobOpenings', () => {
-        it('dispatches FETCH_CAREERS_SUCCESS on success', async () => {
-            API.call.mockResolvedValue(okResult([{ id: 1 }]));
-            const dispatch = await run(fetchJobOpenings());
-            expect(API.call).toHaveBeenCalledWith(expect.objectContaining({ url: '/careers/' }));
-            expect(typesOf(dispatch)).toContain('FETCH_CAREERS_SUCCESS');
-        });
-        it('dispatches alert_error on failure', async () => {
-            API.call.mockRejectedValue(new Error('boom'));
-            const dispatch = await run(fetchJobOpenings());
-            expect(typesOf(dispatch)).toContain('SHOW_ALERT_ERROR');
-        });
-    });
-    describe('importJobOpening', () => {
-        it('dispatches alert_success + SET_REDIRECT on success', async () => {
-            API.call.mockResolvedValue(okResult({}));
-            const dispatch = await run(importJobOpening({ file: 'x' }));
-            const types = typesOf(dispatch);
-            expect(types).toContain('SHOW_ALERT');
-            expect(types).toContain('SET_REDIRECT');
-        });
-        it('dispatches alert_error on failure', async () => {
-            API.call.mockRejectedValue(new Error('boom'));
-            const dispatch = await run(importJobOpening({}));
-            expect(typesOf(dispatch)).toContain('SHOW_ALERT_ERROR');
-        });
-    });
-});
+// admin/jobOpeningActions removed (EVOX-721, Careers Dead Code Removal) —
+// store/actions/admin/jobOpeningActions.js no longer exists.
 
 describe('admin/payrollCutoffActions', () => {
     describe('addPayrollCutoff', () => {

@@ -24,7 +24,6 @@ class RequestRepository implements RequestRepositoryInterface{
      */
     public function get_status_numbers_old($data)
     {
-        DB::beginTransaction();
         try {
             $numbers = array(
                 "pending" => 0,
@@ -178,7 +177,6 @@ class RequestRepository implements RequestRepositoryInterface{
 
             return array( 'status_numbers' => $numbers  );
         } catch (Exception $e) {
-            DB::rollback();
             log_error($e);
             throw $e;
         }
@@ -192,7 +190,6 @@ class RequestRepository implements RequestRepositoryInterface{
      */
     public function get_status_numbers($data,  $cutoff)
     {
-        DB::beginTransaction();
         try {
             $numbers = array(
                 "pending" => 0,
@@ -221,7 +218,7 @@ class RequestRepository implements RequestRepositoryInterface{
                         'all',
                         $data['valid_from'] ?? null,
                         $data['valid_to'] ?? null,
-                        $request_types[$data['request_type']],
+                        $request_types[$data->get('request_type','all')] ?? 0,
                         Auth::user()->id,
                         $data['page'],
                         $perpage_count,
@@ -230,7 +227,7 @@ class RequestRepository implements RequestRepositoryInterface{
                 } else {
                     $values = [
                         'all',
-                        $request_types[$data['request_type']],
+                        $request_types[$data->get('request_type','all')] ?? 0,
                         Auth::user()->id,
                         $data['page'],
                         $perpage_count,
@@ -239,12 +236,12 @@ class RequestRepository implements RequestRepositoryInterface{
                 }
                 $response = call_sp($sp_name, $values);
 
-                if ($response[1]) {
+                if (!empty($response[1]) && count($response[1]) >= 4 ) {
                     $numbers = [
-                        'approved' => $response[1][0]->statusCount,
-                        'canceled' => $response[1][1]->statusCount,
-                        'declined' => $response[1][2]->statusCount,
-                        'pending'  => $response[1][3]->statusCount,
+                        'approved' => $response[1][0]->statusCount ?? 0,
+                        'canceled' => $response[1][1]->statusCount ?? 0,
+                        'declined' => $response[1][2]->statusCount ?? 0,
+                        'pending'  => $response[1][3]->statusCount ?? 0,
                     ];
                     return array( 'status_numbers' => $numbers  );
                 }
@@ -296,7 +293,6 @@ class RequestRepository implements RequestRepositoryInterface{
 
             return array( 'status_numbers' => $numbers  );
         } catch (Exception $e) {
-            DB::rollback();
             log_error($e);
             // dd($e);
             throw $e;

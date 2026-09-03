@@ -80,7 +80,10 @@ class AuthController extends Controller
 
             // Attempt to check if the User is active. If not active, return User not active.
             if ( ! auth()->user()->is_active ) {
-                if ( Carbon::today()> Carbon::parse(auth()->user()->termination_date)->addDay() ) {
+                $terminationDate = auth()->user()->termination_date;
+                // F1 fix: Carbon::parse(null) returns now(), so today > now()+1day is always false.
+                // NULL termination_date means no end-date was set — treat as already terminated.
+                if ( is_null($terminationDate) || Carbon::today() > Carbon::parse($terminationDate)->addDay() ) {
                     return error_response( trans('messages.user_not_active'), [], JsonResponse::HTTP_NOT_FOUND);
                 }
                
@@ -90,6 +93,7 @@ class AuthController extends Controller
 
             // Set the User that was fetched into Session
             $sess_id = session()->getId();
+
             $result = [
                 'access_token' => $token,
                 'token_type' => 'bearer',
@@ -151,7 +155,10 @@ class AuthController extends Controller
 
             // Attempt to check if the User is active. If not active, return User not active.
             if ( ! auth()->user()->is_active ) {
-                if ( Carbon::today()> Carbon::parse(auth()->user()->termination_date)->addDay() ) {
+                $terminationDate = auth()->user()->termination_date;
+                // F1 fix: Carbon::parse(null) returns now(), so today > now()+1day is always false.
+                // NULL termination_date means no end-date was set — treat as already terminated.
+                if ( is_null($terminationDate) || Carbon::today() > Carbon::parse($terminationDate)->addDay() ) {
                     return error_response( trans('messages.user_not_active'), [], JsonResponse::HTTP_NOT_FOUND);
                 }
 
@@ -197,7 +204,10 @@ class AuthController extends Controller
 
             // Attempt to check if the User is active. If not active, return User not active.
             if ( ! auth()->user()->is_active ) {
-                if ( Carbon::today()> Carbon::parse(auth()->user()->termination_date)->addDay() ) {
+                $terminationDate = auth()->user()->termination_date;
+                // F1 fix: Carbon::parse(null) returns now(), so today > now()+1day is always false.
+                // NULL termination_date means no end-date was set — treat as already terminated.
+                if ( is_null($terminationDate) || Carbon::today() > Carbon::parse($terminationDate)->addDay() ) {
                     return error_response( trans('messages.user_not_active'), [], JsonResponse::HTTP_NOT_FOUND);
                 }
                
@@ -265,7 +275,10 @@ class AuthController extends Controller
 
             // Attempt to check if the User is active. If not active, return User not active.
             if ( ! auth()->user()->is_active ) {
-                if ( Carbon::today()> Carbon::parse(auth()->user()->termination_date)->addDay() ) {
+                $terminationDate = auth()->user()->termination_date;
+                // F1 fix: Carbon::parse(null) returns now(), so today > now()+1day is always false.
+                // NULL termination_date means no end-date was set — treat as already terminated.
+                if ( is_null($terminationDate) || Carbon::today() > Carbon::parse($terminationDate)->addDay() ) {
                     return error_response( trans('messages.user_not_active'), [], JsonResponse::HTTP_NOT_FOUND);
                 }
                

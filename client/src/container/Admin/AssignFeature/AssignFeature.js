@@ -10,7 +10,7 @@ import * as Yup from 'yup';
 import Wrapper from "../../../components/Template/Wrapper";
 import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
 
-import { fetchUser,fetchUserRolePermission,assignRolesPermissions,  fetchUserFeatures, assignLevelFeatures } from '../../../store/actions/admin/assignRoleActions'
+import { fetchUser, fetchUserFeatures, assignLevelFeatures } from '../../../store/actions/admin/assignRoleActions'
 import { fetchRoleList, fetchFeaturesList} from '../../../store/actions/lookup/lookupListActions';
 import Formatter from "../../../services/Formatter";
 
@@ -209,10 +209,8 @@ class AssignFeature extends Component {
 		fetchUser       		: ( name_string  ) => dispatch( fetchUser( name_string ) ),
 		fetchRoleList      		: () => dispatch( fetchRoleList() ),
 		fetchFeaturesList      		: () => dispatch( fetchFeaturesList() ),
-		fetchUserRolePermission       	: ( user_id ) => dispatch( fetchUserRolePermission( user_id ) ),
 		fetchUserFeatures       	: ( user_id ) => dispatch( fetchUserFeatures( user_id ) ),
 		
-		assignRolesPermissions  : ( user_id , post_data ) => dispatch( assignRolesPermissions( user_id , post_data ) ),
 		assignLevelFeatures  : ( user_id , post_data ) => dispatch( assignLevelFeatures( user_id , post_data ) ),
 	  } 
   }

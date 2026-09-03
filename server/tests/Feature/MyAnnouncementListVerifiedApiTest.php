@@ -138,6 +138,7 @@ class MyAnnouncementListVerifiedApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)
             ->getJson('/api/department/announcements/strict/1', $this->apiKey);
+        $this->assertNotEquals(500, $response->status()); // unconditional: 200/404 are both acceptable
         if ($response->status() === 200) {
             // Announcement record must carry at minimum an id field
             $this->assertNotNull($response->json('id') ?? $response->json('data.id'));

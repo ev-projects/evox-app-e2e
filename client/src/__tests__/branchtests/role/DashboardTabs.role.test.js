@@ -47,7 +47,6 @@ jest.mock('../../../components/Summary/SummaryDashbord', () => () => <div>SUMMAR
 jest.mock('../../../components/Dashboard/Engagement/Engagement', () => () => <div>ENGAGEMENT_PANEL</div>);
 jest.mock('../../../components/Dashboard/DashboardAnnouncementsList', () => () => <div>ANN_PANEL</div>);
 jest.mock('../../../components/Dashboard/JobOpenings', () => () => <div>JOBS_PANEL</div>);
-jest.mock('../../../components/Dashboard/ChangeLogs', () => () => <div>CHANGELOGS_PANEL</div>);
 jest.mock('../../../components/PoliciesDocument/PoliciesDocumentDownload', () => () => <div>POLICIES_PANEL</div>);
 
 jest.mock('../../../store/actions/announcement/departmentAnnouncementActions', () => ({

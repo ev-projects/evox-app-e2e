@@ -17,7 +17,7 @@ class EnsureUserHasRole
     public function handle($request, Closure $next, $role)
     {
         // If the role has no Admin privileges, throw an exception to not allow the user to register
-        if( ! $request->user()->hasRole( $role )  ) {
+        if( !  $request->user()->isLevel($role)  ) {
             return error_response( trans('messages.role_not_allowed') );
         }
 

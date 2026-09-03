@@ -1012,22 +1012,6 @@ const Sidebar = (props) => {
                                 </p>
                               </Link>
                             </li>
-                        
-                          {/* {Authenticator.scanLevel_Feature("Admin", 
-                            "manage_roles_and_permissions",
-                          ) && (
-                            <li className="nav-item">
-                              <Link
-                                className="nav-link"
-                                to={global.links.assign_role_permission}
-                              >
-                                <i className="nav-icon fa fa-user-o nav-icon" />
-                                <p style={{ fontSize: 13 }}>
-                                  Role/Permission to User
-                                </p>
-                              </Link>
-                            </li>
-                          )} */}
 
                         {Authenticator.scanLevel_Feature("Admin", 
                             "manage_roles_and_permissions",
@@ -1091,17 +1075,6 @@ const Sidebar = (props) => {
                       </Link>
                     </li>
 
-                    {Authenticator.scanLevel("Admin") && (
-                      <li className="nav-item">
-                        <Link
-                          className="nav-link"
-                          to={global.links.manage_change_logs}
-                        >
-                          <i className="nav-icon fa fa-folder-open nav-icon" />
-                          <p style={{ fontSize: 13 }}>EVOX Updates</p>
-                        </Link>
-                      </li>
-                    )}
                     {Authenticator.scanLevel("Admin") && (
                       <li className="nav-item">
                         <Link

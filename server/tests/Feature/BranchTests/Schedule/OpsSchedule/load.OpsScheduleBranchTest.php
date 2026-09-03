@@ -93,15 +93,14 @@ class OpsScheduleLoadBranchTest extends TestCase
                  ->assertJsonStructure(['message', 'content']);
     }
 
-    // show() Branch B (FINDING): non-existent id -> find() returns null -> null->toArray() throws \Error.
-    //   show() has NO try/catch and NO null check, so the \Error propagates -> HTTP 500. Read-only
-    //   (nothing is written); we assert the actual behavior.
+    // show() Branch B: non-existent id -> find() returns null -> null-check/findOrFail now
+    //   returns 404 instead of crashing with \Error (bug EXP_OPS_SHOW_1 fixed).
     /** @test */
     public function show__load__invalid_id__error_500()
     {
-        // FINDING: OpsSchedule::find(999999999)->toArray() on a null model -> uncaught \Error -> 500.
+        // Previously crashed with 500 (\Error from null->toArray()); now returns 404 — bug fixed.
         $response = $this->actingAs($this->user)->getJson('/api/opsschedule/show/999999999');
 
-        $response->assertStatus(500);
+        $response->assertStatus(404);
     }
 }

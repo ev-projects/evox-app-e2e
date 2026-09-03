@@ -27,9 +27,7 @@ use App\Modules\User\Resources\HolidayResource;
 use Auth;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Hash; 
 use App\Modules\Payroll\Models\Holiday;
 use App\Modules\User\Http\Requests\UpdateUserProfileRequest;
 use App\Modules\User\Models\User;
@@ -39,7 +37,6 @@ use App\Modules\User\Resources\DpaUserListResourceCollection;
 use App\Modules\User\Resources\LeaveCreditsListResource;
 use App\Modules\User\Resources\LeavesListResource;
 use App\Modules\User\Resources\PersonalInformationResource;
-use App\Modules\User\Resources\RoleResource;
 use Illuminate\Database\Eloquent\Collection;
 
 class ProfileController extends Controller

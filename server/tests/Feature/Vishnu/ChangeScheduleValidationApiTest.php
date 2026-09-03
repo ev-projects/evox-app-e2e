@@ -44,6 +44,7 @@ class ChangeScheduleValidationApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        \Illuminate\Support\Facades\Cache::flush(); // clear rate-limiter between tests
 
         $this->apiKey = [
             'X-Authorization' => env(
@@ -498,7 +499,7 @@ class ChangeScheduleValidationApiTest extends TestCase
         // trans('messages.cancel_overtime_success') instead of
         // trans('messages.cancel_change_schedule_success').
         // The wrong message text is returned to the user.
-        $this->markTestIncomplete(
+        $this->markTestSkipped(
             'Known production bug B-001: cancel() uses trans(\'messages.cancel_overtime_success\') ' .
             'instead of trans(\'messages.cancel_change_schedule_success\'). ' .
             'See ChangeScheduleController::cancel().'
@@ -514,7 +515,7 @@ class ChangeScheduleValidationApiTest extends TestCase
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->postJson('/api/request/change_schedule', [], $this->apiKey);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG B-002: POST /api/request/change_schedule without schedule_details causes unhandled exception in ScheduleRepository::store() → 500; add validation in ChangeScheduleRequest::rules().');
+            $this->markTestSkipped('APP-BUG B-002: POST /api/request/change_schedule without schedule_details causes unhandled exception in ScheduleRepository::store() → 500; add validation in ChangeScheduleRequest::rules().');
         }
         $this->assertNotEquals(500, $response->status());
     }

@@ -59,8 +59,8 @@ class DtrSummaryReportTest extends TestCase
         $response = $this->actingAs($supervisor)->get(
             '/api/report/dtr_summary/new_export?'
             .'page=1'
-            .'&valid_from=2026-01-16'
-            .'&valid_to=2026-04-15'
+            .'&valid_from=2026-03-01'
+            .'&valid_to=2026-03-31'
             .'&department_id=403'
             .'&is_active=1'
         );

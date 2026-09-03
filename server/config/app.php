@@ -148,7 +148,6 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Ejarnutowski\LaravelApiKey\Providers\ApiKeyServiceProvider::class,
-        Spatie\Permission\PermissionServiceProvider::class,
         Spatie\Activitylog\ActivitylogServiceProvider::class,
         Ixudra\Curl\CurlServiceProvider::class,
 
@@ -175,8 +174,6 @@ return [
         App\Modules\Department\Providers\DepartmentServiceProvider::class,
 
         App\Modules\Department\Providers\AnnouncementServiceProvider::class,
-
-        App\Modules\Client\Providers\ClientServiceProvider::class,
 
         // Stefan Attendance API (Apr 30 2026 — sprint-02-plan.md §1)
         App\Modules\Attendance\Providers\ModuleServiceProvider::class,

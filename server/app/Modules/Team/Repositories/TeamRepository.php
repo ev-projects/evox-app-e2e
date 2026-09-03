@@ -58,9 +58,11 @@ class TeamRepository implements TeamRepositoryInterface
     public function list_via_team_handler( $user_id )
     {
         try {
-            $team_collection = User::find($user_id)
-                                    ->teams_handled()
-                                    ->get();
+            $user = User::find($user_id);
+            if (!$user) {
+                return collect(); // non-existent user → empty teams list, not a crash
+            }
+            $team_collection = $user->teams_handled()->get();
             log_to_file('info', 'Success', [$team_collection]);
             return $team_collection;
 

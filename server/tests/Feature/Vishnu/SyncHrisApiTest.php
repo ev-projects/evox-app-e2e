@@ -5,15 +5,15 @@
 /**
  * EVOX Sync HRIS API Tests — Vishnu Padmanabhan
  *
- * ⚠ ALL TESTS PERMANENTLY SKIPPED — BUG-082 (2026-07-30)
+ * ⚠ ALL TESTS PERMANENTLY SKIPPED — Intentionally dropped (confirmed 2026-08-13)
  *
- * SyncController.php does not exist in this branch. All four routes return 404:
+ * SyncController HRIS sync operations were removed by design from this branch. All four routes return 404:
  *   POST /api/sync_timeoff_allocation
  *   POST /api/sync_timeoff_allocation_new
  *   POST /api/sync_timeoff_allocation_fail_sync
  *   POST /api/sync_users_hris
  *
- * Confirmed dead code (2026-07-30). Remove markTestSkipped() calls if SyncController
+ * Confirmed intentionally dropped (2026-08-13). Remove markTestSkipped() calls if SyncController
  * is implemented and the routes are registered in a future sprint.
  */
 
@@ -48,25 +48,25 @@ class SyncHrisApiTest extends TestCase
     /** @test */
     public function test_sync_timeoff_allocation_without_api_key_returns_401()
     {
-        $this->markTestSkipped('BUG-082: POST /api/sync_timeoff_allocation — SyncController not implemented, route returns 404.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_timeoff_allocation — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_new_without_api_key_returns_401()
     {
-        $this->markTestSkipped('BUG-082: POST /api/sync_timeoff_allocation_new — SyncController not implemented, route returns 404.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_timeoff_allocation_new — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_fail_sync_without_api_key_returns_401()
     {
-        $this->markTestSkipped('BUG-082: POST /api/sync_timeoff_allocation_fail_sync — SyncController not implemented, route returns 404.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_timeoff_allocation_fail_sync — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     /** @test */
     public function test_sync_users_hris_without_api_key_returns_401()
     {
-        $this->markTestSkipped('BUG-082: POST /api/sync_users_hris — SyncController not implemented, route returns 404.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_users_hris — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     // ─── Pattern A — timeoff_allocation_HRIS ─────────────────────────────────
@@ -74,19 +74,19 @@ class SyncHrisApiTest extends TestCase
     /** @test */
     public function test_sync_timeoff_allocation_with_valid_item_does_not_return_500()
     {
-        $this->markTestSkipped('BUG-082: POST /api/sync_timeoff_allocation — SyncController not implemented, route returns 404.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_timeoff_allocation — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_with_empty_array_returns_200_and_empty_failed_sync()
     {
-        $this->markTestSkipped('BUG-082: POST /api/sync_timeoff_allocation — SyncController not implemented, route returns 404.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_timeoff_allocation — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_with_missing_required_fields_logs_id_in_failed_sync()
     {
-        $this->markTestSkipped('BUG-082: POST /api/sync_timeoff_allocation — SyncController not implemented, route returns 404.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_timeoff_allocation — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     // ─── Pattern A — timeoff_allocation_HRIS_New ─────────────────────────────
@@ -94,13 +94,13 @@ class SyncHrisApiTest extends TestCase
     /** @test */
     public function test_sync_timeoff_allocation_new_with_valid_payload_does_not_return_500()
     {
-        $this->markTestSkipped('BUG-082: POST /api/sync_timeoff_allocation_new — SyncController not implemented, route returns 404.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_timeoff_allocation_new — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_new_with_missing_required_fields_returns_error_not_500()
     {
-        $this->markTestSkipped('BUG-082: POST /api/sync_timeoff_allocation_new — SyncController not implemented, route returns 404.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_timeoff_allocation_new — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     // ─── Pattern A — timeoff_allocation_HRIS_fail_sync ───────────────────────
@@ -108,19 +108,19 @@ class SyncHrisApiTest extends TestCase
     /** @test */
     public function test_sync_timeoff_allocation_fail_sync_with_valid_item_does_not_return_500()
     {
-        $this->markTestSkipped('BUG-082: POST /api/sync_timeoff_allocation_fail_sync — SyncController not implemented, route returns 404.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_timeoff_allocation_fail_sync — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_fail_sync_with_empty_array_returns_200()
     {
-        $this->markTestSkipped('BUG-082: POST /api/sync_timeoff_allocation_fail_sync — SyncController not implemented, route returns 404.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_timeoff_allocation_fail_sync — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     /** @test */
     public function test_sync_timeoff_allocation_fail_sync_with_missing_fields_logs_id_in_failed_sync()
     {
-        $this->markTestSkipped('BUG-082: POST /api/sync_timeoff_allocation_fail_sync — SyncController not implemented, route returns 404.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_timeoff_allocation_fail_sync — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     // ─── Pattern A — syncusers_HRIS ──────────────────────────────────────────
@@ -128,24 +128,24 @@ class SyncHrisApiTest extends TestCase
     /** @test */
     public function test_sync_users_hris_with_valid_payload_does_not_return_500()
     {
-        $this->markTestSkipped('BUG-082: POST /api/sync_users_hris — SyncController not implemented, route returns 404.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_users_hris — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     /** @test */
     public function test_sync_users_hris_with_missing_required_fields_returns_error_not_500()
     {
-        $this->markTestSkipped('BUG-082: POST /api/sync_users_hris — SyncController not implemented, route returns 404.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_users_hris — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     /** @test */
     public function test_sync_users_hris_with_none_termination_date_does_not_return_500()
     {
-        $this->markTestSkipped('BUG-082: POST /api/sync_users_hris — SyncController not implemented, route returns 404.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_users_hris — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 
     /** @test */
     public function test_sync_users_hris_with_zero_date_termination_does_not_return_500()
     {
-        $this->markTestSkipped('BUG-082: POST /api/sync_users_hris — SyncController not implemented, route returns 404.');
+        $this->markTestSkipped('[BY-DESIGN] POST /api/sync_users_hris — SyncController HRIS sync operations permanently removed from the application. Route returns 404.');
     }
 }

@@ -39,7 +39,12 @@ class ScheduleRequest extends FormRequest
             'valid_from'                                => 'required_if:source_type,temporary|required_if:source_type,change_schedule|required_if:source_type,default|required_if:source_type,empty|date_format:Y-m-d',
             'valid_to'                                  => 'required_if:source_type,temporary|required_if:source_type,change_schedule|date_format:Y-m-d',
             'work_days'                                 => 'array',            
-            'schedule_policies.*'                       => 'bool|in:'.implode(',', array_merge(get_constant('SCHEDULE_POLICIES'), get_constant('SCHEDULE_HOLIDAY_POLICIES'))),
+            // F18-F19/F38-F39 fix: was 'bool:name1,name2,...' (invalid — colon is a rule-parameter
+            // separator, not a pipe). Correct rule is 'in:<allowed_names>'.
+            // How it works: for known keys (allow_undertime etc.) the explicit 'bool' rule below
+            // overrides this wildcard via Laravel's rule-merge order. For unknown keys there is no
+            // override, so the value (true/false) never matches a policy name → 422 rejected.
+            'schedule_policies.*'                       => 'in:'.implode(',', array_merge(get_constant('SCHEDULE_POLICIES'), get_constant('SCHEDULE_HOLIDAY_POLICIES'))),
             'schedule_policies.allow_undertime'         => 'bool',
             'schedule_policies.allow_late'              => 'bool',
             'schedule_policies.allow_night_diff'        => 'bool',

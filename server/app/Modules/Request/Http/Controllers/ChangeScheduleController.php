@@ -188,8 +188,8 @@ class ChangeScheduleController extends Controller
             log_activity( trans('messages.cancel_change_schedule_attempt') );
 
             return success_response(
-                trans('messages.cancel_overtime_success'), 
-                new ChangeScheduleResource( $this->change_schedule->cancel( $id ) ) 
+                trans('messages.cancel_change_schedule_success'),
+                new ChangeScheduleResource( $this->change_schedule->cancel( $id ) )
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e, JsonResponse::HTTP_NOT_FOUND);

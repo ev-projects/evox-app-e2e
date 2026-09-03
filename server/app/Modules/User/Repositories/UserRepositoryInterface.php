@@ -44,19 +44,13 @@ interface UserRepositoryInterface
     public function change_password( $id, array $data);
 
     public function tick_dpa( $id );
-
-    public function assign_roles_to_user( $id, array $roles_array );
-
-    public function assign_level_features( $id, array $features_array , $level );
-
-    public function assign_permissions_to_user( $id, array $permissions_array, array $roles_array );
+ 
+    public function assign_level_features( $id, array $features_array , $level ); 
 
     public function assign_employees_to_user( $id, array $employee_id_array );
 
     public function list_via_department( $department_id );
-
-    public function adminRoleConditions($user_id, array $request);
-
+ 
     public function update_bhr_user_country_to_evox(User $user, object $bhr_user, object $utc);
 
     public function get_users_under_supervisee_active_with_requests($start_date, $end_date, $supervisor_id = null, $department_id = null);

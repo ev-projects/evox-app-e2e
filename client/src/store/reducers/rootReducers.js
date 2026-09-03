@@ -53,7 +53,7 @@ import myTeamRequestListReducers from "./filters/myTeamRequestListReducers";
 import reportReducers from './report/reportReducers';
 
 import departmentListReducers from "./admin/departmentListReducers";
-import hrAnnouncementReducers from "./hr/hrAnnouncementReducers";
+// hrAnnouncementReducers removed 2026-08-13 — Hr module deleted, feature retired
 import opsScheduleReducers from "./opsschedule/opsScheduleReducers";
 // Combiner of Reducers.
 import { combineReducers } from 'redux';
@@ -113,7 +113,7 @@ const rootReducer = combineReducers({
 
     report  : reportReducers,
     departmentList:   departmentListReducers,
-    hrAnnouncement:   hrAnnouncementReducers,
+    // hrAnnouncement removed 2026-08-13 — Hr module deleted
     opsSchedule:   opsScheduleReducers,
     freshService:   freshServiceReducers,
     neo:  neoReducers,

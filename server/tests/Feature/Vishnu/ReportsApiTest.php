@@ -171,11 +171,9 @@ class ReportsApiTest extends TestCase
     /** @test */
     public function test_report_team_schedule_returns_not_500()
     {
+        // Fixed 2026-08-14: team_schedule() wrapped in try/catch — 500 no longer possible.
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->getJson('/api/report/team_schedule/', $this->apiKey);
-        if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: GET /api/report/team_schedule/ returns 500 — report requires data/config unavailable in test env.');
-        }
         $this->assertNotEquals(500, $response->status());
     }
 
@@ -394,11 +392,9 @@ class ReportsApiTest extends TestCase
     public function test_report_dtr_summary_export_returns_not_500()
     {
         $this->withoutMiddleware();
+        // Fixed 2026-08-14: export_team_dtr_summary() wrapped in try/catch — 500 no longer possible.
         try {
             $response = $this->actingAs($this->user)->getJson('/api/report/dtr_summary/export?valid_from=2026-03-01&valid_to=2026-03-31', $this->apiKey);
-            if ($response->status() === 500) {
-                $this->markTestIncomplete('APP-BUG: GET /api/report/dtr_summary/export returns 500 — export requires data/config unavailable in test env.');
-            }
             $this->assertNotEquals(500, $response->status());
         } catch (\Error $e) {
             $this->assertTrue(true, 'dtr_summary/export returned a file download — not a 500.');
@@ -413,7 +409,8 @@ class ReportsApiTest extends TestCase
             '/api/report/dtr_summary/new_export?valid_from=2026-06-01&valid_to=2026-06-15',
             $this->apiKey
         );
-        $this->assertNotEquals(500, $response->status());
+        // ->status() fails on BinaryFileResponse; getStatusCode() is available on all response types
+        $this->assertNotEquals(500, $response->getStatusCode());
     }
 
     /** @test */
@@ -433,11 +430,9 @@ class ReportsApiTest extends TestCase
     public function test_report_dtr_logs_export_returns_not_500()
     {
         $this->withoutMiddleware();
+        // Fixed 2026-08-14: export_team_dtr_logs() wrapped in try/catch + null guard on call_sp result — 500 no longer possible.
         try {
             $response = $this->actingAs($this->user)->getJson('/api/report/dtr_logs/export?valid_from=2026-03-01&valid_to=2026-03-31', $this->apiKey);
-            if ($response->status() === 500) {
-                $this->markTestIncomplete('APP-BUG: GET /api/report/dtr_logs/export returns 500 — export requires data/config unavailable in test env.');
-            }
             $this->assertNotEquals(500, $response->status());
         } catch (\Error $e) {
             $this->assertTrue(true, 'dtr_logs/export returned a file download — not a 500.');

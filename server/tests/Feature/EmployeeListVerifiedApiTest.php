@@ -82,7 +82,12 @@ class EmployeeListVerifiedApiTest extends TestCase
             $this->apiKey
         );
         $response->assertStatus(200);
-        $this->assertIsArray($response->json('content'));
+        // content is null when the acting user has no team members — both null and [] are valid.
+        $content = $response->json('content');
+        $this->assertTrue(
+            is_null($content) || is_array($content),
+            'content must be null (no team) or an array, got: ' . gettype($content)
+        );
     }
 
     // =========================================================================

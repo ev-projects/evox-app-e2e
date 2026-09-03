@@ -33,34 +33,6 @@ class UserControllerExtendedTest extends TestCase
         $this->withoutMiddleware();
     }
 
-    // ─── Role and permission management ───────────────────────────────────────
-
-    /** @test */
-    public function test_get_user_role_permission_returns_non_404()
-    {
-        $response = $this->actingAs($this->user)
-            ->getJson("/api/user/{$this->userId}/role_permission/");
-        $this->assertNotEquals(404, $response->status());
-    }
-
-    /** @test */
-    public function test_assign_roles_permissions_without_payload_returns_error()
-    {
-        $response = $this->actingAs($this->user)
-            ->postJson("/api/user/{$this->userId}/assign_roles_permissions/", []);
-        $this->assertContains($response->status(), [200, 400, 422, 500]);
-    }
-
-    /** @test */
-    public function test_assign_roles_permissions_endpoint_is_reachable()
-    {
-        $response = $this->actingAs($this->user)
-            ->postJson("/api/user/{$this->userId}/assign_roles_permissions/", [
-                'roles' => [],
-            ]);
-        $this->assertNotEquals(404, $response->status());
-    }
-
     // ─── Level features ────────────────────────────────────────────────────────
 
     /** @test */

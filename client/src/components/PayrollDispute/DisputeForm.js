@@ -18,7 +18,7 @@ import {
   Row,
   Col,
 } from "../../components/GridComponent/AdminLte.js";
-import { fetchUserRolePermission, assignRolesPermissions, fetchUserFeatures, assignLevelFeatures, fetchUserDispute } from '../../store/actions/admin/assignRoleActions';
+import { fetchUserDispute } from '../../store/actions/admin/assignRoleActions';
 import { getDisputeReport } from '../../store/actions/report/reportActions';
 
 function DisputeForm(props) {
@@ -940,12 +940,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    // fetchUserDispute       		: () => dispatch( fetchUserDispute() ),
-    fetchUserRolePermission: (user_id) => dispatch(fetchUserRolePermission(user_id)),
-    fetchUserFeatures: (user_id) => dispatch(fetchUserFeatures(user_id)),
-
-    assignRolesPermissions: (user_id, post_data) => dispatch(assignRolesPermissions(user_id, post_data)),
-    assignLevelFeatures: (user_id, post_data) => dispatch(assignLevelFeatures(user_id, post_data)),
+    // fetchUserDispute       		: () => dispatch( fetchUserDispute() ), 
     getDisputeReport: (dispute_id) => dispatch(getDisputeReport(dispute_id)),
   }
 }

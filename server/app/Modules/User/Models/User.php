@@ -11,7 +11,6 @@ use App\RoleLevelFeatures;
 use App\Modules\Team\Models\Team;
 use Illuminate\Support\Facades\DB;
 use App\Modules\Payroll\Models\Dtr;
-use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Modules\Request\Models\AlterLog;
 use App\Modules\Request\Models\Overtime;
@@ -23,7 +22,6 @@ use App\Modules\Request\Models\WorkFromHome;
 
 
 use Illuminate\Database\Eloquent\Collection;
-use Spatie\Permission\Traits\HasPermissions;
 use App\Modules\Department\Models\Department;
 use App\Modules\Payroll\Models\PayrollCutoff;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -36,7 +34,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements JWTSubject
 {
-    use Notifiable, HasRoles, HasPermissions, SoftDeletes, LogsActivity;
+    use Notifiable, SoftDeletes, LogsActivity;
     
     protected $fillable = [];
 
@@ -329,7 +327,7 @@ class User extends Authenticatable implements JWTSubject
 
            
           if( is_valid( $date )  ){
-                return $this->hasMany(DtrPunchHistory::class)->where('date', '==', $date)
+                return $this->hasMany(DtrPunchHistory::class)->where('date', '=', $date)
                 ->where('is_active','=','1');
     
          
@@ -816,12 +814,9 @@ class User extends Authenticatable implements JWTSubject
     public function departments_team($department_id)
     {
         // Fetch department team if Supervisor
-        if( $this->hasRole( get_constant('USER_ROLES.supervisor') ) || $this->hasRole( get_constant('USER_ROLES.client') )  ) { 
+        if( $this->isLevel('SubDepartment Head') || $this->isLevel('Client')  ) { 
             $teams_id_array = Team::where( "department_id" , $department_id );
-        } elseif( $this->hasRole( get_constant('USER_ROLES.team_leader') )  ) { 
-            $teams_id_array =  $this->belongsToMany(Team::class, 'team_handlers', 'user_id', 'team_id')->where( "department_id" ,$department_id );
-        }
-
+        }  
 
         return $teams_id_array->get();
     }
@@ -964,7 +959,12 @@ class User extends Authenticatable implements JWTSubject
 
     # Fetch the User's Level Name
     public function level_type(){
-            $type = $this->level()->first()->Name;
+            // A user's LevelId can point at a level row that no longer exists in EVOX_LEVELS (levels
+            // get renamed/retired over time — see the project's own note on LevelId/EVOX_LEVELS drift).
+            // level()->first() is then null, and dereferencing ->Name unguarded threw "Trying to get
+            // property 'Name' of non-object".
+            $level = $this->level()->first();
+            $type = is_valid($level) ? $level->Name : null;
 
             if (stristr($type, "HR") !== false){
                 return "HR";

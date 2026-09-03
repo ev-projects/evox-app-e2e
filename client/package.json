@@ -92,6 +92,11 @@
       "last 1 safari version"
     ]
   },
+  "jest": {
+    "moduleNameMapper": {
+      "^@fullcalendar/core/internal-common$": "<rootDir>/src/__mocks__/fullcalendarInternalCommon.js"
+    }
+  },
   "babel": {
     "extends": "react-app",
     "plugins": [

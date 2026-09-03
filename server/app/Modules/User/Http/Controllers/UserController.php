@@ -11,15 +11,11 @@ use Illuminate\Http\Request;
 use App\Exports\DpaListExport;
 use App\Exports\AssetExport;
 use App\Modules\User\Models\User;
-use Illuminate\Http\JsonResponse;
-use Spatie\Permission\Models\Role;
+use Illuminate\Http\JsonResponse; 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
-use Maatwebsite\Excel\Facades\Excel;
-use App\Jobs\AssignAllUserToAdminJob;
-use App\Modules\Payroll\Models\Holiday;
-use Spatie\Permission\Models\Permission;
-use App\Modules\User\Resources\RoleResource;
+use Maatwebsite\Excel\Facades\Excel; 
+use App\Modules\Payroll\Models\Holiday; 
 use Illuminate\Database\Eloquent\Collection;
 use App\Modules\User\Resources\HolidayResource;
 use App\Modules\User\Resources\UserListResource;
@@ -49,8 +45,7 @@ use App\Modules\Email\Repositories\EmailRepositoryInterface;
 use App\Modules\Payroll\Repositories\DtrRepositoryInterface;
 use App\Modules\User\Resources\DpaUserListResourceCollection;
 use App\Modules\Schedule\Resources\ScheduleResourceCollection;
-use App\Modules\User\Http\Requests\AssignUserEmployeesRequest;
-use App\Modules\User\Http\Requests\AssignUserRolePermissionRequest;
+use App\Modules\User\Http\Requests\AssignUserEmployeesRequest; 
 
 class UserController extends Controller
 {
@@ -132,9 +127,9 @@ class UserController extends Controller
             return error_response( trans('messages.error_default'), $e );
         }
     }
-    
 
-    public function job_information( $id ){   
+
+    public function job_information( $id ){
         try {
             
             $this->validate(new Request([
@@ -157,7 +152,7 @@ class UserController extends Controller
                 ]
             );
 
-            
+
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
@@ -217,7 +212,7 @@ class UserController extends Controller
             return success_response(
                 trans('messages.show_time_off_collection'), 
                 new LeaveCreditsListResource( $leave_credits_collection )
-                
+
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -375,7 +370,7 @@ class UserController extends Controller
     }
 
   
-    public function sub_department_under_department( $id, $department_id ){   
+    public function sub_department_under_department( $id, $department_id ){
         try {
 
                 $user = User::find($id);
@@ -384,10 +379,10 @@ class UserController extends Controller
                 }
                 $sub_dep = $user->evox_sub_departments_handled($department_id);
             return success_response(
-                trans('messages.show_sub_department_list'), 
+                trans('messages.show_sub_department_list'),
                 $sub_dep);
-        } catch(Exception $e){
-        
+        } catch(\Throwable $e){
+
             return error_response( trans('messages.error_default'), $e );
         }
     }
@@ -475,13 +470,21 @@ class UserController extends Controller
                 'id' => 'int'
             ]);
 
+            // FINDING USR-INFO-1 (characterized, see UserControllerProfileBranchTest): a
+            // non-supervisee target silently gets null content instead of a 403 — that permission
+            // gap is pre-existing behaviour left as-is. $user_info is initialized to null here only
+            // so that silent-null path does not touch an undefined variable: PHP itself would just
+            // treat it as an implicit null (E_NOTICE, non-fatal) in production, but this repo's test
+            // suite runs with convertNoticesToExceptions, which turns that same notice into a fatal
+            // ErrorException — a test-environment artifact, not a behaviour change.
+            $user_info = null;
             if( is_under_supervisee( $id ) ){
                 $user_info = User::find( $id );
                 $user_info =  $user_info->getUserInfo();
             }
- 
+
             return success_response(
-                trans('messages.get_user_info_success'), 
+                trans('messages.get_user_info_success'),
                 $user_info
             );
 
@@ -529,36 +532,7 @@ class UserController extends Controller
     
     }
 
-    /**
-     * Returns the Temporary Schedules of the User by the User ID
-     * @param string $user_id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function assign_roles_permissions( AssignUserRolePermissionRequest $request, $id ){   
-        try {
-            log_activity( trans('messages.user_assign_roles_permissions_attempt') );
-            
-            $this->validate(new Request([
-                'id' => $id
-            ]), [
-                'id' => 'int'
-            ]);
-
-            AssignAllUserToAdminJob::dispatch( $id ,$request->get('roles') ?? [] )->delay(Carbon::now()->addSeconds(2));
-
-            $this->user->assign_roles_to_user( $id , $request->get('roles') ?? [] );
-
-            $user = $this->user->assign_permissions_to_user( $id ,$request->get('permissions') ?? [], $request->get('roles') ?? []);
-
-            
-            return success_response(
-                trans('messages.user_assign_roles_permissions_success'), 
-                new UserProfileResource( $user )
-            );
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
-    }
+     
 
     public function assign_level_features( Request $request, $id ){   
         try {
@@ -840,23 +814,7 @@ class UserController extends Controller
         }
     }
 
-    # This function returns user role
-    public function get_user_role_permission( $user_id ){   
-        try {
-            $user = User::find($user_id);
-            log_activity( trans('messages.list_role_attempt') );
-                    return success_response(
-                        trans('messages.list_role_success'),  
-                        [ 
-                            'roles' => $user->roles->pluck('name'),
-                            'permissions' => $user->permissions->pluck('name'),
-                        ]
-                    );
-
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
-    }
+     
 
       # This function returns user role
       public function get_user_sub_department_handled( $user_id ){   
@@ -908,19 +866,6 @@ class UserController extends Controller
         }
     }
 
-    # This function returns roles
-    public function get_roles( ){   
-        try {
-            log_activity( trans('messages.list_role_attempt') );
-                    return success_response(
-                        trans('messages.list_role_success'),  
-                        RoleResource::collection( Role::with('permissions')->get() ) 
-                    );
-
-        } catch(Exception $e){
-            return error_response( trans('messages.error_default'), $e );
-        }
-    }
 
       # This function returns roles
       public function get_features( ){   

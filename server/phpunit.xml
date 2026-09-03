@@ -20,6 +20,14 @@
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="false">
             <directory suffix=".php">./app</directory>
+            <exclude>
+                <!-- Migrations are schema history, not application behaviour. They are never run by
+                     the test suite (the test DB is a live-server backup dump - no migrations, ever),
+                     so all 48 classes x 2 methods = 96 methods counted as permanently uncovered and
+                     dragged the method figure down by ~5 points for no diagnostic value.
+                     Excluding them measures the right denominator: 805/1186 rather than 805/1282. -->
+                <directory suffix=".php">./app/Modules/*/Database/Migrations</directory>
+            </exclude>
         </whitelist>
     </filter>
     <php>

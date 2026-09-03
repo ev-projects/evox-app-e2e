@@ -31,6 +31,7 @@ class DisputeBranchApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        \Illuminate\Support\Facades\Cache::flush(); // clear rate-limiter between tests
 
         $this->apiKey = \Illuminate\Support\Str::random(64);
         \Illuminate\Support\Facades\DB::table('api_keys')->insert([

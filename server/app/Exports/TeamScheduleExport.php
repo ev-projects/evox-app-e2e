@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Collection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use App\Modules\Department\Models\EvoxDepartment;
+// EXP-TSE-1 — this import was missing. EvoxSubDepartment is referenced in collection() below, so
+// the Team Schedule export threw "Class not found" on any row that had a sub-department, i.e. on
+// any real data. The export only appeared to work because no test ever exercised it.
+use App\Modules\Department\Models\EvoxSubDepartment;
 
 class TeamScheduleExport implements FromCollection,WithHeadings
 {
@@ -17,11 +21,14 @@ class TeamScheduleExport implements FromCollection,WithHeadings
         $summary = Collection::make();
 
         foreach($this->data as $dtr) {
+
+             $user = $dtr->user()->first();
             # General Information
             $row = array();
-            $row['id'] = $dtr->user()->first()->id;
-            $row['name'] =  $dtr->user()->first()->getFullName( 3 );
-            $row['department'] = EvoxSubDepartment::where("Id", $dtr->user()->first()->SubDepartmentID)->first()->Name;
+            $row['id'] = $user->id;
+            $row['name'] =  $user->getFullName( 3 );
+            $subDept = EvoxSubDepartment::where("Id", $user->SubDepartmentID)->first();
+            $row['department'] = $subDept ? $subDept->Name : '';
             $row['date'] = $dtr->date;
             $row['on_duty'] = '';
             $row['off_duty'] = ''; 

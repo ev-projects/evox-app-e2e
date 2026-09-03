@@ -8,10 +8,10 @@
  *                        so both are skipped. Only the exception path (before create) is exercised.
  *
  * FINDINGS:
- *  // FINDING: HappinessController (namespace App\Http\Controllers) never does `use Exception;`. addHappinessSurvey()'s
- *             `catch(Exception $e)` resolves to the non-existent App\Http\Controllers\Exception, so a real \Exception
- *             thrown in the try is NOT caught -> uncaught -> HTTP 500, never the intended error_response() 400. Same
- *             dead-catch bug as HrController. The 400 catch arm is DEAD; the test asserts the real 500.
+ *  // DEFECT FIXED (found 2026-09-03): HappinessController now imports `use Exception;`, so
+ *             addHappinessSurvey()'s `catch(Exception $e)` is live again. A missing-auth request now hits the
+ *             intended error_response() 400 arm instead of the uncaught-500 the dead catch previously produced.
+ *             Test updated to assert the current, correct behaviour.
  *  // FINDING: addHappinessSurvey() has no implicit-else return — if create() returns falsy, no `return` runs and the
  *             method returns null (HTTP 200 empty body). Reaching it requires the destructive create(), so it is skipped.
  */
@@ -47,16 +47,18 @@ class HappinessSubmitBranchTest extends TestCase
 
     public function test_addHappinessSurvey__submit__exception__uncaught_500()
     {
-        // With no authenticated user, the try's `$data['user_id'] = Auth::user()->id;` dereferences null (a \Error,
-        // Throwable) BEFORE the destructive create(). The namespaced catch(Exception) is DEAD anyway (no
-        // `use Exception;`), so nothing is caught -> uncaught -> 500. See FINDINGs in file header.
+        // With no authenticated user, the try's `$data['user_id'] = Auth::user()->id;` dereferences null
+        // (an "Undefined property" notice under PHP 7.4, turned into a fatal ErrorException by this
+        // suite's convertNoticesToExceptions) BEFORE the destructive create(). catch(Exception $e) now
+        // resolves correctly (HappinessController imports Exception — see DEFECT FIXED in file header),
+        // so this IS caught -> the controller's own error_response() 400, not an uncaught 500.
         $response = $this->postJson('/api/happiness_survey', [
             'focused_motivated'      => 5,
             'growing_professionally' => 5,
             'happiness_suggestion'   => 'branch test',
         ]);
 
-        $response->assertStatus(500);
+        $response->assertStatus(400);
         // create() success (if-true) and falsy (implicit-else) arms: SKIPPED-DESTRUCTIVE; see file header.
     }
 }

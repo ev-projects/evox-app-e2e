@@ -46,13 +46,11 @@ class FreshServiceMockedTest extends TestCase
     /** Bind a fake Curl builder whose fluent methods chain and whose get/post return $response. */
     private function fakeCurl($response)
     {
-        $builder = Mockery::mock('Ixudra\Curl\Builder')->shouldIgnoreMissing();
-        // all common fluent methods return the builder so the chain doesn't break
-        foreach (['withHeader', 'withHeaders', 'withData', 'withContentType', 'asJson',
-                  'withResponseHeaders', 'withTimeout', 'withConnectTimeout',
-                  'returnResponseObject', 'containsFile', 'withOption'] as $m) {
-            $builder->shouldReceive($m)->andReturnSelf();
-        }
+        $builder = Mockery::mock('Ixudra\Curl\Builder');
+        // shouldIgnoreMissing($builder) makes every fluent method not explicitly configured
+        // return $builder — the chain never breaks on an unmocked method name.
+        $builder->shouldIgnoreMissing($builder);
+        // Override only the terminal methods that must return a response, not $builder.
         $builder->shouldReceive('get')->andReturn($response);
         $builder->shouldReceive('post')->andReturn($response);
         Curl::shouldReceive('to')->andReturn($builder);

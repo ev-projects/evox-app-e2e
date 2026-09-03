@@ -19,10 +19,9 @@ import {
   myfetchStatusNumbers_dashboard,
   eventclick,
   eventclick1,
-  get_today_leaves,
-  get_tommrow_leaves,
   get_dashboard_holiday,
 } from "../../store/actions/filters/requestListActions";
+// get_today_leaves + get_tommrow_leaves removed 2026-08-14 — superseded by getDashboardOverall(1)
 import { getDashboardOverall } from '../../store/actions/dashboard/dashboardActions';
 
 
@@ -54,9 +53,7 @@ export const SummaryDashbord = (props) => {
     var currentdate = moment().format("YYYY-MM-DD");
     var enddate = moment().format("YYYY") + '-12-31';
 
-    // API CALL 
-    // dispatch(get_today_leaves(setTodayleaves));
-    // dispatch(get_tommrow_leaves(setTommrowleaves));
+    // API CALL — today/tomorrow leaves served by getDashboardOverall(1) below
     // dispatch(get_dashboard_holiday(setHoliday,currentdate,enddate));
     
     

@@ -11,6 +11,12 @@ use App\Modules\Client\Resources\ClientListResource;
  */
 class ClientListResourceTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->markTestSkipped('CLIENT MODULE REMOVED 2026-08-10: App\Modules\Client deleted. These tests have no runnable subject.');
+    }
+
     public function test_maps_id_department_name_and_description()
     {
         $client = (object) [

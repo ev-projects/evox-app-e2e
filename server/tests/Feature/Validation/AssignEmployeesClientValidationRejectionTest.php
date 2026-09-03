@@ -22,6 +22,7 @@ class AssignEmployeesClientValidationRejectionTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->markTestSkipped('CLIENT MODULE REMOVED 2026-08-10: App\Modules\Client deleted. These tests have no runnable subject.');
         $this->withoutMiddleware();
         $this->user = User::where('is_active', 1)->first() ?? User::first();
         $this->department = EvoxDepartment::first();

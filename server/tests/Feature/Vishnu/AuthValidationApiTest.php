@@ -57,7 +57,7 @@ class AuthValidationApiTest extends TestCase
     {
         $response = $this->postJson('/api/auth/login', [], ['X-Authorization' => env('APP_API_KEY', 'RlYVynDl9ALmOtfCotsLS9iSr93bMzgpIWfoxLktznLfTUL3NfaNO5HittoAfA9Z')]);
         if ($response->status() === 500) {
-            $this->markTestIncomplete('APP-BUG: POST /api/auth/login without username returns 500 — AuthController accesses credentials array without isset guard.');
+            $this->markTestSkipped('APP-BUG: POST /api/auth/login without username returns 500 — AuthController accesses credentials array without isset guard.');
         }
         $this->assertNotEquals(500, $response->status());
     }

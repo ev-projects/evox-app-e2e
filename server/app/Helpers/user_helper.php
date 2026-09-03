@@ -13,14 +13,14 @@ if (! function_exists('get_authenticated_user')) {
     {
         try {
 $ne = 0;
-            // If the current user has 'admin' role and 'full_access' privilege, always return true.
-            if(  auth()->user()->roles()->pluck('name')->contains('admin') &&
-                 auth()->user()->permissions()->pluck('name')->contains('full_access') ) {
+            // BUG-117 fixed 2026-08-14: roles()/permissions() assumed Spatie HasRoles which the
+            // User model never implemented — threw BadMethodCallException ($ne=0) for every non-admin
+            // caller, producing "not Authorized.0{user_id}" and blocking all supervisor approve flows.
+            // Replaced with isLevel('Admin') which uses EVOX's own LevelId-based check.
+            if( auth()->user()->isLevel('Admin') ) {
                $ne = 1;
-                 return User::findOrFail( $user_id ); 
-
-
-            } 
+               return User::findOrFail( $user_id );
+            }
             
             # If the User being requested is the current user being logged in, fetch the current User Instance.
             if( auth()->user()->id == $user_id ) {
@@ -115,7 +115,7 @@ if (! function_exists('is_under_supervisee')) {
             }
 
         }catch(Exception $e){
-            
+
             throw new Exception( trans('messages.user_not_under_supervisee') );
         }
     }

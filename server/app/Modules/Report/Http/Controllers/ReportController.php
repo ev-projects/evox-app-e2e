@@ -24,8 +24,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Modules\Payroll\Models\Holiday;
-use Illuminate\Support\Facades\Storage;
-use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Storage; 
 use App\Exports\TeamSummaryAttendanceExport;
 use Illuminate\Database\Eloquent\Collection;
 use App\Exports\EmployeeAttendanceReportExport;
@@ -188,6 +187,7 @@ class ReportController extends Controller
      */
     public function export_team_dtr_summary(Request $request)
     {
+        try {
         $user_collection_paginated = [];
         $user_collection = $this->user->get_users_under_supervisee($request,  $request->valid_from, $request->valid_to);
         $current_page = $user_collection->currentPage();
@@ -226,6 +226,10 @@ class ReportController extends Controller
             $this->dtr_summary_export->data = $result;
             Storage::disk('local')->delete('app/export/dtrsummary.temp');
             return Excel::download($this->dtr_summary_export, 'dtrsummary.csv');
+        }
+        } catch (Exception $e) {
+            log_to_file('error', $e->getMessage(), [$e], "dtr_summary");
+            return error_response(trans('messages.error_default'), $e);
         }
     }
 
@@ -305,9 +309,13 @@ class ReportController extends Controller
      */
     public function export_team_dtr_logs(Request $request)
     {
+        try {
         $me = auth()->user();
         $my_timezone = $me->country_timezone_name();
         $result_sets = call_sp('EH_SP_DTR_Logs', [2, $me->id, $me->LevelId, $request->department_id, $request->is_active, isset($request->name) ? $request->name : '', $request->valid_from, $request->valid_to]);
+        if (!$result_sets) {
+            return error_response(trans('messages.error_default'), []);
+        }
         $toggle_POV = !($request->toggle_pov == null);
         $dtr_logs = $result_sets[0];
         $dtr_holidays = $result_sets[1];
@@ -359,6 +367,10 @@ class ReportController extends Controller
         }
 
         return Excel::download( new ExportDTRLog($results, $toggle_POV, $my_timezone), 'dtr_log.csv');
+        } catch (Exception $e) {
+            log_to_file('error', $e->getMessage(), [$e], "dtr");
+            return error_response(trans('messages.error_default'), $e);
+        }
     }
 
     /**
@@ -367,6 +379,7 @@ class ReportController extends Controller
      */
     public function team_schedule(Request $request)
     {
+        try {
         $date_from = Carbon::now();
         $logged_user = auth()->user();
         
@@ -480,6 +493,10 @@ class ReportController extends Controller
                     );
                 }
             }
+        }
+        } catch (Exception $e) {
+            log_to_file('error', $e->getMessage(), [$e], "report");
+            return error_response(trans('messages.error_default'), $e);
         }
     }
 
@@ -775,7 +792,7 @@ class ReportController extends Controller
             if($request->sup_id){
                 $user_sup_id = $request->sup_id;
             }
-            $result_sets = call_sp('EH_SP_DTR_Summary_Report', [$user_sup_id, $me->LevelId, $request->department_id, $request->is_active, isset($request->name) ? $request->name : '', $request->valid_from, $request->valid_to]);
+            $result_sets = call_sp('EH_SP_DTR_Summary_Report', [$user_sup_id, $me->LevelId, $request->department_id, $request->is_active ?? 1, isset($request->name) ? $request->name : '', $request->valid_from, $request->valid_to]);
             $user_dtr = $result_sets[1];
             $report = [];
             foreach($user_dtr as $dtr) {
@@ -833,7 +850,7 @@ class ReportController extends Controller
             if($request->sup_id){
                 $user_sup_id = $request->sup_id;
             }
-            $result_sets = call_sp('EH_SP_DTR_Summary_Report', [$user_sup_id, $me->LevelId, $request->department_id, $request->is_active, isset($request->name) ? $request->name : '', $request->valid_from, $request->valid_to]);
+            $result_sets = call_sp('EH_SP_DTR_Summary_Report', [$user_sup_id, $me->LevelId, $request->department_id, $request->is_active ?? 1, isset($request->name) ? $request->name : '', $request->valid_from, $request->valid_to]);
             $user_dtr = $result_sets[1];
             $report = [];
             foreach($user_dtr as $dtr) {
@@ -962,7 +979,10 @@ class ReportController extends Controller
     # Export HalfDay Conflit Report
     public function dtr_half_day_mismatch( Request $request ){   
         try {
-          return $result = DB::select('call Half_Day_Conflict_Report("'.$request->valid_from.'", "'.$request->valid_to.'")');
+          // RPT-SQL-1 (SQL INJECTION) — valid_from / valid_to arrive straight from the request and
+          // were previously concatenated into this raw CALL inside double quotes, so a crafted date
+          // value could close the string and append its own SQL. Now bound as parameters.
+          return $result = DB::select('call Half_Day_Conflict_Report(?, ?)', [$request->valid_from, $request->valid_to]);
 
         }catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -974,7 +994,9 @@ class ReportController extends Controller
         try {       
             $user_collection_paginated = [];    
          
-             $result = DB::select('call Half_Day_Conflict_Report("'.$request->valid_from.'", "'.$request->valid_to.'")');
+             // RPT-SQL-1 (SQL INJECTION) — same raw CALL as above, same fix: request input is now
+             // bound rather than concatenated into the statement.
+             $result = DB::select('call Half_Day_Conflict_Report(?, ?)', [$request->valid_from, $request->valid_to]);
              $current_page = 1;
              $last_page = 1;
              foreach($result as $user) {

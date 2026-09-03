@@ -1,64 +1,35 @@
-// DRAFT — generated 2026-07-08, needs verification
 /**
- * Dashboard/JobOpenings — internal careers list (grouped by country). Fetches
- * openings on mount; reads props.careerList (.PHL / .IND ...). Heavy children
- * (DashboardAnnouncementsList, PageLoading) stubbed.
+ * Dashboard/JobOpenings — as of EVOX-721 (Careers Dead Code Removal) this is a
+ * plain static wrapper embedding the external careers site (taptalent.io) via
+ * an iframe. It no longer fetches data, takes a careerList prop, or dispatches
+ * anything on mount — the internal careers-list implementation (fetchJobOpenings,
+ * jobOpeningActions/Reducers, JobOpeningsUpdate) was removed as dead code.
+ * Still wrapped in react-redux connect() (with empty mapStateToProps/
+ * mapDispatchToProps), so it still needs a store in context — mocked below
+ * rather than pulled in a real Provider, since there's nothing state-related
+ * left to exercise.
  * Source: src/components/Dashboard/JobOpenings/JobOpenings.js
  */
 import React from 'react';
 import { render } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import '@testing-library/jest-dom/extend-expect';
 
 jest.mock('react-redux', () => ({
     ...jest.requireActual('react-redux'),
     connect: () => (Component) => Component,
-    useDispatch: () => jest.fn(),
 }));
-
-jest.mock('../../components/GridComponent/AdminLte.js', () => ({
-    ContainerHeader: ({ children }) => <div>{children}</div>,
-    Content: ({ children }) => <div>{children}</div>,
-    ContainerWrapper: ({ children }) => <div>{children}</div>,
-    ContainerBody: ({ children }) => <div>{children}</div>,
-}));
-
-jest.mock('../../components/Dashboard/DashboardAnnouncementsList', () =>
-    () => <div data-testid="announcements">Announcements</div>);
-jest.mock('../../container/PageLoading/PageLoading', () => () => <div>Loading...</div>);
 
 import JobOpenings from '../../components/Dashboard/JobOpenings/JobOpenings';
 
-const defaultProps = {
-    user: { id: 1, country: 'Philippines' },
-    careerList: { PHL: [], IND: [], MAR: [] },
-    departmentAnnouncement: { dashboard_announcement_list: [] },
-    fetchJobOpenings: jest.fn(),
-    fetchDashboardAnnouncementList: jest.fn(),
-};
-
-function renderComponent(props = {}) {
-    return render(
-        <MemoryRouter>
-            <JobOpenings {...defaultProps} {...props} />
-        </MemoryRouter>
-    );
-}
-
 describe('JobOpenings component', () => {
-    beforeEach(() => jest.clearAllMocks());
-
     test('renders without crashing', () => {
-        expect(() => renderComponent()).not.toThrow();
+        expect(() => render(<JobOpenings />)).not.toThrow();
     });
 
-    test('fetches job openings on mount', () => {
-        const fetchJobOpenings = jest.fn();
-        renderComponent({ fetchJobOpenings });
-        expect(fetchJobOpenings).toHaveBeenCalled();
-    });
-
-    test('does not crash when careerList is undefined (still loading)', () => {
-        expect(() => renderComponent({ careerList: undefined })).not.toThrow();
+    test('renders the external careers iframe', () => {
+        const { container } = render(<JobOpenings />);
+        const iframe = container.querySelector('iframe');
+        expect(iframe).toBeInTheDocument();
+        expect(iframe).toHaveAttribute('src', expect.stringContaining('taptalent.io'));
     });
 });

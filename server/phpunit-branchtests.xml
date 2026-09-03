@@ -5,7 +5,7 @@
   Unit/ and legacy Feature/ suites removed — only BranchTests remain in server/tests.
 
   Run from server/ directory:
-    php -d memory_limit=4G vendor/bin/phpunit --configuration phpunit-branchtests.xml
+    php -d memory_limit=4G vendor/bin/phpunit (dash dash)configuration phpunit-branchtests.xml
 -->
 <phpunit backupGlobals="false"
          backupStaticAttributes="false"
@@ -26,6 +26,14 @@
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="false">
             <directory suffix=".php">./app</directory>
+            <exclude>
+                <!-- Migrations are schema history, never run by this suite (the test DB
+                     forbids them). 48 classes x 2 methods = 96 methods that no permitted
+                     test can cover, worth ~5pp on methods and ~8pp on classes. Keep this
+                     in EVERY phpunit config - patching only some is why the 7-Aug run
+                     reported 62.93% instead of 68.01%. -->
+                <directory suffix=".php">./app/Modules/*/Database/Migrations</directory>
+            </exclude>
         </whitelist>
     </filter>
 

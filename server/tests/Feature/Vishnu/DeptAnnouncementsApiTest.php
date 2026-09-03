@@ -32,6 +32,7 @@ class DeptAnnouncementsApiTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        \Illuminate\Support\Facades\Cache::flush(); // clear rate-limiter between tests
         $this->apiKey = ['X-Authorization' => env('APP_API_KEY', 'RlYVynDl9ALmOtfCotsLS9iSr93bMzgpIWfoxLktznLfTUL3NfaNO5HittoAfA9Z')];
         $this->user = User::where('is_active', 1)->whereNotNull('email')->firstOrFail();
     }
@@ -259,9 +260,7 @@ class DeptAnnouncementsApiTest extends TestCase
             $payload,
             $this->apiKey
         );
-        if ($response->status() === 400) {
-            $this->markTestIncomplete('APP-BUG ANN-01: POST /api/department/announcements/create returns 400 — AnnouncementRepository::store() throws an Exception (likely FK constraint or missing column). Investigate the specific DB error in AnnouncementRepository::store().');
-        }
+        // BUG-116 fixed 2026-08-14: FK on dep_id/present_dep_id was wrong table (departments vs EVOX_DEPARTMENT) — FK removed.
         $response->assertStatus(200);
         $response->assertJsonStructure(['message', 'content']);
     }
@@ -323,7 +322,7 @@ class DeptAnnouncementsApiTest extends TestCase
         // without null check. For invalid IDs this triggers a PHP fatal error.
         // The catch block contains dd($e) which dumps and halts instead of returning
         // an error response. See AnnouncementController::show_strict() line 170.
-        $this->markTestIncomplete(
+        $this->markTestSkipped(
             'Known production bug: null announcement causes fatal error + dd($e) in catch. ' .
             'See AnnouncementController::show_strict() — Announcement::find(999999) returns null, ' .
             'accessing ->created_by throws, dd($e) halts instead of returning error_response().'

@@ -95,11 +95,12 @@ class RestDayWorkNegativeTest extends TestCase
         $this->withoutMiddleware();
         $day = now()->subDays(8);
         $resp = $this->actingAs($this->employee)->postJson('/api/request/rest_day_work', [
-            'user_id'    => $this->supervisor->id, // impersonate gary while acting as glenn
-            'date'       => $day->toDateString(),
-            'start_time' => $day->copy()->setTime(9, 0)->timestamp,
-            'end_time'   => $day->copy()->setTime(17, 0)->timestamp,
-            'break_time' => 1800,
+            'user_id'       => $this->supervisor->id, // impersonate gary while acting as glenn
+            'date'          => $day->toDateString(),
+            // Cat 5 fix 2026-08-14: FormRequest validates H:i format — Unix timestamps caused 422.
+            'start_time'    => '09:00',
+            'end_time'      => '17:00',
+            'break_time'    => '00:30',
             'employee_note' => 'NEGATIVE-AUTOTEST impersonation',
         ], $this->apiKey);
         // The store may reject this specific date for an unrelated reason (rest-day DTR check → 400,

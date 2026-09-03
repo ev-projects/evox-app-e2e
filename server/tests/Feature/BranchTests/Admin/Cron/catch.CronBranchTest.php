@@ -7,7 +7,6 @@ use Mockery;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
-use Spatie\Permission\Models\Role;
 use App\Modules\User\Models\User;
 use App\Modules\Bhr\Repositories\BhrRepositoryInterface;
 use App\Modules\Payroll\Repositories\PayrollCutoffRepositoryInterface;
@@ -96,8 +95,9 @@ class CronCatchBranchTest extends TestCase
 
     public function test_sync_users_catch_arm()
     {
-        try { Role::findByName('admin'); } catch (\Throwable $e) {
-            $this->markTestIncomplete('admin role missing in test DB (controller would 500 pre-seam)');
+        // Controller now uses User::where('LevelId',4) — no Spatie Role dependency.
+        if (!User::where('LevelId', 4)->where('is_active', 1)->exists()) {
+            $this->markTestIncomplete('no Admin-level user (LevelId=4) in test DB');
         }
         $this->bhr->shouldReceive('get_changed_users')->once()
                   ->andThrow(new \Exception('forced repo failure'));

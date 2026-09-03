@@ -120,7 +120,7 @@ return [
     ],
 
     'USER_ROLES' => [
-        'employee'      =>  'employee', 
+        'employee'      =>  'employee',
         'supervisor'    =>  'supervisor',
         'team_leader'   =>  'team_leader',
         'admin'         =>  'admin',

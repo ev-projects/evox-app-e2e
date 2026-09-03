@@ -135,7 +135,8 @@ class TeamEndpointsTest extends TestCase
         $this->requireUser();
         $this->withoutMiddleware();
         $response = $this->actingAs($this->user)->getJson('/api/user/999999/teams_handled', $this->apiKey);
-        // Correct behaviour would be 404; 500 is the known null-safety bug (BUG-1).
-        $this->assertContains($response->status(), [404, 500]);
+        // BUG-1 fixed in TeamRepository::list_via_team_handler (null check added — returns collect()).
+        // Nonexistent user now returns 200 with empty list instead of 500.
+        $this->assertContains($response->status(), [200, 404]);
     }
 }

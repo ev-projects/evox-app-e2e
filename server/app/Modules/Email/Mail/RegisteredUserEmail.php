@@ -47,6 +47,13 @@ class RegisteredUserEmail extends Mailable
      */
     public function build()
     {
+        // F8 fix: BCC block was missing — same pattern as OvertimeRequestEmail / AlterLogRequestEmail.
+        if( App::environment('production') ) {
+            $this->bcc( get_constant('BCC_EMAIL_ADDRESS') );
+        } else {
+            $this->bcc( get_constant('BCC_EMAIL_ADDRESS_FOR_NON_PROD') );
+        }
+
         $this->subject( "Welcome to Eastvantage!" )
              ->markdown('emails.registered-user');
 

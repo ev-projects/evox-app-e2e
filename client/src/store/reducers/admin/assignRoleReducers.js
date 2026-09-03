@@ -36,13 +36,6 @@ const assignRoleReducers = (state = initState, action) => {
                     payroll : action.payroll,
                 };
                 break;
-        case "FETCH_USER_ROLE_AND_PERMISSION":
-            return {
-                userRole : action.userRole,
-                userPermission : action.userPermission,
-                isUserRolesPermissionsLoaded : true,
-            };
-            break;
         case "FETCH_USER_FEATURES":
             return {
                 userLevel : action.userLevel,

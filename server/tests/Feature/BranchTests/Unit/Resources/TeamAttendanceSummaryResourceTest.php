@@ -158,7 +158,7 @@ class TeamAttendanceSummaryResourceTest extends TestCase
         $dtr->schedule = true;
         $dtr->insideSchedWindow = true;
         // Last history action is a LOG IN (not out) — a correct == check would keep "Absent".
-        $dtr->historyRows = [(object) ['log_out_type' => 'Log_in']];
+        $dtr->historyRows = [(object) ['log_out_type' => 'Log_in', 'log_in_type' => 'Log_in']];
 
         // BUG-9: `=` assignment is always truthy -> status becomes Present regardless.
         $this->assertSame('Present', $this->transform($dtr)['status']);

@@ -74,11 +74,14 @@ class TeamAttendanceSummaryResource extends JsonResource
                         // if not blank duty not started yet
 
 
-                        if($dtr->get_dtr_history()->latest()->first() != null){
-                            if($dtr->get_dtr_history()->latest()->first()->log_out_type = "Log_out"){
+                        $latestDtrHistory = $dtr->get_dtr_history()->latest()->first();
+                        if ($latestDtrHistory !== null) {
+                            // Fix F28: also mark Present when clocked-in but not yet clocked-out.
+                            // Previously only Log_out was checked, so active-shift employees showed Absent.
+                            if ($latestDtrHistory->log_out_type == "Log_out"
+                                || $latestDtrHistory->log_in_type == "Log_in") {
                                 $status = "Present";
                             }
-                           
                         }
                     }
                 

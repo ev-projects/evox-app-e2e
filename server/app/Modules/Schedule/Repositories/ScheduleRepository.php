@@ -50,9 +50,14 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
             $schedule                   = $this->set_schedule_valid_date($schedule, $data);
             $schedule->save();
 
+            // schedule_policies is optional in StoreScheduleRequest — unlike every other field
+            // above, this was read unconditionally and threw "Undefined index" (fatal under this
+            // suite's convertNoticesToExceptions) whenever a caller omitted it.
+            $schedule_policies = ( isset( $data['schedule_policies'] ) && is_array( $data['schedule_policies'] ) ) ? $data['schedule_policies'] : [];
+
             $this->save_schedule_details( $schedule, $data['schedule_details'] );
-            $this->save_schedule_policies( $schedule, $data['schedule_policies'] );
-            $this->save_schedule_holiday_policies( $schedule, $data['schedule_policies'] );
+            $this->save_schedule_policies( $schedule, $schedule_policies );
+            $this->save_schedule_holiday_policies( $schedule, $schedule_policies );
             
             DB::commit();
             log_to_file('info', 'Success', [$schedule]);
@@ -91,9 +96,13 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
            
             $schedule->schedule_details()->delete();
             $schedule->schedule_policies()->delete();
+
+            // schedule_policies is optional — see the same guard in store() above.
+            $schedule_policies = ( isset( $data['schedule_policies'] ) && is_array( $data['schedule_policies'] ) ) ? $data['schedule_policies'] : [];
+
             $this->save_schedule_details( $schedule, $data['schedule_details'] );
-            $this->save_schedule_policies( $schedule, $data['schedule_policies'] );
-            $this->save_schedule_holiday_policies( $schedule, $data['schedule_policies'] );
+            $this->save_schedule_policies( $schedule, $schedule_policies );
+            $this->save_schedule_holiday_policies( $schedule, $schedule_policies );
 
             DB::commit();
             log_to_file('info', 'Success', [$schedule]);
@@ -148,7 +157,11 @@ class ScheduleRepository implements ScheduleRepositoryInterface{
         try {
 
             $schedule_collection = "something";
-            $schedule_collection = User::find($id)->AllSchedules()->paginate(5);
+            $user = User::find($id);
+            if (!$user) {
+                throw new Exception("User {$id} not found.");
+            }
+            $schedule_collection = $user->AllSchedules()->paginate(5);
 
             log_to_file('info', 'Success', [$schedule_collection]);
             return $schedule_collection;
