@@ -1,0 +1,210 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+      - main
+
+  schedule:
+    # Runs every day at 2:00 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+
+  ###########################################
+  # Backend PHPUnit Tests
+  ###########################################
+
+  phpunit:
+
+    name: Backend PHPUnit Tests
+
+    runs-on: self-hosted
+
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Display workspace
+        run: |
+          pwd
+          ls -la
+
+      - name: Install Composer packages
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Create testing environment
+        run: |
+          cat > .env.testing <<'EOF'
+          DB_CONNECTION=mysql
+          DB_HOST=10.10.4.24
+          DB_PORT=3307
+          DB_DATABASE=evox-app
+          DB_USERNAME=laraveluser
+          DB_PASSWORD=LaravelPass@20@#
+
+          DB_EVOX_LOGS_CONNECTION=mysql
+          DB_EVOX_LOGS_HOST=10.10.4.24
+          DB_EVOX_LOGS_PORT=3307
+          DB_EVOX_LOGS_DATABASE=evox-app
+          DB_EVOX_LOGS_USERNAME=laraveluser
+          DB_EVOX_LOGS_PASSWORD=LaravelPass@20@#
+          EOF
+
+      - name: Copy dompdf font cache
+        run: |
+          mkdir -p storage/fonts
+          cp -r /var/www/html/evox-app-e2e/server/storage/fonts/* storage/fonts/
+
+      - name: Run PHPUnit
+        run: |
+          mkdir -p reports
+
+          vendor/bin/phpunit \
+            --testsuite FeatureRoot \
+            --coverage-html reports \
+            --coverage-clover reports/phpunit-coverage.xml
+
+      - name: Upload PHPUnit Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: phpunit-coverage
+          path: server/reports/
+
+  ###########################################
+  # Playwright E2E Tests
+  ###########################################
+
+  # e2e:
+
+  #   name: Playwright E2E
+
+  #   runs-on: self-hosted
+
+  #   steps:
+
+  #     - uses: actions/checkout@v4
+
+  #     - name: Install Composer packages
+  #       working-directory: server
+  #       run: composer install --no-interaction --prefer-dist
+
+  #     - name: Install Node packages
+  #       working-directory: client
+  #       run: npm ci
+
+  #     - name: Install Playwright Browsers
+  #       working-directory: client
+  #       run: npx playwright install
+
+  #     # Replace with however your backend starts
+  #     - name: Start Laravel Server
+  #       working-directory: server
+  #       run: |
+  #         php artisan serve --host=127.0.0.1 --port=8000 &
+  #         sleep 10
+
+  #     # Replace with your actual command
+  #     - name: Run Playwright Tests
+  #       working-directory: client
+  #       run: |
+  #         npm run test:e2e
+
+  #     # Replace with your PCOV coverage generation
+  #     - name: Generate Backend Coverage (PCOV)
+  #       working-directory: server
+  #       run: |
+  #         mkdir -p reports
+  #         # Replace with your actual PCOV command
+
+  #     - name: Upload E2E Coverage
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: e2e-coverage
+  #         path: server/reports/
+
+  ###########################################
+  # Frontend Tests
+  ###########################################
+
+  frontend:
+
+    name: Frontend Tests
+
+    runs-on: self-hosted
+
+    defaults:
+      run:
+        working-directory: client
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: npm ci
+
+      # Replace with your project command
+      - name: Run Frontend Tests
+        run: |
+          npm test -- --coverage --watchAll=false
+
+      - name: Upload Frontend Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: client/coverage/
+
+  ###########################################
+  # Coverage Validation
+  ###########################################
+
+  # coverage:
+
+  #   name: Coverage Report
+
+  #   runs-on: self-hosted
+
+  #   needs:
+  #     - phpunit
+  #     - e2e
+  #     - frontend
+
+  #   steps:
+
+  #     - uses: actions/checkout@v4
+
+  #     - name: Download PHPUnit Coverage
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: phpunit-coverage
+  #         path: coverage/phpunit
+
+  #     - name: Download E2E Coverage
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: e2e-coverage
+  #         path: coverage/e2e
+
+  #     - name: Download Frontend Coverage
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: frontend-coverage
+  #         path: coverage/frontend
+
+  #     # Replace with your actual merge script
+  #     - name: Merge Coverage Reports
+  #       run: |
+  #         echo "Merge coverage reports here"
+
+  #     # Replace with your actual threshold check
+  #     - name: Check Coverage Threshold
+  #       working-directory: server
+  #       run: |
+  #         php scripts/checkCoverage.php

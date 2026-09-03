@@ -16,6 +16,16 @@
         <testsuite name="Feature">
             <directory suffix="Test.php">./tests/Feature</directory>
         </testsuite>
+
+        <testsuite name="FeatureRoot">
+            <file>tests/Feature/AdminScheduleManagementTest.php</file>
+            <file>tests/Feature/AlterDisputeSubmissionTest.php</file>
+            <file>tests/Feature/CertificateOfEmploymentTest.php</file>
+            <file>tests/Feature/DtrSummaryReportTest.php</file>
+            <file>tests/Feature/SurveySubmissionTest.php</file>
+            <file>tests/Feature/PoliciesDocumentTest.php</file>
+            <file>tests/Feature/RedisManagementTest.php</file>
+        </testsuite>
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="false">
