@@ -106,6 +106,25 @@ log_sep
 
 cd "$CLIENT_DIR"
 
+# Use node v18 directly — system node (v12) is too old for Playwright/Jest.
+# Put node 18's dir first on PATH and EXECUTE bin shims directly, rather than
+# passing them as an argument to node ("$NODE18" node_modules/.bin/...).
+# node_modules/.bin/playwright (and .bin/react-scripts) is sometimes a POSIX
+# shell wrapper (shebang #!/bin/sh, with its own `exec node ...` fallback
+# logic) and sometimes a plain `#!/usr/bin/env node` JS file, depending on the
+# npm version that generated it - either way it's meant to be run as its own
+# executable, not fed to a specific node binary as a script argument. Doing
+# the latter made node try to parse the shell-wrapper form as JavaScript and
+# crash with "SyntaxError: missing ) after argument list" - only ever
+# discovered once a run got far enough to reach this step (previously always
+# blocked earlier by DB config errors). Exporting PATH here, rather than only
+# invoking $NODE18 directly, is what lets either shim style still resolve to
+# v18 internally. Done unconditionally (not just inside the Playwright branch
+# below) so Jest gets the same fix even when Playwright is skipped.
+NODE18="$NVM_DIR/versions/node/v18.20.8/bin/node"
+[ ! -f "$NODE18" ] && NODE18="$(which node)"
+export PATH="$(dirname "$NODE18"):$PATH"
+
 # Temporarily disabled by default (2026-09-03) — 15 real role/geo logins against
 # live staging plus full E2E specs was the dominant chunk of CI wall time,
 # dwarfing PHPUnit+coverage and Jest combined. Set RUN_PLAYWRIGHT=true (as a
@@ -123,23 +142,6 @@ elif [ ! -d "node_modules/@playwright" ]; then
     log_err "Playwright not installed — run 'npm install && npx playwright install chromium' in client/"
     FAILED_SUITES+=("Playwright (not installed)")
 else
-    # Use node v18 directly — system node (v12) is too old for Playwright
-    NODE18="$NVM_DIR/versions/node/v18.20.8/bin/node"
-    [ ! -f "$NODE18" ] && NODE18="$(which node)"
-    # Put node 18's dir first on PATH and EXECUTE the bin shim directly, rather
-    # than passing it as an argument to node ("$NODE18" node_modules/.bin/...).
-    # node_modules/.bin/playwright is sometimes a POSIX shell wrapper (shebang
-    # #!/bin/sh, with its own `exec node ...` fallback logic) and sometimes a
-    # plain `#!/usr/bin/env node` JS file, depending on the npm version that
-    # generated it - either way it's meant to be run as its own executable,
-    # not fed to a specific node binary as a script argument. Doing the latter
-    # made node try to parse the shell-wrapper form as JavaScript and crash
-    # with "SyntaxError: missing ) after argument list" - only ever discovered
-    # once a run got far enough to reach this step (previously always blocked
-    # earlier by DB config errors). Exporting PATH here, rather than only
-    # invoking $NODE18 directly, is what lets either shim style still resolve
-    # to v18 internally.
-    export PATH="$(dirname "$NODE18"):$PATH"
     chmod +x node_modules/.bin/playwright 2>/dev/null || true
     # Note: playwright.config.ts loads client/.env.e2e itself via dotenv, so this
     # only reflects this shell's own env var (usually unset) — not what Playwright
@@ -165,9 +167,10 @@ if [ ! -d "node_modules/.bin" ]; then
     FAILED_SUITES+=("Jest (npm not installed)")
 else
     JEST_EXIT=0
-    # Same fix as the Playwright step above: execute the bin shim directly
-    # rather than passing it to a specific node binary as an argument. PATH
-    # already has node 18's dir first (exported in the Playwright step).
+    # Same fix as Playwright's: execute the bin shim directly rather than
+    # passing it to a specific node binary as an argument. PATH already has
+    # node 18's dir first (exported unconditionally above, before the
+    # Playwright on/off check — so this holds whether or not Playwright ran).
     chmod +x node_modules/.bin/react-scripts 2>/dev/null || true
     CI=true node_modules/.bin/react-scripts test \
             --coverage \
