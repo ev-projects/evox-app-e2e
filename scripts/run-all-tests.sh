@@ -56,8 +56,11 @@ else
     if php -m | grep -qi pcov; then
         log "PCOV detected — collecting coverage."
         COVERAGE_FLAGS="--coverage-php $COVERAGE_DIR/phpunit-coverage.php --coverage-clover $COVERAGE_DIR/clover.xml --log-junit $COVERAGE_DIR/phpunit-results.xml"
+    elif php -m | grep -qi xdebug; then
+        log "Xdebug detected — collecting coverage (slower than PCOV, expected on this PHP 7.4 install)."
+        COVERAGE_FLAGS="--coverage-php $COVERAGE_DIR/phpunit-coverage.php --coverage-clover $COVERAGE_DIR/clover.xml --log-junit $COVERAGE_DIR/phpunit-results.xml"
     else
-        log "WARN: PCOV not loaded — running PHPUnit without coverage (see SETUP.md)."
+        log "WARN: no coverage driver (pcov/xdebug) loaded — running PHPUnit without coverage (see SETUP.md)."
         COVERAGE_FLAGS="--log-junit $COVERAGE_DIR/phpunit-results.xml"
     fi
 
@@ -87,8 +90,26 @@ else
     # Use node v18 directly — system node (v12) is too old for Playwright
     NODE18="$NVM_DIR/versions/node/v18.20.8/bin/node"
     [ ! -f "$NODE18" ] && NODE18="$(which node)"
-    log "PLAYWRIGHT_BASE_URL=${PLAYWRIGHT_BASE_URL:-http://localhost:3000}"
-    if "$NODE18" node_modules/.bin/playwright test --config=playwright.config.ts 2>&1 | tee "$COVERAGE_DIR/playwright.log"; then
+    # Put node 18's dir first on PATH and EXECUTE the bin shim directly, rather
+    # than passing it as an argument to node ("$NODE18" node_modules/.bin/...).
+    # node_modules/.bin/playwright is sometimes a POSIX shell wrapper (shebang
+    # #!/bin/sh, with its own `exec node ...` fallback logic) and sometimes a
+    # plain `#!/usr/bin/env node` JS file, depending on the npm version that
+    # generated it - either way it's meant to be run as its own executable,
+    # not fed to a specific node binary as a script argument. Doing the latter
+    # made node try to parse the shell-wrapper form as JavaScript and crash
+    # with "SyntaxError: missing ) after argument list" - only ever discovered
+    # once a run got far enough to reach this step (previously always blocked
+    # earlier by DB config errors). Exporting PATH here, rather than only
+    # invoking $NODE18 directly, is what lets either shim style still resolve
+    # to v18 internally.
+    export PATH="$(dirname "$NODE18"):$PATH"
+    chmod +x node_modules/.bin/playwright 2>/dev/null || true
+    # Note: playwright.config.ts loads client/.env.e2e itself via dotenv, so this
+    # only reflects this shell's own env var (usually unset) — not what Playwright
+    # actually uses. Logged for visibility only, not a config source of truth.
+    log "PLAYWRIGHT_BASE_URL (shell env, informational only)=${PLAYWRIGHT_BASE_URL:-<unset — see client/.env.e2e>}"
+    if node_modules/.bin/playwright test --config=playwright.config.ts 2>&1 | tee "$COVERAGE_DIR/playwright.log"; then
         log_ok "Playwright PASSED"
     else
         log_err "Playwright FAILED"
@@ -108,7 +129,11 @@ if [ ! -d "node_modules/.bin" ]; then
     FAILED_SUITES+=("Jest (npm not installed)")
 else
     JEST_EXIT=0
-    CI=true "$NODE18" node_modules/.bin/react-scripts test \
+    # Same fix as the Playwright step above: execute the bin shim directly
+    # rather than passing it to a specific node binary as an argument. PATH
+    # already has node 18's dir first (exported in the Playwright step).
+    chmod +x node_modules/.bin/react-scripts 2>/dev/null || true
+    CI=true node_modules/.bin/react-scripts test \
             --coverage \
             --coverageDirectory="$COVERAGE_DIR/jest" \
             --watchAll=false \
