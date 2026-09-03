@@ -1,0 +1,7 @@
+persona,env_var,suggested_name,level,role,requirements,used_by
+Employee (PH),E2E_USER_EMPLOYEE_PHILIPPINES,E2E Employee PH,Employee,employee,"Active; Philippines; BHR number; department + sub-department; direct supervisor = the E2E Supervisor persona; own unique email + mobile","Baseline for ~330 tests; owns every seeded request; Vishnu API suites"
+Supervisor (PH),E2E_USER_SUPERVISOR_PHILIPPINES,E2E Supervisor PH,Head,supervisor,"Active; Philippines; BHR number; same department as employee persona; set as department handler / direct supervisor of the employee persona","All approve/decline seeding; approver-level tests; DTR summary report tests"
+Admin (PH),E2E_USER_ADMIN_PHILIPPINES,E2E Admin PH,Admin,admin,"Active; Philippines; BHR number; admin level AND admin role","Attendance API suite; admin-permission tests"
+HR (PH),E2E_USER_HR_PHILIPPINES,E2E HR PH,HR,employee,"Active; Philippines; HR-named level (EVOX_LEVELS row whose name contains HR)","HR-restricted announcement visibility tests"
+Second employee,E2E_USER_EMPLOYEE_SECOND,E2E Employee Two,Employee,employee,"Active; DIFFERENT department from employee persona; NOT on any team; own unique email + mobile number","Duplicate email/mobile collision tests; team eligibility + cross-department tests; supervisor-pivot tests"
+Multi-login employee,E2E_USER_MULTIPUNCH,E2E Multipunch,Employee,employee,"Active; grant the Use Multi-Login permission (user_multi_login); Claude will then do repeated login/logout cycles to generate punch rows","16 alter-log-punch tests (wave 2)"
