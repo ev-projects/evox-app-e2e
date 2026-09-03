@@ -959,7 +959,12 @@ class User extends Authenticatable implements JWTSubject
 
     # Fetch the User's Level Name
     public function level_type(){
-            $type = $this->level()->first()->Name;
+            // A user's LevelId can point at a level row that no longer exists in EVOX_LEVELS (levels
+            // get renamed/retired over time — see the project's own note on LevelId/EVOX_LEVELS drift).
+            // level()->first() is then null, and dereferencing ->Name unguarded threw "Trying to get
+            // property 'Name' of non-object".
+            $level = $this->level()->first();
+            $type = is_valid($level) ? $level->Name : null;
 
             if (stristr($type, "HR") !== false){
                 return "HR";

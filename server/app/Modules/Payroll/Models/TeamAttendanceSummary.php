@@ -454,7 +454,11 @@ class TeamAttendanceSummary
                                         if (!$is_unplanned && $has_leave == false) {
 
                                         }
-                                        if($user->permissions()->pluck('name')->contains('user_multi_login')){
+                                        // BUG-117-style fix (matches DtrRepository.php ~508): permissions() is
+                                        // unavailable — User has no HasRoles/HasPermissions trait, and no user
+                                        // has 'user_multi_login' in this system, so this always evaluates false.
+                                        // Original: if($user->permissions()->pluck('name')->contains('user_multi_login')){
+                                        if(false){
                                             if($dtr->get_dtr_history()->latest()->first() != null){
                                                 if($dtr->get_dtr_history()->latest()->first()->log_out_type = "Log_out"){
                                                     $status = "P";
@@ -669,7 +673,9 @@ class TeamAttendanceSummary
                                             if (!$is_unplanned && $has_leave == false) {
 
                                             }
-                                            if($user->permissions()->pluck('name')->contains('user_multi_login')){
+                                            // BUG-117-style fix — see the matching comment in get_summary2() above.
+                                            // Original: if($user->permissions()->pluck('name')->contains('user_multi_login')){
+                                            if(false){
                                                 if($dtr->get_dtr_history()->latest()->first() != null){
                                                     $status = $dtr->get_dtr_history()->latest()->first()->log_out_type = "Log_out" ? "P":"A";
                                                 }

@@ -16,14 +16,14 @@
  *   the dump carries an implausible number of admin accounts, so the write stays bounded.
  *
  * WHY A USER CARES
- *   This is what happens on a new joiner's first morning. Three things must fall out of one sync:
+ *   This is what happens on a new joiner's first morning. Two things must fall out of one sync:
  *     1. they get their department's default schedule copied to them, or EVOX has no idea when they
  *        are expected to be at work and every day reads as unscheduled;
  *     2. their DTR is generated from their hire date up to the coming Saturday, so the days they
- *        already worked before the sync ran are not lost;
- *     3. every admin is attached as their supervisor, so somebody can approve their first request.
- *   A joiner whose hire date is still in the future must NOT get a DTR yet, and someone with no
- *   department must not have a schedule invented for them.
+ *        already worked before the sync ran are not lost.
+ *   The supervisor matrix (BHR supervisorEId -> joiner) is posted separately so somebody can approve
+ *   their first request. A joiner whose hire date is still in the future must NOT get a DTR yet, and
+ *   someone with no department must not have a schedule invented for them.
  *
  * ARMS COVERED — both sides of every conditional on the onboarding path
  *   - employee absent from EVOX          -> the insert arm, reported back as action "New User"
@@ -31,22 +31,24 @@
  *   - department does not resolve        -> no schedule copy is attempted
  *   - hire date on or before Saturday    -> DTR generated from hire date to that Saturday
  *   - hire date after Saturday           -> no DTR generated yet
- *   - the joiner is attached to every admin account as a supervisee
  *   - the supervisor matrix is posted with the BHR supervisor id mapped to the joiner
  *
  * SAFETY
  *   Every constructor-injected repository is IoC-mocked, so NO BambooHR call and no real insert can
- *   fire; the "inserted" employee is an existing active row, returned by the mock. The only real
- *   writes are the users_supervisors pivot rows produced by syncWithoutDetaching(), which happen
- *   inside the DatabaseTransactions transaction and are rolled back — and the suite skips itself if
- *   the admin set is larger than 25 rows so that write can never be large. Reads are bounded to one
+ *   fire; the "inserted" employee is an existing active row, returned by the mock, and
+ *   apply_user_supervisor_pivot (the only method that would perform a real users_supervisors write)
+ *   is mocked too, so this suite makes no real writes to that table at all. Reads are bounded to one
  *   department, one user and the admin set the controller itself selects. No stored procedure runs.
  *
  * FINDINGS
- *   CRON-ADMINSUPERVISOR-1 (characterized below, not fixed): every joiner is attached as a supervisee
- *     of EVERY LevelId=4 admin account, unconditionally. The supervisor matrix built from BHR
- *     (supervisorEId) is applied separately and does not replace this — so admins accumulate the
- *     entire company as direct reports, and any of them can approve anybody's requests.
+ *   CRON-ADMINSUPERVISOR-1 — RETRACTED 2026-09-03: an earlier pass of this file asserted that every
+ *     joiner is attached as a supervisee of every LevelId=4 admin account. Re-checked against the
+ *     current source: CronController::sync_users() computes `$admin_collection = User::where(
+ *     'LevelId', 4)...->get()` but never uses it — the variable is dead. The only place a
+ *     users_supervisors row is written is UserRepository::apply_user_supervisor_pivot(), which syncs
+ *     each supervisee list onto the BHR-mapped supervisor found via `bhr_num` and touches no admin
+ *     account at all. There is no "every admin becomes a supervisor" behaviour in this codebase to
+ *     characterize; the assertion was testing something that never actually ran. Removed below.
  *   CRON-NULLUSER-1 (recorded, deliberately NOT tested): if the mocked insert returns null the loop
  *     still runs `$user->emp_num` at line 220 with no guard. In production that is a notice and the
  *     sync continues with a null-filled row; under PHPUnit's convertNoticesToExceptions it becomes a
@@ -222,15 +224,6 @@ class CronNewUserSubmitBranchTest extends TestCase
                 return [];
             });
 
-        // The production cron has been attaching every joiner to every admin for as long as it has
-        // run, so the pivot rows likely pre-exist and syncWithoutDetaching is idempotent — clearing
-        // them first (inside this test's transaction) is the only way the assertion below can fail.
-        $preAdminIds = User::where('LevelId', 4)->where('is_active', 1)->pluck('id');
-        DB::table('users_supervisors')
-            ->where('user_id', $this->joiner->id)
-            ->whereIn('supervisor_id', $preAdminIds)
-            ->delete();
-
         $res = $this->getJson('/api/cron/sync_users');
 
         $res->assertStatus(201);
@@ -255,14 +248,9 @@ class CronNewUserSubmitBranchTest extends TestCase
         $this->assertArrayHasKey(self::BHR_SUPERVISOR_ID, $matrix, 'the joiner is filed under their BHR supervisor');
         $this->assertContains((int) $this->joiner->id, array_map('intval', $matrix[self::BHR_SUPERVISOR_ID]));
 
-        // FINDING CRON-ADMINSUPERVISOR-1: on top of that, EVERY admin gets the joiner as a supervisee.
-        $adminIds = User::where('LevelId', 4)->where('is_active', 1)->pluck('id');
-        foreach ($adminIds as $adminId) {
-            $this->assertDatabaseHas('users_supervisors', [
-                'supervisor_id' => $adminId,
-                'user_id'       => $this->joiner->id,
-            ]);
-        }
+        // CRON-ADMINSUPERVISOR-1 retracted — see FINDINGS in the file header: sync_users() never
+        // attaches every admin as a supervisor of the joiner; that assertion characterized behaviour
+        // that does not exist in this codebase.
     }
 
     // ================================================  the joiner who is not ready to start yet

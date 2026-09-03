@@ -206,19 +206,20 @@ class UserRelationArmsTest extends TestCase
     // ================================================================= target_punch()
 
     /**
-     * F-USR-TARGETPUNCH-1 — characterised as it behaves today. where('date', '==', $date) is not a
-     * comparison Laravel recognises, so it short-cuts to date = '==' and throws the requested date
-     * away. The single-day punch list at DtrController.php:366 can therefore never return a row.
-     * When the operator is corrected this test fails — flip it to assert the date is bound.
+     * F-USR-TARGETPUNCH-1 — DEFECT FIXED (found 2026-09-03, see DtrControllerBranchTest's
+     * FINDING_PUNCH_CHECK_OPERATOR): target_punch() previously used where('date', '==', $date), an
+     * operator Laravel does not recognise, which short-cut to date = '==' and threw the requested
+     * date away. User.php now uses '=', so the date is bound correctly. Flipped per this test's own
+     * original instruction ("when the operator is corrected this test fails — flip it").
      */
     /** @test */
-    public function target_punch__discards_the_requested_date_and_compares_against_the_operator_FINDING_F_USR_TARGETPUNCH_1()
+    public function target_punch__binds_the_requested_date_with_the_equality_operator()
     {
         $builder = $this->user->target_punch(self::START);
         $bindings = $builder->getBindings();
 
-        $this->assertContains('==', $bindings);
-        $this->assertNotContains(self::START, $bindings);
+        $this->assertNotContains('==', $bindings);
+        $this->assertContains(self::START, $bindings);
         $this->assertContains('1', $bindings);           // the is_active filter still applies
     }
 

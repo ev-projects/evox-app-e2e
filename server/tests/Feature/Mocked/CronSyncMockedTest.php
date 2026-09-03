@@ -71,15 +71,18 @@ class CronSyncMockedTest extends TestCase
     {
         $this->fakeCutoff();
 
-        // Anonymous mocks (no interface type hints) avoid the Windows class-loading duplicate
-        // that causes "must be Collection, instance of Collection given" PHP type errors.
-        $bhr = Mockery::mock()->shouldIgnoreMissing();
+        // Typed mocks (matching sync_leaves/sync_users below): CronController's constructor
+        // type-hints these interfaces, so the container refuses to inject an anonymous
+        // Mockery::mock() that implements no interface at all — "must implement interface
+        // BhrRepositoryInterface, instance of Mockery_N given". Binding it via a closure did not
+        // change that; the mock itself has to satisfy the type-hint.
+        $bhr = Mockery::mock(BhrRepositoryInterface::class)->shouldIgnoreMissing();
         $bhr->shouldReceive('sync_holidays')->withAnyArgs()->andReturn(true);
-        $this->app->bind(BhrRepositoryInterface::class, function() use ($bhr) { return $bhr; });
+        $this->app->instance(BhrRepositoryInterface::class, $bhr);
 
-        $dtr = Mockery::mock()->shouldIgnoreMissing();
+        $dtr = Mockery::mock(DtrRepositoryInterface::class)->shouldIgnoreMissing();
         $dtr->shouldReceive('bind_holidays_to_dtr')->withAnyArgs()->andReturn(new EloquentCollection([]));
-        $this->app->bind(DtrRepositoryInterface::class, function() use ($dtr) { return $dtr; });
+        $this->app->instance(DtrRepositoryInterface::class, $dtr);
 
         $r = $this->get('/api/cron/sync_holidays');
 
@@ -89,15 +92,14 @@ class CronSyncMockedTest extends TestCase
     /** @test — sync_realtime_biometrics: biometric device + DTR faked; no device call */
     public function sync_realtime_biometrics_runs_with_mocked_device()
     {
-        // Anonymous mocks bypass the Windows class-loading duplicate that causes PHP type errors
-        // when EloquentCollection is passed through a type-hinted interface method.
-        $bio = Mockery::mock()->shouldIgnoreMissing();
+        // Typed mocks — see the comment on sync_holidays above.
+        $bio = Mockery::mock(BiometricsRepositoryInterface::class)->shouldIgnoreMissing();
         $bio->shouldReceive('get_biometrics')->withAnyArgs()->andReturn(new EloquentCollection([]));
-        $this->app->bind(BiometricsRepositoryInterface::class, function() use ($bio) { return $bio; });
+        $this->app->instance(BiometricsRepositoryInterface::class, $bio);
 
-        $dtr = Mockery::mock()->shouldIgnoreMissing();
+        $dtr = Mockery::mock(DtrRepositoryInterface::class)->shouldIgnoreMissing();
         $dtr->shouldReceive('sync_biometrics_to_dtr')->withAnyArgs()->andReturn(new EloquentCollection([]));
-        $this->app->bind(DtrRepositoryInterface::class, function() use ($dtr) { return $dtr; });
+        $this->app->instance(DtrRepositoryInterface::class, $dtr);
 
         $r = $this->get('/api/cron/sync_realtime_biometrics');
 

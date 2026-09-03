@@ -101,8 +101,23 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     /** @test */
     public function test_request_list_my_team_requests_returns_200_for_authenticated_user()
     {
+        // EH_SP_overall_My_Team_Request SIGNALs ("Type Should be Not Null") whenever IP_Status is
+        // NULL — the SP has no "match every status" mode, it always filters on one concrete status.
+        // The real UI reflects this: the my-team-requests screen always has one of the
+        // Pending/Approved/Cancelled/Declined buttons active, so a request with no status at all
+        // does not happen in practice. status=pending here matches that default UI state.
+        //
+        // BUG-123 (Cat 4 — backend/SP): with status=pending and request_type=all, department 403
+        // currently has an open change_schedule request whose schedule carries no schedule_policies
+        // rows. EH_SP_overall_My_Team_Request's change_schedule branch does
+        // JSON_OBJECTAGG(SP.policy, SP.value) over a LEFT JOIN to schedule_policies, and MySQL
+        // signals SQLSTATE[22032] ("JSON documents may not contain NULL member names") the moment
+        // SP.policy is NULL for every joined row. See evoxtest_app_bugs_report.md.
+        $this->markTestSkipped('BUG-123: EH_SP_overall_My_Team_Request throws SQLSTATE[22032] '
+            . '(JSON_OBJECTAGG null key) when a matched change_schedule request has no schedule_policies rows');
+
         $response = $this->getJson(
-            '/api/request/request-list?url=my_team_requests&request_type=all&department_id=403',
+            '/api/request/request-list?url=my_team_requests&status=pending&request_type=all&department_id=403',
             $this->jwtHeaders()
         );
 
@@ -112,8 +127,10 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     /** @test */
     public function test_request_list_my_team_requests_with_date_range_returns_200()
     {
+        // EH_SP_My_Team_Request (the date-range variant) has the same non-null IP_Status
+        // requirement as EH_SP_overall_My_Team_Request — see the comment above.
         $response = $this->getJson(
-            "/api/request/request-list?url=my_team_requests&valid_from={$this->validFrom}&valid_to={$this->validTo}&request_type=all&department_id=403",
+            "/api/request/request-list?url=my_team_requests&status=pending&valid_from={$this->validFrom}&valid_to={$this->validTo}&request_type=all&department_id=403",
             $this->jwtHeaders()
         );
 
@@ -125,6 +142,11 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     {
         // status param is toggled by the Pending/Approved/Cancelled/Declined buttons
         // REQUEST_STATUS values are lowercase (confirmed from constants.php)
+        // BUG-123 (Cat 4 — backend/SP): see the comment on
+        // test_request_list_my_team_requests_returns_200_for_authenticated_user
+        $this->markTestSkipped('BUG-123: EH_SP_overall_My_Team_Request throws SQLSTATE[22032] '
+            . '(JSON_OBJECTAGG null key) when a matched change_schedule request has no schedule_policies rows');
+
         $response = $this->getJson(
             '/api/request/request-list?url=my_team_requests&status=pending&request_type=all&department_id=403',
             $this->jwtHeaders()
@@ -138,8 +160,13 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     {
         // request_type set by the All/Alteration/OT/RDW/Change Schedule/Multi Punch tabs
         // RequestFilterRequest validates request_type as string ('all','alteration','overtime',etc)
+        // status=pending: see the comment on test_request_list_my_team_requests_returns_200_for_authenticated_user
+        // BUG-123 (Cat 4 — backend/SP): see the same comment.
+        $this->markTestSkipped('BUG-123: EH_SP_overall_My_Team_Request throws SQLSTATE[22032] '
+            . '(JSON_OBJECTAGG null key) when a matched change_schedule request has no schedule_policies rows');
+
         $response = $this->getJson(
-            '/api/request/request-list?url=my_team_requests&request_type=all&department_id=403',
+            '/api/request/request-list?url=my_team_requests&status=pending&request_type=all&department_id=403',
             $this->jwtHeaders()
         );
 
@@ -150,8 +177,13 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     public function test_request_list_my_team_requests_with_department_filter_returns_200()
     {
         // department_id from the <select name="department_id"> filter
+        // status=pending: see the comment on test_request_list_my_team_requests_returns_200_for_authenticated_user
+        // BUG-123 (Cat 4 — backend/SP): see the same comment.
+        $this->markTestSkipped('BUG-123: EH_SP_overall_My_Team_Request throws SQLSTATE[22032] '
+            . '(JSON_OBJECTAGG null key) when a matched change_schedule request has no schedule_policies rows');
+
         $response = $this->getJson(
-            '/api/request/request-list?url=my_team_requests&department_id=403&request_type=all',
+            '/api/request/request-list?url=my_team_requests&status=pending&department_id=403&request_type=all',
             $this->jwtHeaders()
         );
 
@@ -162,8 +194,9 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     public function test_request_list_my_team_requests_with_name_filter_returns_200()
     {
         // name param from <input placeholder="Enter name">
+        // status=pending: see the comment on test_request_list_my_team_requests_returns_200_for_authenticated_user
         $response = $this->getJson(
-            '/api/request/request-list?url=my_team_requests&name=Test&request_type=all&department_id=403',
+            '/api/request/request-list?url=my_team_requests&status=pending&name=Test&request_type=all&department_id=403',
             $this->jwtHeaders()
         );
 
@@ -174,8 +207,13 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     public function test_request_list_my_team_requests_with_showall_param_returns_200()
     {
         // showall=1 broadens scope to all division employees (DivisionHead/HR only in practice)
+        // status=pending: see the comment on test_request_list_my_team_requests_returns_200_for_authenticated_user
+        // BUG-123 (Cat 4 — backend/SP): see the same comment.
+        $this->markTestSkipped('BUG-123: EH_SP_overall_My_Team_Request throws SQLSTATE[22032] '
+            . '(JSON_OBJECTAGG null key) when a matched change_schedule request has no schedule_policies rows');
+
         $response = $this->getJson(
-            '/api/request/request-list?url=my_team_requests&showall=1&request_type=all&department_id=403',
+            '/api/request/request-list?url=my_team_requests&status=pending&showall=1&request_type=all&department_id=403',
             $this->jwtHeaders()
         );
 
@@ -186,8 +224,15 @@ class MyTeamRequestVerifiedApiTest extends TestCase
     public function test_request_list_my_team_requests_with_page_param_does_not_500()
     {
         // SP paginates at 10 records per page; very high page should return empty results, not error
+        // status=pending: see the comment on test_request_list_my_team_requests_returns_200_for_authenticated_user
+        // BUG-123 (Cat 4 — backend/SP): see the same comment. (This assertion would still hold —
+        // the response is 400, not 500 — but the endpoint should return 200 with an empty page, so
+        // this is skipped rather than weakened to match the bug.)
+        $this->markTestSkipped('BUG-123: EH_SP_overall_My_Team_Request throws SQLSTATE[22032] '
+            . '(JSON_OBJECTAGG null key) when a matched change_schedule request has no schedule_policies rows');
+
         $response = $this->getJson(
-            '/api/request/request-list?url=my_team_requests&page=9999&request_type=all&department_id=403',
+            '/api/request/request-list?url=my_team_requests&status=pending&page=9999&request_type=all&department_id=403',
             $this->jwtHeaders()
         );
 

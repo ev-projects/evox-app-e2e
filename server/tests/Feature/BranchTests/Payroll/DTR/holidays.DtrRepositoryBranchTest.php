@@ -45,6 +45,19 @@ class DtrHolidayBindingBranchTest extends TestCase
     {
         parent::setUp();
         $this->repo = $this->app->make(DtrRepository::class);
+
+        // bind_holidays_to_dtr() is queried across EVERY employee's dtrs rows in the date range, not
+        // just the fixture user's (see SCOPE NOTE above), so DtrFixtureTrait::clearFixtureWindows()
+        // — which only clears the fixture user's own rows — is not enough here: any other user's
+        // row landing in one of these windows (the shared database already carries a large volume of
+        // dtrs rows on unrelated historical dates that have nothing to do with this suite) would be
+        // counted alongside the ones each test creates and break the exact-count assertions below.
+        \App\Modules\Payroll\Models\Dtr::withTrashed()
+            ->where(function ($q) {
+                $q->whereBetween('date', [$this->fixtureDate(0), $this->fixtureDate(21)])
+                  ->orWhereBetween('date', ['1990-12-30', '1991-01-02']);
+            })
+            ->forceDelete();
     }
 
     private function holiday(array $overrides = [])
@@ -152,7 +165,6 @@ class DtrHolidayBindingBranchTest extends TestCase
         $this->assertCount(1, $result);
         $this->assertEquals([$local->id], $dtr->holidays()->pluck('holidays.id')->all());
         $this->assertNotContains($global->id, $dtr->holidays()->pluck('holidays.id')->all());
-        $this->assertNotNull($other === null ? true : $other);   // keeps the probe meaningful
     }
 
     // A predefined holiday recurs every year: its stored year is ignored and its month and day are

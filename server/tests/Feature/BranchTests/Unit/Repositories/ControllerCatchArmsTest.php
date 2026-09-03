@@ -346,31 +346,34 @@ class ControllerCatchArmsTest extends TestCase
     // ==================================================== findings guard: the dead catch arms
 
     /**
-     * CTRL-EXC-1..4. Not a coverage test — an executable record of why four catch arms in
-     * App\Http\Controllers can never be covered, and a tripwire that goes off the moment someone
-     * fixes the import (at which point these arms become testable and this guard should be deleted
-     * and replaced with real catch-arm tests).
-     *
-     * `catch (Exception $e)` inside `namespace App\Http\Controllers;` with no `use Exception;`
-     * resolves to App\Http\Controllers\Exception. PHP falls back to the global namespace for
-     * functions and constants, NEVER for class names — so the arm matches nothing at all.
+     * CTRL-EXC-1..4 — DEFECT FIXED (found 2026-09-03). This guard originally recorded why four catch
+     * arms in App\Http\Controllers could never be covered: `catch (Exception $e)` inside
+     * `namespace App\Http\Controllers;` with no `use Exception;` resolves to the non-existent
+     * App\Http\Controllers\Exception, so the arm matches nothing. All three controllers this test
+     * named (CodeOfConductController, HappinessController, EvaController) now import Exception
+     * alongside the fourth, already-working control case (NewHireOrientationController) — so every
+     * catch(Exception) arm in this namespace is reachable, and the guard's own instruction ("delete
+     * this guard and write a real catch-arm test that asserts the 400 envelope") applies to all
+     * three. Full behavioural catch-arm tests for each controller are a follow-up (out of scope for
+     * this pass); what remains here is the regression tripwire: if the import is ever dropped again,
+     * this test catches it.
      *
      * @test
      */
-    public function the_unimported_exception_catch_arms_in_app_http_controllers_can_never_match()
+    public function the_previously_unimported_exception_catch_arms_are_now_reachable()
     {
         $this->assertFalse(
             class_exists('App\\Http\\Controllers\\Exception'),
-            'root cause: the class these catch arms name does not exist'
+            'the class an unqualified catch(Exception) would resolve to in this namespace still does not exist'
         );
 
-        $broken = [
+        $fixed = [
             CodeOfConductController::class      => 'store() line 64-65',
             HappinessController::class          => 'addHappinessSurvey() line 81',
             EvaController::class                => 'store() line 61 and saveEvaRegistration() line 91',
         ];
 
-        foreach ($broken as $class => $where) {
+        foreach ($fixed as $class => $where) {
             $source = $this->normalisedSourceOf($class);
 
             $this->assertTrue(
@@ -378,15 +381,14 @@ class ControllerCatchArmsTest extends TestCase
                     || strpos($source, 'catch (Exception $e)') !== false,
                 "$class no longer has an unqualified catch(Exception) — update this guard"
             );
-            $this->assertFalse(
+            $this->assertTrue(
                 $this->importsException($source),
-                "DEFECT FIXED: $class now imports Exception, so $where is finally reachable. " .
-                'Delete this guard and write a real catch-arm test that asserts the 400 envelope.'
+                "$class no longer imports Exception at $where — the dead-catch defect is back"
             );
         }
 
-        // Control: the fourth controller in the very same namespace does import it, which is why
-        // its catch arm is already covered. If this ever flips, the whole namespace is broken.
+        // Control: the fourth controller in the very same namespace has always imported it, which is
+        // why its catch arm was already covered before the other three were fixed.
         $this->assertTrue(
             $this->importsException($this->normalisedSourceOf(NewHireOrientationController::class)),
             'NewHireOrientationController is the working control case for this defect'

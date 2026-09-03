@@ -127,9 +127,9 @@ class UserController extends Controller
             return error_response( trans('messages.error_default'), $e );
         }
     }
-    
 
-    public function job_information( $id ){   
+
+    public function job_information( $id ){
         try {
             
             $this->validate(new Request([
@@ -152,7 +152,7 @@ class UserController extends Controller
                 ]
             );
 
-            
+
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
         }
@@ -212,7 +212,7 @@ class UserController extends Controller
             return success_response(
                 trans('messages.show_time_off_collection'), 
                 new LeaveCreditsListResource( $leave_credits_collection )
-                
+
             );
         } catch(Exception $e){
             return error_response( trans('messages.error_default'), $e );
@@ -470,13 +470,21 @@ class UserController extends Controller
                 'id' => 'int'
             ]);
 
+            // FINDING USR-INFO-1 (characterized, see UserControllerProfileBranchTest): a
+            // non-supervisee target silently gets null content instead of a 403 — that permission
+            // gap is pre-existing behaviour left as-is. $user_info is initialized to null here only
+            // so that silent-null path does not touch an undefined variable: PHP itself would just
+            // treat it as an implicit null (E_NOTICE, non-fatal) in production, but this repo's test
+            // suite runs with convertNoticesToExceptions, which turns that same notice into a fatal
+            // ErrorException — a test-environment artifact, not a behaviour change.
+            $user_info = null;
             if( is_under_supervisee( $id ) ){
                 $user_info = User::find( $id );
                 $user_info =  $user_info->getUserInfo();
             }
- 
+
             return success_response(
-                trans('messages.get_user_info_success'), 
+                trans('messages.get_user_info_success'),
                 $user_info
             );
 

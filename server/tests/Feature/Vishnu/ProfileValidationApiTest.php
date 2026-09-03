@@ -158,8 +158,12 @@ class ProfileValidationApiTest extends TestCase
         // F24 fix: UserController::personal_information() calls BhrRepository::get_user_bhr_field()
         // → bhr_api_call('GET', 'employees/{bhr_num}?fields=…'). Fake the fields endpoint.
         // actingAs() is unreliable with JWT guard in this environment — use real Bearer token instead.
+        // PersonalInformationResource reads ->mobilePhone and ->jobTitle with no null guard, so both
+        // must be present or the resource throws "Undefined property" (fatal under phpunit.xml's
+        // convertNoticesToExceptions).
         BhrApiFake::fake('?fields=', (object)[
             'id' => $this->user->bhr_num, 'firstName' => 'Test', 'lastName' => 'User',
+            'mobilePhone' => '+63 900 000 0000', 'jobTitle' => 'Tester',
         ]);
         $response = $this->getJson('/api/user/' . $this->user->id . '/personal_information', $this->jwtHeaders());
         $response->assertStatus(200);
@@ -356,7 +360,10 @@ class ProfileValidationApiTest extends TestCase
         // once for BHR_USER_TABLE.employee_status and once for BHR_USER_TABLE.job_info.
         // Both map to 'employees/{bhr_num}/tables/{type}'. One substring fake covers both.
         // actingAs() is unreliable with JWT guard — use real Bearer token instead.
-        BhrApiFake::fake('tables/', (object)['rows' => []]);
+        // JobInformationResource/EmploymentStatusResource foreach() the raw result directly (each
+        // row read as $array->date, ->location, etc.) — the payload is not wrapped in a ->rows
+        // property, so the fake must be the (empty) row list itself, not an object wrapping one.
+        BhrApiFake::fake('tables/', []);
         $response = $this->getJson('/api/user/' . $this->user->id . '/job_information', $this->jwtHeaders());
         $response->assertStatus(200);
         $response->assertJsonStructure(['message', 'content']);
@@ -407,7 +414,9 @@ class ProfileValidationApiTest extends TestCase
         // F26 fix: UserController::leave_credits() calls BhrRepository::get_leave_credits()
         // → bhr_api_call('GET', 'employees/{bhr_num}/time_off/calculator?end=…').
         // actingAs() is unreliable with JWT guard — use real Bearer token instead.
-        BhrApiFake::fake('time_off/calculator', [(object)['name' => 'VL', 'balance' => 5.0]]);
+        // LeaveCreditsListResource reads ->name, ->balance AND ->policyType off each row with no
+        // null guard, so all three must be present or the resource throws "Undefined property".
+        BhrApiFake::fake('time_off/calculator', [(object)['name' => 'VL', 'balance' => 5.0, 'policyType' => 'accrued']]);
         $response = $this->getJson('/api/user/' . $this->user->id . '/leave_credits', $this->jwtHeaders());
         $response->assertStatus(200);
         $response->assertJsonStructure(['message', 'content']);

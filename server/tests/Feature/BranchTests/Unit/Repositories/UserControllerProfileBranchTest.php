@@ -61,7 +61,10 @@ class UserControllerProfileBranchTest extends TestCase
         // which is shadowed by CallSpFake). Registering them globally prevents unhandled
         // RuntimeException when a test exercises the profile path without per-test overrides.
         CallSpFake::fake('EH_SP_Get_Department_By_UserId', [[]]); // evox_departments_handled() + evox_departments_handled_strict()
-        CallSpFake::fake('EV_SP_NHO_Validate_User', [[['Result' => 0]]]); // isUserNhoValid()
+        // isUserNhoValid() reads $is_user_nho_valid[0][0]->Result — a stdClass property access, matching
+        // how a real PDO stored-procedure row comes back. The row must be an object, not an assoc array,
+        // or "$row->Result" throws "Trying to get property 'Result' of non-object" (User.php:1048).
+        CallSpFake::fake('EV_SP_NHO_Validate_User', [[(object) ['Result' => 0]]]); // isUserNhoValid()
         CallSpFake::fake('EH_SP_Direct_Supervisor', [[]]); // direct_supervisor_temp() via is_under_supervisee()
 
         // Use Gary Aure — known-good: has LevelId=1, bhr_num, country_id, complete profile data.
@@ -119,12 +122,21 @@ class UserControllerProfileBranchTest extends TestCase
     /** @test */
     public function personal_and_job_information_map_the_bhr_payloads()
     {
+        // PersonalInformationResource reads ->mobilePhone and ->jobTitle directly off this payload
+        // (no null guard — see PersonalInformationResource::toArray()), so both must be present or
+        // the resource throws "Undefined property" (a notice, fatal under phpunit.xml's
+        // convertNoticesToExceptions).
         BhrApiFake::fake('?fields=', (object) [
             'id' => $this->user->bhr_num, 'firstName' => 'Alice', 'lastName' => 'Tester',
+            'mobilePhone' => '+63 900 000 0000', 'jobTitle' => 'Tester',
         ]);
         // job_information() calls get_user_job_information twice: tables/employmentStatus AND
         // tables/jobInfo. A single 'tables/' prefix covers both via BhrApiFake substring match.
-        BhrApiFake::fake('tables/', (object) ['rows' => []]);
+        // JobInformationResource/EmploymentStatusResource foreach() the raw result directly (each
+        // row is read as $array->date, ->location, etc. — see both classes' toArray()); the payload
+        // is not wrapped in a ->rows property, so the fake must be the (possibly empty) row list
+        // itself, not an object wrapping one.
+        BhrApiFake::fake('tables/', []);
 
         $this->getJson("/api/user/{$this->user->id}/personal_information", $this->jwtHeaders())
             ->assertStatus(200);
@@ -136,7 +148,9 @@ class UserControllerProfileBranchTest extends TestCase
     /** @test */
     public function leave_credits_reaches_the_bhr_calculator_endpoint()
     {
-        BhrApiFake::fake('time_off/calculator', [(object) ['name' => 'VL', 'balance' => 5]]);
+        // LeaveCreditsListResource reads ->name, ->balance AND ->policyType off each row with no
+        // null guard, so all three must be present or the resource throws "Undefined property".
+        BhrApiFake::fake('time_off/calculator', [(object) ['name' => 'VL', 'balance' => 5, 'policyType' => 'accrued']]);
 
         $res = $this->getJson("/api/user/{$this->user->id}/leave_credits", $this->jwtHeaders());
 
@@ -226,7 +240,14 @@ class UserControllerProfileBranchTest extends TestCase
         $this->app->instance(EmailRepositoryInterface::class, $emailRepo);
         $originalHash = $this->user->password;
 
-        $res = $this->postJson('/api/forgot_password_request', ['email' => $this->user->email]);
+        // This route sits behind auth.apikey (not jwtauth — the caller is logged out), so it needs
+        // X-Authorization, not a Bearer token. Without it AuthorizeApiKey rejects with 401 before the
+        // controller — and, therefore, the mocked EmailRepositoryInterface — is ever reached, which
+        // made the ->once() expectation below fail in Mockery::close() during tearDown() even though
+        // the test body itself appeared to pass.
+        $res = $this->postJson('/api/forgot_password_request', ['email' => $this->user->email], [
+            'X-Authorization' => $this->rawApiKey,
+        ]);
 
         if ($res->status() === 200) {
             $fresh = User::find($this->user->id);

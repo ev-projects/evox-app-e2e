@@ -22,10 +22,14 @@ Route::group(['prefix' => 'dtr', 'middleware' => ['jwtauth', 'auth.apikey']], fu
     # Gets the DTR of the User indicated.
     Route::get('/punch/{user_id}/{start_date}/{end_date}', 'DtrController@punches');//->middleware('auth.apikey');
 
+    # This literal-prefixed route MUST be registered before the '/dtrpunch/{user_id}/{start_date}/{end_date}'
+    # route below: both match 3 path segments after '/dtrpunch/', so with the generic route registered
+    # first, Laravel's router would match it for every '/dtrpunch/check/{id}/{date}' request too
+    # (binding $user_id='check', $start_date=$id, $end_date=$date), so this route could never be reached.
+    Route::get('/dtrpunch/check/{user_id}/{call_date}', 'DtrController@dtr_single_punch');//->middleware('auth.apikey');
+
      # Gets the DTR of the User indicated.
      Route::get('/dtrpunch/{user_id}/{start_date}/{end_date}', 'DtrController@Dtr_punches');//->middleware('auth.apikey');
-
-    Route::get('/dtrpunch/check/{user_id}/{call_date}', 'DtrController@dtr_single_punch');//->middleware('auth.apikey');
 
     Route::post('/quickpunch', 'DtrController@quickpunch');
 

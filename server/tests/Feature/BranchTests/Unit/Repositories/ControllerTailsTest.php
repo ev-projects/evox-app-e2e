@@ -276,39 +276,36 @@ class ControllerTailsTest extends TestCase
     }
 
     /**
-     * CHARACTERIZATION — FINDING EVA-DEADCATCH.
+     * FINDING EVA-DEADCATCH — DEFECT FIXED (found 2026-09-03).
      *
-     * App\Http\Controllers\EvaController declares `catch(Exception $e)` but the file never imports
+     * App\Http\Controllers\EvaController previously declared `catch(Exception $e)` without importing
      * the global Exception (no `use Exception;` at the top, unlike DashboardController in the same
-     * namespace). PHP therefore resolves the type to App\Http\Controllers\Exception, a class that
-     * does not exist, so the catch can never match: saveEvaRegistration() (and store()) can never
-     * return the intended 400 error_response — the failure escapes as an unhandled 500.
-     *
-     * This test pins the CURRENT behaviour. It does not fix the app. When the missing import is
-     * added, this test flips to red and the finding is closed.
+     * namespace), so PHP resolved the type to the non-existent App\Http\Controllers\Exception and the
+     * catch could never match — saveEvaRegistration() (and store()) let the failure escape as an
+     * unhandled 500 instead of the intended 400 error_response. EvaController now imports Exception,
+     * so the catch is live; this test is flipped to assert the fixed behaviour, per its own original
+     * instruction ("when the missing import is added, this test flips to red and the finding is
+     * closed").
      *
      * @test
      */
-    public function eva_registration_failure_escapes_the_dead_catch_FINDING_EVA_DEADCATCH()
+    public function eva_registration_failure_is_handled_by_the_now_reachable_catch_arm()
     {
-        // static half of the characterization — the catch type is unresolvable
-        $this->assertFalse(class_exists('App\\Http\\Controllers\\Exception'),
-            'the catch in EvaController names a class that does not exist');
+        // static half — the import is present, so the catch type resolves correctly
         $source = file_get_contents(
             (new \ReflectionClass(\App\Http\Controllers\EvaController::class))->getFileName()
         );
         $this->assertNotFalse(strpos($source, 'catch(Exception $e)'),
             'EvaController still catches an unqualified Exception');
-        $this->assertFalse(strpos($source, "\nuse Exception;"),
-            'EvaController still does not import the global Exception');
+        $this->assertNotFalse(strpos($source, "\nuse Exception;"),
+            'EvaController no longer imports the global Exception — the dead-catch defect is back');
 
-        // behavioural half — with no authenticated user, Auth::user()->id blows up INSIDE the try
+        // behavioural half — with no authenticated user, Auth::user()->id throws INSIDE the try,
+        // and the now-reachable catch arm converts it into the standard 400 error envelope.
         $res = $this->postJson('/api/eva_registration', []);
 
-        $this->assertNotSame(400, $res->getStatusCode(),
-            'if the catch worked this would be the 400 error_response envelope');
-        $this->assertGreaterThanOrEqual(500, $res->getStatusCode(),
-            'the failure currently escapes saveEvaRegistration unhandled');
+        $res->assertStatus(400);
+        $this->assertArrayHasKey('error', $res->json());
     }
 
     // =====================================================================================

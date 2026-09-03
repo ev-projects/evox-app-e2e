@@ -195,10 +195,16 @@ class NeoMockedCurlIntegrationTest extends TestCase
     }
 
     // FINDING NEO-EXC-BODY — expected-current-behaviour. A NEO outage is answered with
-    // `response()->json($e)`, i.e. HTTP 200 whose body is the serialised Exception — `{}`, because
-    // an Exception has no public properties. The console therefore cannot distinguish "NEO is
-    // down" from "nothing to onboard". Asserted as it behaves today; when the controller starts
+    // `response()->json($e)`, i.e. HTTP 200 whose body is the serialised Exception — normally `{}`,
+    // because an Exception has no public properties. The console therefore cannot distinguish "NEO
+    // is down" from "nothing to onboard". Asserted as it behaves today; when the controller starts
     // returning a real error status this test fails and should be flipped.
+    //
+    // Under Xdebug's develop mode (this suite's coverage runs enable it) Xdebug attaches its own
+    // public `xdebug_message` property to every thrown Exception, so the serialised body is not
+    // exactly `{}` — it is `{}` plus that one debug-only key. Strip it before comparing so the
+    // assertion characterises the app's behaviour (an empty envelope, not a real error/success
+    // shape) rather than coupling to whether Xdebug happens to be active.
     /** @test */
     public function a_transport_failure_is_reported_as_status_200_FINDING_NEO_EXC_BODY()
     {
@@ -208,7 +214,9 @@ class NeoMockedCurlIntegrationTest extends TestCase
         $res = $this->getJson('/api/get_neo_onboarding_users/?country=India');
 
         $res->assertStatus(200);
-        $this->assertSame('{}', $res->getContent());   // serialised Exception, not an error payload
+        $content = $res->json();
+        unset($content['xdebug_message']);
+        $this->assertSame([], $content, 'serialised Exception should carry no real payload');
     }
 
     // ============================================== get_users_pending_submissions()
@@ -264,8 +272,11 @@ class NeoMockedCurlIntegrationTest extends TestCase
         $res = $this->getJson('/api/get_users_pending_submissions/?country=India');
 
         // FINDING NEO-EXC-BODY again: the SP failure surfaces as 200 + serialised Exception.
+        // xdebug_message stripped — see the comment on a_transport_failure_is_reported_as_status_200_FINDING_NEO_EXC_BODY.
         $res->assertStatus(200);
-        $this->assertSame('{}', $res->getContent());
+        $content = $res->json();
+        unset($content['xdebug_message']);
+        $this->assertSame([], $content, 'serialised Exception should carry no real payload');
         $this->assertCount(1, CallSpFake::callsFor('EV_SP_Neo_Full_Access_Validation'));
     }
 

@@ -5,6 +5,22 @@
 
 ---
 
+## BUG-123 — Open (test skipped, dev team to fix the stored procedure)
+
+### EH_SP_overall_My_Team_Request signals SQLSTATE[22032] via JSON_OBJECTAGG(NULL key)
+
+| Field | Value |
+|---|---|
+| **Category** | Cat 4 — Backend Code (stored procedure) |
+| **File** | MySQL stored procedure `EH_SP_overall_My_Team_Request` (lives in the database, not in this repo) — the `change_schedule` branch, `JSON_OBJECT('work_days',JSON_ARRAYAGG(SD.day)) as fourth_column, JSON_OBJECTAGG(SP.policy,SP.value) fifth_column` |
+| **Status** | Open |
+| **Symptom** | `GET /api/request/request-list?url=my_team_requests&status=pending&request_type=all&department_id=403` (and any other `request_type=all` combination that reaches the change_schedule branch) throws `PDOException: SQLSTATE[22032]: <<Unknown error>>: 3158 JSON documents may not contain NULL member names`, caught by `RequestController::requestlist()`'s `catch(Exception $e)` and returned as HTTP 400. |
+| **Root Cause** | The change_schedule branch `LEFT JOIN`s `schedule_policies`. When a matched employee's change_schedule request points at a schedule with zero `schedule_policies` rows, `SP.policy` is `NULL` for every joined row, and `JSON_OBJECTAGG(NULL, SP.value)` is invalid in MySQL — the function signals SQLSTATE 22032 rather than returning e.g. `{}` or omitting the pair. |
+| **Likely Fix** | In the SP, replace `JSON_OBJECTAGG(SP.policy, SP.value)` with a form that tolerates an all-NULL group, e.g. `IF(COUNT(SP.policy) = 0, JSON_OBJECT(), JSON_OBJECTAGG(COALESCE(SP.policy, 'none'), SP.value))`, or filter the join so a policy-less schedule contributes zero rows to the aggregate rather than one row with a NULL policy. |
+| **Affected Tests** | `Feature/MyTeamRequestVerifiedApiTest::test_request_list_my_team_requests_returns_200_for_authenticated_user`, `::test_request_list_my_team_requests_with_status_filter_returns_200`, `::test_request_list_my_team_requests_with_request_type_filter_returns_200`, `::test_request_list_my_team_requests_with_department_filter_returns_200`, `::test_request_list_my_team_requests_with_showall_param_returns_200`, `::test_request_list_my_team_requests_with_page_param_does_not_500` — all `markTestSkipped('BUG-123: ...')` 2026-09-03. |
+
+---
+
 ## BUG-122 ✅ FIXED — App code updated 2026-08-14
 
 ### OpsScheduleController::store() replace-image arm uses undefined $new_ops_sched

@@ -115,7 +115,7 @@ if (! function_exists('is_under_supervisee')) {
             }
 
         }catch(Exception $e){
-            
+
             throw new Exception( trans('messages.user_not_under_supervisee') );
         }
     }

@@ -49,11 +49,27 @@ trait DtrFixtureTrait
 
     /**
      * The anchor date. (A property, not a const — traits cannot hold constants on PHP 7.4.)
-     * Changed from 1990-06-11 to 1900-01-01 on 2026-08-25: a stale dtrs row for user 13292 on
-     * 1990-06-11 accumulated in the live DB after a crashed test run that did not roll back.
-     * 1900-01-01 is also a Monday and predates all real EVOX data — no collision is possible.
+     *
+     * Reverted from 1900-01-01 back to 1990-06-11 on 2026-09-03: 1900-01-01 predates the Unix
+     * epoch, so every timestamp this trait stores for that day is negative. dtrs' onupdate_rendertime
+     * trigger runs FROM_UNIXTIME()/UNIX_TIMESTAMP(CONVERT_TZ(...)) over time_in/time_out/
+     * start_datetime/end_datetime on every UPDATE, and a negative argument there produced
+     * "Incorrect datetime value: '-86400'" under this connection's SQL mode — a real, reproducible
+     * failure on any test that updates a row on the day rather than only inserting one
+     * (DtrRequestApplicationBranchTest). 1990-06-11 is a Monday, is in 1990 (no DST transitions,
+     * per config/app.php's UTC setting), and is post-epoch, so the trigger's arithmetic stays valid.
+     *
+     * The original move away from 1990-06-11 (2026-08-25) was chasing a symptom, not the cause: a
+     * crashed test run had left a real (non-transactional) row behind for the probe user on that
+     * date, and picking a different literal date "fixed" it only until the next crash did the same
+     * thing to the new date (which is exactly what happened — see fixtureUser()/clearFixtureWindows()
+     * below). No fixed literal date is actually collision-proof against that failure mode, and,
+     * separately, the live database already carries millions of dtrs rows on unrelated historical
+     * dates that have nothing to do with this suite, so "predates EVOX" was never a safe assumption
+     * either. The real fix is to make the fixture self-healing regardless of what already occupies
+     * the anchor window, which is what clearFixtureWindows() does.
      */
-    protected $fxAnchor = '1900-01-01';
+    protected $fxAnchor = '1990-06-11';
 
     /**
      * Set true (before the first fixture call) to demand a user who owns NO user-bound schedule.
@@ -101,7 +117,39 @@ trait DtrFixtureTrait
 
         $this->fxUser = $query->orderBy('id', 'desc')->first();
 
+        if ($this->fxUser) {
+            $this->clearFixtureWindows($this->fxUser->id);
+        }
+
         return $this->fxUser;
+    }
+
+    /**
+     * Remove any dtrs row already sitting in this trait's fixture windows for $userId, hard
+     * (bypassing SoftDeletes — dtrs_user_id_date_unique does not exempt deleted_at, so a
+     * soft-deleted row still blocks a fresh insert on the same user+date).
+     *
+     * Both fxAnchor and the far-future anchor are resolved to the SAME real, live user every run
+     * (fixtureUser() always picks the highest-id match), so a row a previous run left behind here —
+     * a crashed process never reaches DatabaseTransactions' rollback — collides with every run after
+     * it until removed. Every date this trait can produce is within a bounded number of days of one
+     * of the two anchors, so clearing that bounded window once, up front, makes every later
+     * makeDtr()/makeDtrOnDate() call — and any assertion that a date is NOT yet occupied — safe
+     * regardless of what a previous run (or the wider database) already left there.
+     */
+    protected function clearFixtureWindows($userId)
+    {
+        $windowEnd = function ($anchor) {
+            return date('Y-m-d', strtotime($anchor . ' +60 days'));
+        };
+
+        Dtr::withTrashed()
+            ->where('user_id', $userId)
+            ->where(function ($q) use ($windowEnd) {
+                $q->whereBetween('date', [$this->fxAnchor, $windowEnd($this->fxAnchor)])
+                  ->orWhereBetween('date', ['2094-06-14', $windowEnd('2094-06-14')]);
+            })
+            ->forceDelete();
     }
 
     /** Resolve the fixture user, authenticate as them, or stop the test naming the cause. */
@@ -153,6 +201,11 @@ trait DtrFixtureTrait
     protected function makeDtrOnDate($date, array $attrs = [])
     {
         $user = $this->requireFixtureUser();
+
+        // Belt-and-braces: clearFixtureWindows() already ran once when the user was first resolved,
+        // but this guards any date makeDtrOnDate() is called with directly (outside the two anchor
+        // windows) against the same collision.
+        Dtr::withTrashed()->where('user_id', $user->id)->where('date', $date)->forceDelete();
 
         return Dtr::create(array_merge([
             'user_id'             => $user->id,

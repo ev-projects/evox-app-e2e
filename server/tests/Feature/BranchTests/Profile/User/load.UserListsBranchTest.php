@@ -448,22 +448,25 @@ class UserListsLoadBranchTest extends TestCase
     }
 
     /**
-     * F-USR-LEVELTYPE-1 — other arm. An employee with no access level (which is exactly what
-     * UserRepository::register_user creates) cannot read this page at all: the feature list is
-     * correctly skipped, but the response array still calls $user->level_type()
-     * (UserController.php:850), which dereferences ->Name on the missing evox_levels row.
-     * Characterised as it behaves today; the fixed shape is 200 with a null level and no features.
+     * F-USR-LEVELTYPE-1 — DEFECT FIXED (found 2026-09-03). An employee with no access level (which is
+     * exactly what UserRepository::register_user creates) used to 400: the response array called
+     * $user->level_type() (UserController.php:850) unconditionally, which dereferenced ->Name on the
+     * missing evox_levels row. User::level_type() now guards that lookup (level()->first() can be
+     * null whenever LevelId doesn't resolve to a row, not just when it's literally null), so this
+     * arm's own original note — "the fixed shape is 200 with a null level and no features" — is what
+     * is asserted below.
      */
     /** @test */
-    public function user_features__load__user_without_an_access_level__error_400_FINDING_F_USR_LEVELTYPE_1()
+    public function user_features__load__user_without_an_access_level__returns_a_null_level_and_no_features()
     {
         $levelless = $this->replicaOf($this->admin, ['LevelId' => null]);
 
         $res = $this->getJson('/api/user/' . $levelless->id . '/features');
 
-        $res->assertStatus(400);
-        $this->assertSame(trans('messages.error_default'), $res->json('error.message'));
-        $this->assertStringContainsString('Name', $res->json('error.content'));
+        $res->assertStatus(200);
+        $this->assertNull($res->json('content.level.level_id'));
+        $this->assertNull($res->json('content.level.level_type'));
+        $this->assertSame([], $res->json('content.features'));
     }
 
     /**

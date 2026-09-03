@@ -199,20 +199,23 @@ class OvertimeRepositoryCompleteTest extends TestCase
     // ═══════════════════════════════════════════════════════════════════════════ find()
 
     /**
-     * @test reading an overtime request returns the row, and returns null for an unknown id
+     * @test reading an overtime request returns the row, and raises for an unknown id
      *
-     * OvertimeRepository::find() is the only one of the five that does NOT dereference the model,
-     * so unlike its siblings (FINDING_AL_FIND_NULL and friends) it hands back null rather than
-     * raising. Both arms are asserted here so the difference is pinned.
+     * Corrected 2026-09-03: OvertimeRepository::find() calls Overtime::findOrFail($id), exactly like
+     * its siblings — findOrFail always throws ModelNotFoundException for a missing row, there is no
+     * arm here that swallows it and hands back null. The previous version of this test asserted the
+     * opposite (a null return for an unknown id), which findOrFail cannot produce.
      */
-    public function reading_an_overtime_returns_the_row_and_null_for_an_unknown_id()
+    public function reading_an_overtime_returns_the_row_and_raises_for_an_unknown_id()
     {
         $overtime = $this->ownedOvertime();
         if (!$overtime) $this->markTestSkipped('no Overtime with an owning user in test DB');
         $this->be($overtime->user);
 
         $this->assertEquals($overtime->id, $this->repo->find($overtime->id)->id);
-        $this->assertNull($this->repo->find(-1));
+
+        $this->expectException(ModelNotFoundException::class);
+        $this->repo->find(-1);
     }
 
     /** @test a database failure while reading an overtime request reaches the caller */

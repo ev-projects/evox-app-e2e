@@ -127,19 +127,23 @@ class BhrRepositoryFailureArmsTest extends TestCase
     /** @test */
     public function a_profile_read_asks_for_the_display_fields_and_a_sync_read_asks_for_the_sync_fields()
     {
+        // config/constants.php was reorganized since this test was authored: 'payRate' now lives
+        // only in BHR_COE_USER_FIELDS (a third, COE-specific list — not requested here) and
+        // 'employmentHistoryStatus' is present in BOTH BHR_USER_FIELDS and BHR_USER_SYNC_FIELDS, so
+        // neither can distinguish the two lists any more. 'customSSS' is present only in
+        // BHR_USER_FIELDS, which still makes it a valid field-list discriminator.
         BhrApiFake::fake('employees/1001', (object) ['id' => 1001]);
 
-        // for_sync = false (the default) -> BHR_USER_FIELDS, which carries payRate.
+        // for_sync = false (the default) -> BHR_USER_FIELDS, which carries customSSS.
         $this->repo->get_user('1001');
         $displayEndpoint = BhrApiFake::calls()[0]['endpoint'];
-        $this->assertStringContainsString('payRate', $displayEndpoint);
-        $this->assertStringNotContainsString('employmentHistoryStatus', $displayEndpoint);
+        $this->assertStringContainsString('customSSS', $displayEndpoint);
 
-        // for_sync = true -> BHR_USER_SYNC_FIELDS, which carries the employment status instead.
+        // for_sync = true -> BHR_USER_SYNC_FIELDS instead, which does not carry customSSS.
         $this->repo->get_user('1001', true);
         $syncEndpoint = BhrApiFake::calls()[1]['endpoint'];
-        $this->assertStringContainsString('employmentHistoryStatus', $syncEndpoint);
-        $this->assertStringNotContainsString('payRate', $syncEndpoint);
+        $this->assertStringNotContainsString('customSSS', $syncEndpoint);
+        $this->assertNotSame($displayEndpoint, $syncEndpoint, 'for_sync must select a different field list');
     }
 
     /** @test */

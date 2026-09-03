@@ -26,10 +26,15 @@
  *   below (wrapped in DatabaseTransactions; no writes/DDL). The non-int 400 test fails validation
  *   first and never reaches the SP.
  *
- * dtr_single_punch(): left UNCHANGED (not in scope). Its test URL /dtr/dtrpunch/check/{id}/{date}
- *   collides with the earlier-registered Dtr_punches route /dtrpunch/{user_id}/{start}/{end},
- *   binding user_id='check' (non-integer) -> validation fails -> 400. The existing 400 assertion
- *   therefore still holds.
+ * dtr_single_punch(): route collision FIXED 2026-09-03 (app/Modules/Payroll/Routes/api.php) — the
+ *   literal-prefixed /dtrpunch/check/{user_id}/{call_date} route is now registered BEFORE
+ *   /dtrpunch/{user_id}/{start_date}/{end_date}, so it is finally reachable instead of always being
+ *   swallowed by the earlier, more general route (which bound user_id='check', a non-integer, and
+ *   validation-failed into the SAME 400 this file's previous test asserted — coincidentally right,
+ *   for the wrong reason). With the collision gone, dtr_single_punch() validates 'call_date' =>
+ *   'date_format:Y-m-d' (its 'user_id' => 'int' rule is the same always-passing rule described
+ *   above) — a valid integer user_id and a valid date now reach success_response() => 200; a
+ *   malformed date fails validation => 400. Authored as a pair below, mirroring its three siblings.
  *
  * get_incomplete_logs(): has NO try/catch and no injected dep; uses Eloquent models directly and
  *   only performs user-scoped READS, always returning a raw array (HTTP 200). Its two arms
@@ -126,11 +131,21 @@ class DTRLoadBranchTest extends TestCase
     }
 
     // --------------------------------------------------------- dtr_single_punch()
-    // Only reachable arm: 'int' rule throws -> catch -> error_response default 400.
+    // Success arm: valid integer user_id and a valid date now reach target_punch() and
+    // success_response() => 200 (route collision fixed — see file header).
     /** @test */
-    public function dtr_single_punch__load__invalid_int_rule__error_400()
+    public function dtr_single_punch__load__valid_int__success_200()
     {
         $res = $this->getJson('/api/dtr/dtrpunch/check/' . $this->user->id . '/2020-01-01');
+
+        $res->assertStatus(200)->assertJsonStructure(['message', 'content']);
+    }
+
+    // Validation arm: a malformed call_date fails 'date_format:Y-m-d' -> catch -> error_response 400.
+    /** @test */
+    public function dtr_single_punch__load__invalid_date_format__error_400()
+    {
+        $res = $this->getJson('/api/dtr/dtrpunch/check/' . $this->user->id . '/not-a-date');
 
         $res->assertStatus(400)->assertJsonStructure(['error' => ['message', 'content']]);
     }
