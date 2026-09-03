@@ -180,85 +180,9 @@ function DisputeForm(props) {
         }
       }
     } else {
-      // fetchDisputes();
       dispatch(getDisputeReport(props.params.id));
     }
   }, [payroll]);
-
-  // useEffect(() => {
-
-  //   setFormData5({
-  //     ...formData5,
-  //     ["Payroll_Period"]:payroll
-  //   });
-  // }, [payroll]);
-
-
-  // Function to fetch disputes from the API
-  const fetchDisputes = async () => {
-    try {
-
-      API.call({
-        method: "get",
-        url: "/getuserdispute/" + props.params.id,
-      })
-        .then(result => {
-          setFormData({
-            ...formData,
-            employee_id: result.data.content[0].employee_id,
-            dispute_type: result.data.content[0].dispute_type,
-            description: result.data.content[0].description,
-            status: result.data.content[0].status,
-            LWOP: result.data.content[0].LWOP,
-            UT: result.data.content[0].UT,
-            TARDINESS: result.data.content[0].TARDINESS,
-            Late: result.data.content[0].Late,
-            Night_Shift_Diff: result.data.content[0].Night_Shift_Diff,
-            Overtime: result.data.content[0].Overtime,
-            OT_with_NSD: result.data.content[0].OT_with_NSD,
-            Rest_Day: result.data.content[0].Rest_Day,
-            Rest_Day_200: result.data.content[0].Rest_Day_200,
-            Rest_Day_Work_With_NSD: result.data.content[0].Rest_Day_Work_with_NSD,
-            Rest_Day_Work_With_OT: result.data.content[0].Rest_Day_Work_with_OT,
-            Rest_Day_Work_NSD_With_OT: result.data.content[0].Rest_Day_Work_NSD_with_OT,
-            Legal_Holiday: result.data.content[0].Legal_Holiday,
-            Legal_Holiday_With_NSD: result.data.content[0].Legal_Holiday_with_NSD,
-            Legal_Holiday_With_Overtime: result.data.content[0].Legal_Holiday_with_Overtime,
-            Legal_Holiday_OT_With_OT: result.data.content[0].Legal_Holiday_OT_with_OT,
-            Special_Holiday: result.data.content[0].Special_Holiday,
-            Special_Holiday_200: result.data.content[0].Special_Holiday_200,
-            Special_Holiday_With_NSD: result.data.content[0].Special_Holiday_with_NSD,
-            Special_Holiday_With_Overtime: result.data.content[0].Special_Holiday_with_Overtime,
-            Special_Holiday_OT_With_OT: result.data.content[0].Special_Holiday_OT_with_OT,
-            Referral_Fee: result.data.content[0].Referral_Fee,
-            Bonus: result.data.content[0].Bonus,
-            LWOP_Adjustment: result.data.content[0].LWOP_Adjustment,
-            Commission: result.data.content[0].Commission,
-            BPs_Remarks: result.data.content[0].BPs_Remarks,
-            BPs_Date_Encoded: result.data.content[0].BPs_Date_Encoded,
-            Payroll_Remarks: result.data.content[0].Payroll_Remarks,
-            Payout_Inclusion: result.data.content[0].Payout_Inclusion,
-            Valid_From: result.data.content[0].Valid_From,
-            Valid_To: result.data.content[0].Valid_To,
-            Payroll_Cutoff: result.data.content[0].Payroll_Cutoff,
-          });
-          setFormData1({
-            ...formData1,
-            ["first_name"]: result.data.content[0].first_name,
-            ["last_name"]: result.data.content[0].last_name,
-            ["emp_num"]: result.data.content[0].emp_num,
-            ["department_name"]: result.data.content[0].Department,
-          });
-        })
-        .catch(e => {
-          dispatch(Formatter.alert_error(e))
-        });
-      //   const response = await axios.get('/api/storedispute', { params: filters });
-      //   setDisputes(response.data); // Update state with fetched data
-    } catch (error) {
-      console.error("Error fetching disputes:", error); // Log any errors
-    }
-  };
 
 
   const handleCutoff = async (fromdate, todate) => {

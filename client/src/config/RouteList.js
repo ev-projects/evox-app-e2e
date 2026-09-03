@@ -85,7 +85,6 @@ import MyOverallRequest from "../container/MyOverallRequest/MyOverallRequest";
 import OverallRequest from "../container/MyTeam/OverallRequest";
 import OpsScheduleForm from "../container/OpsSchedule/OpsScheduleForm";
 import OpsScheduleList from "../container/OpsSchedule/OpsScheduleList";
-import JobOpeningsUpdate from "../container/Admin/JobOpeningsUpdate/JobOpeningsUpdate";
 
 import DtrMultiLogsSummary from "../container/MyTeam/DtrMultiLogsSummary";
 
@@ -476,11 +475,17 @@ const RoutesList = (props) => {
           <OpsScheduleList />
         </ProtectedRoute>
 
-        <ProtectedRoute exact path={global.links.admin_import_careers}>
-          <JobOpeningsUpdate  
-          level={["Admin"]} 
-          role={['admin']} permission={['full_access']}/>
+        <ProtectedRoute exact path={global.links.manage_hr_announcements}>
+          <HrAnnouncementsList  
+          level={["HR"]} 
+          role={['hr']} />
         </ProtectedRoute>
+
+        <ProtectedRoute exact path={global.links.post_hr_announcements+":id?"}>
+          <HrAnnouncementsForm  
+          feature = {['manage_announcement']} 
+          role={['hr']} permission={['manage_hr_announcements']}/>
+        </ProtectedRoute> 
 
         <ProtectedRoute exact path={global.links.view_report}>
            <ViewReport></ViewReport>

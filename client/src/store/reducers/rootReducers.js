@@ -55,7 +55,6 @@ import reportReducers from './report/reportReducers';
 import departmentListReducers from "./admin/departmentListReducers";
 // hrAnnouncementReducers removed 2026-08-13 — Hr module deleted, feature retired
 import opsScheduleReducers from "./opsschedule/opsScheduleReducers";
-import jobOpeningReducers from "./admin/jobOpeningReducers";
 // Combiner of Reducers.
 import { combineReducers } from 'redux';
 import modalLoginReducer from './settings/modalLoginReducer';
@@ -116,7 +115,6 @@ const rootReducer = combineReducers({
     departmentList:   departmentListReducers,
     // hrAnnouncement removed 2026-08-13 — Hr module deleted
     opsSchedule:   opsScheduleReducers,
-    careerList:   jobOpeningReducers,
     freshService:   freshServiceReducers,
     neo:  neoReducers,
 });

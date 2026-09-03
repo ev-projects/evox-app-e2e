@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import { Container,Col,Tabs,Tab,Badge,Table,Button,Pagination,FormControl,Row,ToggleButton,ButtonGroup } from 'react-bootstrap';
+import { Col,Tabs,Tab,Badge,Table,Button,Row,ToggleButton,ButtonGroup } from 'react-bootstrap';
 import { connect,dispatch } from 'react-redux';
 import "./MyTeamRequests.css";
-import { ContainerHeader,Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
+import { Content,ContainerWrapper,ContainerBody } from '../../../components/GridComponent/AdminLte.js';
 import Wrapper from "../../../components/Template/Wrapper";
 import { Formik,FieldArray,Field,ErrorMessage,getIn,Form,useFormikContext  } from 'formik';
 import Authenticator from "../../../services/Authenticator";
@@ -211,19 +211,6 @@ console.log(this.state.store_departments);
   });
 
     if(this.props.isListLoaded){
-
-    let pagination = [];  
-    for (let number = 1; number <= request_list.last_page; number++) {
-      pagination.push(
-        <Field>
-          {({ field, form }) => (
-            <div>
-              <Button type="submit" className="pagination_btn text-center" active={number === request_list.current_page} onClick={() =>{resetValues(form.setFieldValue,number) }}>{number}</Button>
-            </div>
-          )}
-        </Field>
-      );
-    }
 
     var pending = 0;
     var approved = 0;
@@ -640,7 +627,6 @@ console.log(this.state.store_departments);
                   </tbody>
                 </Table>
                 <Paginate pagination={request_list} />
-                {/* <Pagination className="justify-content-center" >{pagination}</Pagination> */}
                 </div>) : (<div> Sorry, No Record Found </div>)}
                 </Content>
             </ContainerBody>  
@@ -674,30 +660,23 @@ console.log(this.state.store_departments);
     
   };
 
-  const resetValues = (setFieldValue,number) => {
-    setFieldValue("page",number); 
-    setFieldValue("action", "");
-    setFieldValue( "checkedList",[]  ) ;
-    setFieldValue( "isAll",false  ) ;
-  };
-
   const Status = (props) => {
-    let pagination = [];
+    let states = [];
     switch( props.status ) { 
       case "Pending":
-          pagination.push( <Badge variant="secondary"><span></span>{props.status}</Badge>);
+          states.push( <Badge variant="secondary"><span></span>{props.status}</Badge>);
           break;
       case "Canceled":
-          pagination.push(<Badge variant="dark"><span></span>{props.status}</Badge>);
+          states.push(<Badge variant="dark"><span></span>{props.status}</Badge>);
           break;
       case "Approved":
-          pagination.push(<Badge variant="success"><span></span>{props.status}</Badge>);
+          states.push(<Badge variant="success"><span></span>{props.status}</Badge>);
           break;
       case "Declined":
-          pagination.push(<Badge variant="danger"><span></span>{props.status}</Badge>);
+          states.push(<Badge variant="danger"><span></span>{props.status}</Badge>);
       break;
    }
-    return pagination;
+    return states;
   }
 
   const mapStateToProps = (state) => {
