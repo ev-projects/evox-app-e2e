@@ -3,7 +3,6 @@
 // SOURCE FILES UNDER TEST (the connect() wiring closure in each)
 //   components/PoliciesDocument/PoliciesDocumentDownload.js   mapStateToProps
 //   components/PoliciesDocument/PoliciesDocumentViewer.js     mapStateToProps
-//   components/PoliciesDocument/PoliciesDocumentModal.js      mapStateToProps
 //   components/PoliciesDocument/PoliciesDocumentUpload.js     mapStateToProps
 //   components/PoliciesDocument/UploadedDocumentList.js       mapStateToProps
 //   components/NeoReport/NeoOnboarding.js                     mapStateToProps
@@ -105,7 +104,6 @@ jest.mock('../../store/actions/neo/neoActions', () => ({
 
 import PoliciesDocumentDownload from '../../components/PoliciesDocument/PoliciesDocumentDownload';
 import PoliciesDocumentViewer from '../../components/PoliciesDocument/PoliciesDocumentViewer';
-import PoliciesDocumentModal from '../../components/PoliciesDocument/PoliciesDocumentModal';
 import PoliciesDocumentUpload from '../../components/PoliciesDocument/PoliciesDocumentUpload';
 import UploadedDocumentList from '../../components/PoliciesDocument/UploadedDocumentList';
 import NeoOnboarding from '../../components/NeoReport/NeoOnboarding';
@@ -177,12 +175,8 @@ describe('Policies Document screens — store slices feeding each screen', () =>
     expect(props.user).toBe(state.user);
   });
 
-  test('Modal maps only the user and the document tree — it never reads the single file', () => {
-    const props = PoliciesDocumentModal.__mapStateToProps(state);
-
-    expect(props).toEqual({ user: state.user, policiesdocument: state.dashboard.my_doc });
-    expect(props.policydocument).toBeUndefined();
-  });
+  // Modal wiring test removed (EVOX-715, remove Policies Document Modal) —
+  // PoliciesDocumentModal.js no longer exists.
 
   test('Upload maps the departments it must tag a document with, plus the settings country list', () => {
     expect(PoliciesDocumentUpload.__mapStateToProps(state)).toEqual({

@@ -106,7 +106,7 @@ const mockScreens = [
     '../../../container/Admin/GenerateDate',
     '../../../container/Admin/SyncBiometrics/SyncBiometrics',
     '../../../container/Admin/DepartmentList',
-    '../../../container/Admin/JobOpeningsUpdate/JobOpeningsUpdate',
+    // JobOpeningsUpdate removed (EVOX-720, Careers Dead Code Removal)
     '../../../container/Profile',
     '../../../container/Profile/JobInformation',
     '../../../container/Profile/PersonalInformation',

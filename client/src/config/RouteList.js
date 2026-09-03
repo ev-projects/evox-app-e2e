@@ -475,17 +475,9 @@ const RoutesList = (props) => {
           <OpsScheduleList />
         </ProtectedRoute>
 
-        <ProtectedRoute exact path={global.links.manage_hr_announcements}>
-          <HrAnnouncementsList  
-          level={["HR"]} 
-          role={['hr']} />
-        </ProtectedRoute>
-
-        <ProtectedRoute exact path={global.links.post_hr_announcements+":id?"}>
-          <HrAnnouncementsForm  
-          feature = {['manage_announcement']} 
-          role={['hr']} permission={['manage_hr_announcements']}/>
-        </ProtectedRoute> 
+        {/* HR Announcements feature retired 2026-08-13 (container/Hr/Announcements and
+            container/Hr/PostAnnouncements are stubbed to `null`) - routes removed to match,
+            same as ChangeLogs' retirement. */}
 
         <ProtectedRoute exact path={global.links.view_report}>
            <ViewReport></ViewReport>

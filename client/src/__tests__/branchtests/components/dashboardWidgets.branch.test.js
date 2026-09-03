@@ -90,15 +90,10 @@ jest.mock('../../../store/actions/announcement/departmentAnnouncementActions', (
     fetchDashboardAnnouncementList: jest.fn((data) => ({ type: 'THUNK_DASHBOARD_ANNOUNCEMENTS', data })),
 }));
 
-jest.mock('../../../store/actions/admin/jobOpeningActions.js', () => ({
-    fetchJobOpenings: jest.fn(() => ({ type: 'THUNK_JOB_OPENINGS' })),
-}));
-
 global.links = new Proxy({}, { get: (target, name) => '/x/' + String(name) });
 
 const dashboardActions = require('../../../store/actions/dashboard/dashboardActions');
 const announcementActions = require('../../../store/actions/announcement/departmentAnnouncementActions');
-const jobOpeningActions = require('../../../store/actions/admin/jobOpeningActions.js');
 
 const lastWiring = () => global.__connected[global.__connected.length - 1];
 
@@ -113,9 +108,6 @@ const birthdayWiring = lastWiring();
 
 const DtrNotifications = require('../../../components/Dashboard/DtrNotifications/DtrNotifications').default;
 const dtrNotificationsWiring = lastWiring();
-
-const JobOpenings = require('../../../components/Dashboard/JobOpenings/JobOpenings').default;
-const jobOpeningsWiring = lastWiring();
 
 const storeState = {
     user: { id: 7 },
@@ -443,66 +435,6 @@ describe('My DTR Notifications panel', () => {
     });
 });
 
-describe('Job Openings panel', () => {
-    test('the panel asks for the job openings as it mounts and embeds the careers board', () => {
-        const fetchJobOpenings = jest.fn();
-
-        const { container } = render(
-            <JobOpenings
-                careerList={{ PHL: [], IND: [] }}
-                fetchJobOpenings={fetchJobOpenings}
-                fetchDashboardAnnouncementList={jest.fn()}
-            />,
-        );
-
-        expect(fetchJobOpenings).toHaveBeenCalledTimes(1);
-        expect(container.querySelector('iframe').getAttribute('src')).toContain('client.taptalent.io/career/eastvantage');
-    });
-
-    test('the panel still renders when no career list has arrived yet', () => {
-        const { container } = render(
-            <JobOpenings fetchJobOpenings={jest.fn()} fetchDashboardAnnouncementList={jest.fn()} />,
-        );
-
-        expect(container.querySelector('iframe')).toBeInTheDocument();
-    });
-
-    test('choosing a category refetches the dashboard announcements for that category', () => {
-        const fetchDashboardAnnouncementList = jest.fn();
-        const ref = React.createRef();
-
-        render(
-            <JobOpenings
-                ref={ref}
-                careerList={{ PHL: [], IND: [] }}
-                fetchJobOpenings={jest.fn()}
-                fetchDashboardAnnouncementList={fetchDashboardAnnouncementList}
-            />,
-        );
-        ref.current.handleSelect('hr-announcements');
-
-        expect(fetchDashboardAnnouncementList).toHaveBeenCalledWith({ category: 'hr-announcements' });
-    });
-
-    test('the panel reads the user, announcement and career slices and can refresh both feeds', () => {
-        const dispatch = jest.fn();
-
-        expect(jobOpeningsWiring.mapStateToProps(storeState)).toEqual({
-            user: storeState.user,
-            departmentAnnouncement: storeState.departmentAnnouncement,
-            careerList: storeState.careerList.careerlist,
-        });
-
-        const props = jobOpeningsWiring.mapDispatchToProps(dispatch);
-        props.fetchJobOpenings();
-        props.fetchDashboardAnnouncementList({ category: 'all' });
-
-        expect(jobOpeningActions.fetchJobOpenings).toHaveBeenCalledTimes(1);
-        expect(announcementActions.fetchDashboardAnnouncementList).toHaveBeenCalledWith({ category: 'all' });
-        expect(dispatch).toHaveBeenNthCalledWith(1, { type: 'THUNK_JOB_OPENINGS' });
-        expect(dispatch).toHaveBeenNthCalledWith(2, {
-            type: 'THUNK_DASHBOARD_ANNOUNCEMENTS',
-            data: { category: 'all' },
-        });
-    });
-});
+// Job Openings panel tests removed (EVOX-721, Careers Dead Code Removal) —
+// JobOpenings.js is now a plain iframe embed with no fetch/wiring behavior,
+// and store/actions/admin/jobOpeningActions.js no longer exists.

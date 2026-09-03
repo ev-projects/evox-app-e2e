@@ -10,43 +10,35 @@
  *        Menu:  Admin -> Department List         (Sidebar.js:1109)
  *        Route: global.links.department_list -> /app/admin/DepartmentList/
  *               (config/RouteList.js:485-489, permission access_department_list)
- *   3. container/Admin/JobOpeningsUpdate/JobOpeningsUpdate.js
- *        Menu:  Admin -> Careers                 (Sidebar.js:1055)
- *        Route: global.links.admin_import_careers -> /app/admin/CareersImport/
- *               (config/RouteList.js:518-522, permission full_access)
+ *   3. container/Admin/JobOpeningsUpdate/JobOpeningsUpdate.js — REMOVED (EVOX-720, Careers
+ *      Dead Code Removal). All PHASE 3 tests and findings below that referenced it (JOU_*)
+ *      were removed along with it.
  *
  * CURRENT MEASURED COVERAGE (the baseline this suite was commissioned against, as supplied
- * in the packet - 61 uncovered statements across the three files):
+ * in the packet):
  *        ChangeLogs.js          38.46% statements
  *        DepartmentList.js      42.42% statements
- *        JobOpeningsUpdate.js   45.45% statements
  *
  * AFTER THIS SUITE. Measured 2026-08-05, this suite alone:
  *   CI=true npx react-scripts test --watchAll=false
  *     --testPathPattern=AdminMaintenanceLifecycle --coverage
  *     --collectCoverageFrom=src/container/Admin/ChangeLogs/ChangeLogs.js
  *     --collectCoverageFrom=src/container/Admin/DepartmentList/DepartmentList.js
- *     --collectCoverageFrom=src/container/Admin/JobOpeningsUpdate/JobOpeningsUpdate.js
  *        ChangeLogs.js          94.87% stmts / 83.87% branch / 94.74% lines
  *        DepartmentList.js       100%  stmts /  100%  branch /  100%  lines
- *        JobOpeningsUpdate.js    100%  stmts / 94.44% branch /  100%  lines
  *   Everything still uncovered is unreachable by construction, and is itself a finding:
  *     ChangeLogs.js:68  - the `default: break` of the inner switch on values.method, which can
  *                         only ever see "store" (see CL_DEADGATE).
  *     ChangeLogs.js:202 - `return <PageLoading/>`, guarded by an always-true condition
  *                         (see CL_DEADGATE).
- *     JobOpeningsUpdate.js:129 - the false arm of `type != null && type === "csv"`. `type` is
- *                         seeded to 'csv' in the constructor and never written again, so the
- *                         csv chooser cannot be hidden and the <></> fallback is dead.
  *
  * WHAT IS WALKED
  *   PHASE 1  CHANGE LOG   render gate, category options, every arm of the Yup schema,
  *                         the confirm guard, and exactly what lands in the FormData.
  *   PHASE 2  DEPARTMENTS  mount fetch, load gate, row rendering, the multi-login toggle
  *                         payload, and the soft-delete confirm guard (both arms).
- *   PHASE 3  CAREERS      csv chooser, MIME gate, Papa.parse options, header-row drop,
- *                         preview table, and the import payload (both arms).
- *   PHASE 4  WIRING       mapStateToProps / mapDispatchToProps for all three containers,
+ *   PHASE 3  CAREERS      removed (EVOX-720) — see note above.
+ *   PHASE 4  WIRING       mapStateToProps / mapDispatchToProps for the remaining containers,
  *                         captured off `connect` rather than executed through a real store.
  *
  * FINDINGS (characterised, NOT fixed - each test below asserts today's behaviour and is
@@ -89,31 +81,15 @@
  *   DL_LOGSPILL   DepartmentList.js:60 console.log's the entire department list object on every
  *                 render - shipped debug output that leaks the full department table into the
  *                 browser console of any admin who opens the screen.
- *   JOU_SEMICOLON JobOpeningsUpdate.js:178 closes with `</Formik>;` INSIDE the <Wrapper> JSX.
- *                 The `;` is not syntax there, it is a JSX text child, so a stray semicolon is
- *                 painted on the Job Openings Import page under the form.
- *   JOU_ACCEPT    JobOpeningsUpdate.js:134 sets accept="csv/*" on the file input. That is not a
- *                 valid MIME pattern (the type is "text", not "csv"), so the browser's file
- *                 picker filter matches nothing and the user has to switch it to "All Files"
- *                 before any csv is selectable.
- *   JOU_MIME      JobOpeningsUpdate.js:37 and :74 both gate on an exact
- *                 `type !== "text/csv"`. Chrome on Windows reports a .csv as
- *                 "application/vnd.ms-excel" whenever Excel owns the extension, so a perfectly
- *                 valid csv is rejected with "Please provide the correct file format."
- *   JOU_NOSCHEMA  JobOpeningsUpdate's Formik (line 116) has no validationSchema and no
- *                 field-level validate, so `errors` is permanently empty and the
- *                 <ErrorMessage name="file"/> slot at line 139 can never render anything. The
- *                 error/message keys seeded into initialValues (lines 110-111) are likewise
- *                 never read back out of `values`. All user-visible validation runs off
- *                 component state instead.
+ *   (JOU_SEMICOLON, JOU_ACCEPT, JOU_MIME, JOU_NOSCHEMA — findings about JobOpeningsUpdate.js,
+ *   removed along with that component, EVOX-720.)
  *
  * DELIBERATELY NOT ASSERTED
  *   - The missing `key` prop on DepartmentList.js:81's <tr>. React de-duplicates that warning
  *     per owner, so an assertion on it would pass or fail depending on which test in this file
  *     ran first. It is a real source defect; it is simply not safely testable here.
- *   - `<i class="fa fa-trash">` (DepartmentList.js:104) and `<div class="invalid-feedback">`
- *     (JobOpeningsUpdate.js:136). React 16 warns about `class` but still emits the attribute,
- *     so there is no user-visible failure to characterise.
+ *   - `<i class="fa fa-trash">` (DepartmentList.js:104). React 16 warns about `class` but still
+ *     emits the attribute, so there is no user-visible failure to characterise.
  *   - ChangeLogs.js:87 does `new Date(instance.log_date)` on a "YYYY-MM-DD" string, which
  *     parses as UTC midnight and therefore displays as the previous day west of Greenwich.
  *     Noted, but latent: nothing in the app ever puts a log_date on the restDayWork slice this
@@ -124,9 +100,8 @@
  *
  * DETERMINISM
  *   No test reads the wall clock. Every date is built from explicit local components or
- *   asserted as a UTC instant. papaparse is stubbed so its FileReader never runs - the
- *   `complete` callback is invoked by the test, synchronously, inside act(). There are no
- *   timers, no polling and no debounce anywhere in these three files.
+ *   asserted as a UTC instant. There are no timers, no polling and no debounce anywhere in
+ *   these files.
  *
  * ADDITIVE ONLY - no existing test file and no application source was modified.
  */
@@ -298,13 +273,6 @@ jest.mock('react-bootstrap/Dropdown', () => {
     return { __esModule: true, default: Dropdown };
 });
 
-// papaparse is stubbed so the FileReader it would otherwise open never runs. Tests invoke the
-// `complete` callback themselves, synchronously.
-jest.mock('papaparse', () => {
-    const parse = jest.fn();
-    return { __esModule: true, default: { parse }, parse };
-});
-
 // Action creators return identifiable plain objects so PHASE 4 can prove which creator each
 // mapDispatchToProps key routes to, and with which arguments.
 // changeLogsActions.js removed — { virtual: true } skips the filesystem check.
@@ -320,11 +288,6 @@ jest.mock('../../store/actions/admin/departmentListActions', () => ({
     deleteDepartment:               jest.fn((id) => ({ type: 'THUNK_DELETE_DEPARTMENT', id })),
     updateDepartmentScheduleStatus: jest.fn((id, d) => ({ type: 'THUNK_UPDATE_DEPT_SCHED', id, data: d })),
 }));
-jest.mock('../../store/actions/admin/jobOpeningActions.js', () => ({
-    importJobOpening:  jest.fn((d) => ({ type: 'THUNK_IMPORT_JOBS', data: d })),
-    fetchJobOpenings:  jest.fn(() => ({ type: 'THUNK_FETCH_JOBS' })),
-}));
-
 global.links = new Proxy({}, { get: (t, k) => '/x/' + String(k) + '/' });
 
 /* ------------------------------------------------- components under test */
@@ -333,14 +296,11 @@ global.links = new Proxy({}, { get: (t, k) => '/x/' + String(k) + '/' });
 let ChangeLogs = null;
 try { ChangeLogs = require('../../container/Admin/ChangeLogs/ChangeLogs.js').default; } catch (_) {}
 const DepartmentList    = require('../../container/Admin/DepartmentList/DepartmentList.js').default;
-const JobOpeningsUpdate = require('../../container/Admin/JobOpeningsUpdate/JobOpeningsUpdate.js').default;
 
 let changeLogsActions = {};
 try { changeLogsActions = require('../../store/actions/admin/changeLogsActions'); } catch (_) {}
 const redirectActions       = require('../../store/actions/redirectActions');
 const departmentListActions = require('../../store/actions/admin/departmentListActions');
-const jobOpeningActions     = require('../../store/actions/admin/jobOpeningActions.js');
-const Papa                  = require('papaparse').default;
 
 /* ----------------------------------------------------------- utilities */
 
@@ -772,199 +732,10 @@ describe('Admin -> Department List: switching multi-login for a department', () 
 });
 
 /* ================================================================== */
-/* PHASE 3 - ADMIN -> CAREERS (JobOpeningsUpdate)                       */
+/* PHASE 3 - ADMIN -> CAREERS (JobOpeningsUpdate) - removed (EVOX-720,  */
+/* Careers Dead Code Removal). container/Admin/JobOpeningsUpdate/       */
+/* JobOpeningsUpdate.js no longer exists.                               */
 /* ================================================================== */
-
-const renderCareers = () => {
-    const props = { importJobOpening: jest.fn(), user: {}, constant: {} };
-    const ref = React.createRef();
-    const utils = render(<JobOpeningsUpdate ref={ref} {...props} />);
-    return { ...utils, props, ref };
-};
-
-const fileInput = (container) => container.querySelector('#csv-to-upload');
-
-/** runs the papaparse `complete` callback the component registered, with the given rows */
-const finishParse = (rows) => {
-    const complete = Papa.parse.mock.calls[Papa.parse.mock.calls.length - 1][1].complete;
-    act(() => { complete({ data: rows }); });
-};
-
-const JOB_ROWS = [
-    ['Position Title', 'EV Careers Link', 'Category', 'Country'],
-    ['Data Engineer',  'https://ev/de',   'Tech',     'Philippines'],
-    ['Recruiter',      'https://ev/rc',   'HR',       'India'],
-];
-
-describe('Admin -> Careers: choosing a csv of job openings', () => {
-
-    it('opens on the csv chooser with no preview table and no error', () => {
-        const { container } = renderCareers();
-        expect(fileInput(container)).not.toBeNull();
-        expect(container.querySelector('table')).toBeNull();
-        expect(container.querySelector('[data-testid="content"]').getAttribute('data-title'))
-            .toBe('Job Openings Import');
-    });
-
-    it('rejects a non-csv file with a format message and parses nothing', () => {
-        const { container, ref, getByText } = renderCareers();
-        act(() => { chooseFiles(fileInput(container), [notCsv('handbook.pdf', 'application/pdf')]); });
-        expect(getByText('Please provide the correct file format.')).toBeInTheDocument();
-        expect(Papa.parse).not.toHaveBeenCalled();
-        expect(ref.current.state.parsedJobs).toEqual([]);
-        expect(ref.current.state.error).toBe(true);
-    });
-
-    it('_FINDING_JOU_MIME rejects a real .csv that the browser reports as application/vnd.ms-excel', () => {
-        const { container, ref, getByText } = renderCareers();
-        // this is exactly what Chrome on Windows reports for a .csv when Excel owns the extension
-        act(() => { chooseFiles(fileInput(container), [notCsv('openings.csv', 'application/vnd.ms-excel')]); });
-        expect(getByText('Please provide the correct file format.')).toBeInTheDocument();
-        expect(Papa.parse).not.toHaveBeenCalled();
-        expect(ref.current.state.csv_file).toEqual([]);
-    });
-
-    it('_FINDING_JOU_ACCEPT filters the file picker on the invalid MIME pattern "csv/*"', () => {
-        const { container } = renderCareers();
-        expect(fileInput(container).getAttribute('accept')).toBe('csv/*');
-    });
-
-    it('parses an accepted csv headerless and skipping empty lines', () => {
-        const { container } = renderCareers();
-        const file = csv('openings.csv');
-        act(() => { chooseFiles(fileInput(container), [file]); });
-        expect(Papa.parse).toHaveBeenCalledTimes(1);
-        expect(Papa.parse.mock.calls[0][0]).toBe(file);
-        const config = Papa.parse.mock.calls[0][1];
-        expect(config.header).toBe(false);
-        expect(config.skipEmptyLines).toBe(true);
-        expect(typeof config.complete).toBe('function');
-    });
-
-    it('drops the csv header row and previews only the job rows', () => {
-        const { container, ref } = renderCareers();
-        act(() => { chooseFiles(fileInput(container), [csv('openings.csv')]); });
-        finishParse(JOB_ROWS);
-
-        expect(ref.current.state.parsedJobs).toEqual([JOB_ROWS[1], JOB_ROWS[2]]);
-        const rows = Array.from(container.querySelectorAll('tbody tr'))
-            .map((tr) => Array.from(tr.querySelectorAll('td')).map((td) => td.textContent));
-        expect(rows).toEqual([
-            ['Data Engineer', 'https://ev/de', 'Tech', 'Philippines'],
-            ['Recruiter',     'https://ev/rc', 'HR',   'India'],
-        ]);
-    });
-
-    it('shows no preview table when the csv holds nothing but a header row', () => {
-        const { container, ref } = renderCareers();
-        act(() => { chooseFiles(fileInput(container), [csv('empty.csv')]); });
-        finishParse([JOB_ROWS[0]]);
-        expect(ref.current.state.parsedJobs).toEqual([]);
-        expect(container.querySelector('table')).toBeNull();
-    });
-
-    it('leaves the chosen file and its preview untouched when the picker is cancelled', () => {
-        const { container, ref } = renderCareers();
-        act(() => { chooseFiles(fileInput(container), [csv('openings.csv')]); });
-        finishParse(JOB_ROWS);
-
-        act(() => { chooseFiles(fileInput(container), []) });   // cancelled dialog: no files
-        expect(Papa.parse).toHaveBeenCalledTimes(1);
-        expect(ref.current.state.parsedJobs).toEqual([JOB_ROWS[1], JOB_ROWS[2]]);
-        expect(container.querySelectorAll('tbody tr')).toHaveLength(2);
-    });
-
-    it('clears the format error and shows the new preview when a valid csv replaces a rejected one', () => {
-        const { container, ref, queryByText } = renderCareers();
-        act(() => { chooseFiles(fileInput(container), [notCsv('handbook.pdf', 'application/pdf')]); });
-        expect(ref.current.state.error).toBe(true);
-
-        act(() => { chooseFiles(fileInput(container), [csv('openings.csv')]); });
-        finishParse(JOB_ROWS);
-
-        expect(ref.current.state.error).toBe(false);
-        expect(ref.current.state.message).toBe('');
-        expect(queryByText('Please provide the correct file format.')).toBeNull();
-        expect(container.querySelectorAll('tbody tr')).toHaveLength(2);
-    });
-});
-
-describe('Admin -> Careers: importing the job openings', () => {
-
-    it('refuses to import when no file has been chosen and says the field is required', async () => {
-        const { container, props, getByText } = renderCareers();
-        await submitTheForm(container);
-        expect(props.importJobOpening).not.toHaveBeenCalled();
-        expect(getByText('This field is required.')).toBeInTheDocument();
-    });
-
-    it('refuses to import after a rejected file and repeats the format message', async () => {
-        const { container, props, getByText } = renderCareers();
-        act(() => { chooseFiles(fileInput(container), [notCsv('handbook.pdf', 'application/pdf')]); });
-        await submitTheForm(container);
-        expect(props.importJobOpening).not.toHaveBeenCalled();
-        expect(getByText('Please provide the correct file format.')).toBeInTheDocument();
-    });
-
-    it('imports the parsed rows as JSON, without the csv header row', async () => {
-        const { container, props } = renderCareers();
-        act(() => { chooseFiles(fileInput(container), [csv('openings.csv')]); });
-        finishParse(JOB_ROWS);
-        await submitTheForm(container);
-
-        expect(props.importJobOpening).toHaveBeenCalledTimes(1);
-        const fd = props.importJobOpening.mock.calls[0][0];
-        expect(formDataToObject(fd)).toEqual({
-            parsedJobs: JSON.stringify([JOB_ROWS[1], JOB_ROWS[2]]),
-        });
-        expect(JSON.parse(fd.get('parsedJobs'))).toHaveLength(2);
-    });
-
-    it('imports an empty array when the csv carried only a header row', async () => {
-        const { container, props } = renderCareers();
-        act(() => { chooseFiles(fileInput(container), [csv('openings.csv')]); });
-        finishParse([JOB_ROWS[0]]);
-        await submitTheForm(container);
-        expect(props.importJobOpening.mock.calls[0][0].get('parsedJobs')).toBe('[]');
-    });
-
-    it('clears the outstanding error banner once a valid import goes through', async () => {
-        const { container, ref, queryByText } = renderCareers();
-        await submitTheForm(container);                       // -> "This field is required."
-        expect(ref.current.state.error).toBe(true);
-
-        act(() => { chooseFiles(fileInput(container), [csv('openings.csv')]); });
-        finishParse(JOB_ROWS);
-        await submitTheForm(container);
-
-        expect(ref.current.state.error).toBe(false);
-        expect(ref.current.state.message).toBe('');
-        expect(queryByText('This field is required.')).toBeNull();
-    });
-
-    it('_FINDING_JOU_NOSCHEMA never fills the Formik error slot, because the form has no validation schema', async () => {
-        const { container, getByText } = renderCareers();
-        await submitTheForm(container);
-        // The one message the user sees is the state-driven banner at line 136, which the
-        // component wraps in <div class="invalid-feedback">.
-        expect(getByText('This field is required.')).toBeInTheDocument();
-        const allFeedback = Array.from(container.querySelectorAll('.input-feedback'));
-        expect(allFeedback).toHaveLength(1);
-        expect(allFeedback[0].parentElement.getAttribute('class')).toBe('invalid-feedback');
-        // The <ErrorMessage component="div" name="file" className="input-feedback"/> at line 139
-        // sits OUTSIDE that wrapper and contributes nothing, because formik has no schema and so
-        // errors.file can never be set - even now, after a submit has run validation.
-        expect(allFeedback.filter((el) => !el.closest('.invalid-feedback'))).toHaveLength(0);
-    });
-
-    it('_FINDING_JOU_SEMICOLON paints a stray semicolon under the import form', () => {
-        const { container } = renderCareers();
-        const wrapper = container.querySelector('[data-testid="wrapper"]');
-        const last = wrapper.childNodes[wrapper.childNodes.length - 1];
-        expect(last.nodeType).toBe(3);            // a Text node, not an element
-        expect(last.textContent).toBe(';');
-    });
-});
 
 /* ================================================================== */
 /* PHASE 4 - REDUX WIRING                                              */
@@ -1041,20 +812,6 @@ describe('Redux wiring for the three admin maintenance screens', () => {
         expect(dispatch).toHaveBeenCalledTimes(3);
     });
 
-    it('gives the Careers import screen the user and constant branches only', () => {
-        const state = { user: { id: 4 }, constant: { c: 1 }, departmentList: {} };
-        const mapped = JobOpeningsUpdate.__msp(state);
-        expect(mapped.user).toBe(state.user);
-        expect(mapped.constant).toBe(state.constant);
-        expect(Object.keys(mapped).sort()).toEqual(['constant', 'user']);
-    });
-
-    it('routes the careers import to importJobOpening with the form data it was handed', () => {
-        const dispatch = jest.fn();
-        const fd = new FormData();
-        JobOpeningsUpdate.__mdp(dispatch).importJobOpening(fd);
-        expect(jobOpeningActions.importJobOpening).toHaveBeenCalledWith(fd);
-        expect(dispatch).toHaveBeenCalledTimes(1);
-        expect(dispatch).toHaveBeenCalledWith({ type: 'THUNK_IMPORT_JOBS', data: fd });
-    });
+    // Careers import (JobOpeningsUpdate) wiring tests removed (EVOX-720,
+    // Careers Dead Code Removal) — that screen no longer exists.
 });

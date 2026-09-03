@@ -46,7 +46,6 @@ import {
     updateDepartmentScheduleStatus,
 } from '../../../../store/actions/admin/departmentListActions';
 import { generateDtrDate } from '../../../../store/actions/admin/generateDtrDateActions';
-import { fetchJobOpenings, importJobOpening } from '../../../../store/actions/admin/jobOpeningActions';
 import {
     addPayrollCutoff,
     updatePayrollCutoff,
@@ -267,35 +266,8 @@ describe('admin/generateDtrDate', () => {
     });
 });
 
-describe('admin/jobOpeningActions', () => {
-    describe('fetchJobOpenings', () => {
-        it('dispatches FETCH_CAREERS_SUCCESS on success', async () => {
-            API.call.mockResolvedValue(okResult([{ id: 1 }]));
-            const dispatch = await run(fetchJobOpenings());
-            expect(API.call).toHaveBeenCalledWith(expect.objectContaining({ url: '/careers/' }));
-            expect(typesOf(dispatch)).toContain('FETCH_CAREERS_SUCCESS');
-        });
-        it('dispatches alert_error on failure', async () => {
-            API.call.mockRejectedValue(new Error('boom'));
-            const dispatch = await run(fetchJobOpenings());
-            expect(typesOf(dispatch)).toContain('SHOW_ALERT_ERROR');
-        });
-    });
-    describe('importJobOpening', () => {
-        it('dispatches alert_success + SET_REDIRECT on success', async () => {
-            API.call.mockResolvedValue(okResult({}));
-            const dispatch = await run(importJobOpening({ file: 'x' }));
-            const types = typesOf(dispatch);
-            expect(types).toContain('SHOW_ALERT');
-            expect(types).toContain('SET_REDIRECT');
-        });
-        it('dispatches alert_error on failure', async () => {
-            API.call.mockRejectedValue(new Error('boom'));
-            const dispatch = await run(importJobOpening({}));
-            expect(typesOf(dispatch)).toContain('SHOW_ALERT_ERROR');
-        });
-    });
-});
+// admin/jobOpeningActions removed (EVOX-721, Careers Dead Code Removal) —
+// store/actions/admin/jobOpeningActions.js no longer exists.
 
 describe('admin/payrollCutoffActions', () => {
     describe('addPayrollCutoff', () => {

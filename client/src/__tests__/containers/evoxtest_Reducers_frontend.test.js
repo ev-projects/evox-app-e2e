@@ -43,7 +43,6 @@ import requestApprovalReducers from '../../store/reducers/approvals/requestAppro
 import lookupListReducers from '../../store/reducers/lookup/lookupListReducers';
 import assignRoleReducers from '../../store/reducers/admin/assignRoleReducers';
 import departmentListReducers from '../../store/reducers/admin/departmentListReducers';
-import jobOpeningReducers from '../../store/reducers/admin/jobOpeningReducers';
 import payrollCutoffReducers from '../../store/reducers/admin/payrollCutoffReducers';
 import registerUserReducers from '../../store/reducers/admin/registerUserReducers';
 import syncReducers from '../../store/reducers/admin/syncReducers';
@@ -1336,18 +1335,8 @@ describe('departmentListReducers', () => {
   });
 });
 
-// ─── jobOpeningReducers ───────────────────────────────────────────────────────
-
-describe('jobOpeningReducers', () => {
-  test('returns initial state on unknown action', () => {
-    expect(jobOpeningReducers(undefined, {}).isCareerListLoaded).toBe(false);
-  });
-
-  test('FETCH_CAREERS_SUCCESS sets careerlist', () => {
-    const result = jobOpeningReducers(undefined, { type: 'FETCH_CAREERS_SUCCESS', list: [{ title: 'Dev' }] });
-    expect(result.careerlist).toEqual([{ title: 'Dev' }]);
-  });
-});
+// jobOpeningReducers removed (EVOX-721, Careers Dead Code Removal) —
+// store/reducers/admin/jobOpeningReducers.js no longer exists.
 
 // ─── payrollCutoffReducers ────────────────────────────────────────────────────
 

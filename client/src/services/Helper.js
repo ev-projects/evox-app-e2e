@@ -1,4 +1,4 @@
-import moment from 'moment';
+import baseMoment from 'moment';
 import { extendMoment } from 'moment-range';
 
 import { format, getDate } from "date-fns";

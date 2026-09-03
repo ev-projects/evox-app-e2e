@@ -25,7 +25,6 @@ jest.mock('../../components/GridComponent/AdminLte.js', () => ({
     Row: ({ children }) => <div>{children}</div>,
     Col: ({ children }) => <div>{children}</div>,
 }));
-jest.mock('../../components/PoliciesDocument/PoliciesDocumentModal', () => () => <div>modal</div>);
 jest.mock('../../components/PoliciesDocument/PoliciesDocumentViewer', () => () => <div>viewer</div>);
 jest.mock('../../components/PoliciesDocument/PoliciesDocumentApi.js', () => ({
     fecthUserContry: jest.fn(() => ({ type: 'FETCH_COUNTRY' })),

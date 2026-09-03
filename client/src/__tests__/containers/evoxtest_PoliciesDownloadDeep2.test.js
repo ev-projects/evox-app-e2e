@@ -43,7 +43,6 @@ jest.mock('../../components/PoliciesDocument/PoliciesDocumentViewer', () => (pro
         <button data-testid="viewer-close" onClick={props.closeModal}>close</button>
     </div>
 ));
-jest.mock('../../components/PoliciesDocument/PoliciesDocumentModal', () => () => <div />);
 
 jest.mock('react-bootstrap', () => {
     const React = require('react');

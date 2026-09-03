@@ -102,14 +102,6 @@ try {
     AdminAnnouncementsList = () => <div>AdminAnnouncementsList</div>;
 }
 
-let JobOpeningsUpdate;
-try {
-    const m = require('../../container/Admin/JobOpeningsUpdate/JobOpeningsUpdate');
-    JobOpeningsUpdate = m.JobOpeningsUpdate || m.default;
-} catch (e) {
-    JobOpeningsUpdate = () => <div>JobOpeningsUpdate</div>;
-}
-
 // ---------------------------------------------------------------------------
 // Component defaultProps — provide fallbacks so components don't crash when
 // optional Redux-connected props are undefined (e.g. departmentList).
@@ -367,46 +359,7 @@ describe('AdminAnnouncementsList component', () => {
 });
 
 // ===========================================================================
-// 5. JOB OPENINGS UPDATE (CAREERS IMPORT)
+// 5. JOB OPENINGS UPDATE (CAREERS IMPORT) — removed (EVOX-720, Careers Dead
+// Code Removal). container/Admin/JobOpeningsUpdate/JobOpeningsUpdate.js no
+// longer exists; the careers-import CSV upload feature it tested is gone.
 // ===========================================================================
-describe('JobOpeningsUpdate component', () => {
-    const jobProps = {
-        ...baseProps,
-        importJobOpening: jest.fn(),
-        user:             { ...baseUser },
-        constant:         {},
-    };
-
-    beforeEach(() => jest.clearAllMocks());
-
-    test('renders without crashing', () => {
-        expect(() => wrap(<JobOpeningsUpdate {...jobProps} />)).not.toThrow();
-    });
-
-    test('renders Choose a csv file label', () => {
-        const { getByText } = wrap(<JobOpeningsUpdate {...jobProps} />);
-        expect(getByText(/Choose a csv file/i)).toBeInTheDocument();
-    });
-
-    test('renders file input with id csv-to-upload', () => {
-        const { container } = wrap(<JobOpeningsUpdate {...jobProps} />);
-        expect(container.querySelector('#csv-to-upload')).toBeInTheDocument();
-    });
-
-    test('renders file input with name="file"', () => {
-        const { container } = wrap(<JobOpeningsUpdate {...jobProps} />);
-        expect(container.querySelector('input[name="file"]')).toBeInTheDocument();
-    });
-
-    test('does not crash with empty constant prop', () => {
-        expect(() =>
-            wrap(<JobOpeningsUpdate {...jobProps} constant={{}} />)
-        ).not.toThrow();
-    });
-
-    test('does not crash with undefined importJobOpening', () => {
-        expect(() =>
-            wrap(<JobOpeningsUpdate {...jobProps} importJobOpening={undefined} />)
-        ).not.toThrow();
-    });
-});

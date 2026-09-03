@@ -444,19 +444,13 @@ test('_FINDING_FMT_DEAD_401_1 an alert_error called with no error is reported as
 });
 
 /**
- * FINDING HLP-GETCURRENTDATE-1 — Helper.getcurrentdate() throws whenever it is called.
- *
- * src/services/Helper.js line 145 calls `moment.format("YYYY-MM-DD")` on the moment FACTORY
- * rather than on a moment instance (`moment().format(...)`). The factory has no `format`
- * method, so the call raises a TypeError in any environment, browser included.
- *
- * It is currently harmless only because nothing invokes it: src/container/Dashboard/Dashboard.js
- * imports `getcurrentdate` (line 43) but never calls it, and a repo-wide search finds no other
- * caller. The moment anyone wires that import to a click handler the Dashboard will crash.
- *
- * When the call is corrected to `moment().format(...)`, this test fails — that is the signal to
- * assert the returned Y-m-d string instead.
+ * FINDING HLP-GETCURRENTDATE-1 (resolved) — Helper.getcurrentdate() used to throw on every call:
+ * src/services/Helper.js line 145 called `moment.format("YYYY-MM-DD")` on the moment FACTORY
+ * rather than on a moment instance (`moment().format(...)`). Now fixed to call `moment()` first,
+ * per this test's own original instructions for when that happened — asserting the returned
+ * Y-m-d string instead of the old throw.
  */
-test('_FINDING_HLP_GETCURRENTDATE_1 getcurrentdate throws instead of returning today', () => {
-    expect(() => getcurrentdate()).toThrow(TypeError);
+test('getcurrentdate returns today in YYYY-MM-DD format', () => {
+    const expected = require('moment')().format('YYYY-MM-DD');
+    expect(getcurrentdate()).toBe(expected);
 });

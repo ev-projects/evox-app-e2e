@@ -2,36 +2,22 @@
  * PoliciesDocumentLifecycle.test.js
  *
  * SOURCE FILES UNDER TEST
- *   src/components/PoliciesDocument/PoliciesDocumentModal.js
  *   src/components/PoliciesDocument/PoliciesDocumentDownload.js
+ *   (PoliciesDocumentModal.js was also covered here originally, but was removed — EVOX-715,
+ *   remove Policies Document Modal — along with all its Modal-specific tests/findings below.)
  *
  * MENU PATH
  *   Dashboard -> Policies Document -> Download Documents      (PoliciesDocumentDownload page)
- *   Dashboard -> Policies Document -> "Download Documents" modal (PoliciesDocumentModal)
  *
  * 29-JUL COVERAGE BASELINE
- *   PoliciesDocumentModal.js .... 3.9%  (49 uncovered lines - effectively untested)
  *   PoliciesDocumentDownload.js . 0%    (50 uncovered lines - never mounted by any suite)
- *   Combined packet baseline: 99 uncovered lines.
  *
  * WHAT IS EXERCISED HERE
- *   Modal:    closed-gate, Modal show/onHide wiring, row numbering, per-extension icon
- *             switch, single-file base64 anchor, viewer index handoff, empty/undefined
- *             list arms, and the Download-All JSZip flow incl. its FAILURE arm.
  *   Download: mount fetch (GET /show + exact params), success vs failure dispatch,
  *             accordion group rendering, per-group row rendering, icon switch,
  *             empty/undefined arms, viewer open gate, viewer close + CLEAR dispatch.
  *
  * FINDINGS DISCOVERED (each characterised, not fixed - suffix _FINDING_<CODE>)
- *   PDM-IDX-BOOL   Modal viewer index state is seeded with boolean `false`, not 0/null,
- *                  so the viewer receives index=false before any row is clicked.
- *   PDM-NULL-HREF  downloadBase64File builds the <a> with no guard on FileData; a null
- *                  FileData still produces a clickable anchor with href="null".
- *   PDM-ZIP-RACE   handleDownloadAll waits a hard-coded 1000ms instead of Promise.all,
- *                  so a slow fetch produces a silently EMPTY zip download.
- *   PDM-ZIP-FAIL   A failed fetch is only console.error'd; the zip is still generated and
- *                  downloaded, so the user gets a partial/empty archive with no warning.
- *   PDM-NO-KEY     The Modal's document rows are mapped without a React `key`.
  *   PDD-ID-ZERO    Download page gates the viewer on `isId &&`; a document whose Id is 0
  *                  can never be opened - the eye button silently does nothing.
  *   PDD-IDX-LOCAL  The index handed to the viewer is the index WITHIN a group, so row 1 of
@@ -148,8 +134,6 @@ jest.mock('../../components/PoliciesDocument/PoliciesDocumentViewer', () => {
 
 const API = require('../../services/API').default || require('../../services/API');
 const Formatter = require('../../services/Formatter').default || require('../../services/Formatter');
-const PoliciesDocumentModal =
-    require('../../components/PoliciesDocument/PoliciesDocumentModal').default;
 const PoliciesDocumentDownload =
     require('../../components/PoliciesDocument/PoliciesDocumentDownload').default;
 
@@ -160,12 +144,6 @@ const EXPECTED_ICONS = [
     '/images/excel.png', '/images/excel.png', '/images/doc.png', '/images/pdf.png',
     '/images/img.png', '/images/img.png', '/images/img.png', '',
 ];
-
-const files = ICON_EXTS.map((ext, i) => ({
-    FileName: `doc${i}.${ext}`,
-    FileExtension: ext,
-    FileData: `data:application/x;base64,QQ==${i}`,
-}));
 
 const groupedDocs = {
     'HR Policies': [
@@ -182,38 +160,6 @@ const USER = { country_id: 7, id: 1 };
 // Collected across the whole file so React's once-per-warning de-duplication
 // cannot hide a warning behind whichever test happens to render first.
 const consoleErrors = [];
-
-function trackAnchorClicks() {
-    const clicks = [];
-    const origCreate = document.createElement.bind(document);
-    const spy = jest.spyOn(document, 'createElement').mockImplementation((tag) => {
-        const el = origCreate(tag);
-        if (tag === 'a') {
-            el.click = () => clicks.push({
-                href: el.href,
-                rawHref: el.getAttribute('href'),
-                download: el.download,
-            });
-        }
-        return el;
-    });
-    return { clicks, spy };
-}
-
-async function flush(times = 8) {
-    for (let i = 0; i < times; i++) await Promise.resolve();
-}
-
-function renderModal(props = {}) {
-    return render(
-        <PoliciesDocumentModal
-            isOpen
-            closeModal={jest.fn()}
-            policiesdocument={files}
-            {...props}
-        />
-    );
-}
 
 async function renderDownload(props = {}) {
     let utils;
@@ -251,212 +197,8 @@ beforeEach(() => {
 });
 
 // =====================================================================
-describe('PoliciesDocumentModal - Download Documents modal', () => {
-
-    test('the modal is fully suppressed while isOpen is false, so no document rows leak into the DOM', () => {
-        const { container, queryByTestId } = renderModal({ isOpen: false });
-        expect(container.firstChild).toBeNull();
-        expect(queryByTestId('viewer')).toBeNull();
-        expect(mockModalProps.length).toBe(0);
-    });
-
-    test('an open modal shows the Download Documents title and passes show=true down to the bootstrap Modal', () => {
-        const { getByText, getByTestId } = renderModal();
-        getByTestId('modal');
-        getByText('Download Documents');
-        expect(mockModalProps[0].show).toBe(true);
-        expect(mockModalProps[0].size).toBe('xl');
-    });
-
-    test('the modal dismiss handler is wired to the closeModal prop the parent supplied', () => {
-        const closeModal = jest.fn();
-        renderModal({ closeModal });
-        expect(mockModalProps[0].onHide).toBe(closeModal);
-        mockModalProps[0].onHide();
-        expect(closeModal).toHaveBeenCalledTimes(1);
-    });
-
-    test('every supplied document produces exactly one row, numbered from 1 rather than from 0', () => {
-        const { container } = renderModal();
-        const rows = container.querySelectorAll('tbody tr');
-        expect(rows.length).toBe(files.length);
-        const numbers = [...rows].map((r) => r.querySelectorAll('td')[0].textContent);
-        expect(numbers).toEqual(['1', '2', '3', '4', '5', '6', '7', '8']);
-    });
-
-    test('each file name is rendered beside the icon that its extension maps to', () => {
-        const { container, getByText } = renderModal();
-        files.forEach((f) => getByText(new RegExp(f.FileName)));
-        const icons = [...container.querySelectorAll('td.tdcontent img')].map((i) => i.getAttribute('src'));
-        expect(icons).toEqual(EXPECTED_ICONS);
-    });
-
-    test('an extension outside the known set falls through to the default arm and renders an empty icon src', () => {
-        const { container } = renderModal({
-            policiesdocument: [{ FileName: 'weird.bin', FileExtension: 'bin', FileData: 'data:x;base64,QQ==' }],
-        });
-        const rows = container.querySelectorAll('tbody tr');
-        expect(rows.length).toBe(1);
-        expect(rows[0].querySelector('td.tdcontent img').getAttribute('src')).toBe('');
-    });
-
-    test('the per-row download button builds a named anchor carrying that row base64 payload', () => {
-        const { clicks, spy } = trackAnchorClicks();
-        const { container } = renderModal();
-        const thirdRow = container.querySelectorAll('tbody tr')[2];
-        fireEvent.click(within(thirdRow).getAllByRole('button')[0]);
-        expect(clicks.length).toBe(1);
-        expect(clicks[0].download).toBe('doc2.docx');
-        expect(clicks[0].rawHref).toBe(files[2].FileData);
-        spy.mockRestore();
-    });
-
-    test('downloading a different row uses that row own name and payload, not the first row', () => {
-        const { clicks, spy } = trackAnchorClicks();
-        const { container } = renderModal();
-        const rows = container.querySelectorAll('tbody tr');
-        fireEvent.click(within(rows[0]).getAllByRole('button')[0]);
-        fireEvent.click(within(rows[6]).getAllByRole('button')[0]);
-        expect(clicks.map((c) => c.download)).toEqual(['doc0.csv', 'doc6.jpeg']);
-        expect(clicks[1].rawHref).toBe(files[6].FileData);
-        spy.mockRestore();
-    });
-
-    // FINDING PDM-NULL-HREF: downloadBase64File never validates FileData. When the API
-    // returns a row with no payload the component still fabricates and clicks an anchor,
-    // producing a browser download of the literal string "null" instead of surfacing an
-    // error to the user. The guard belongs at the top of downloadBase64File.
-    test('a row whose payload is null still fires a download anchor with href "null" _FINDING_PDM-NULL-HREF', () => {
-        const { clicks, spy } = trackAnchorClicks();
-        const { container } = renderModal({
-            policiesdocument: [{ FileName: 'broken.pdf', FileExtension: 'pdf', FileData: null }],
-        });
-        fireEvent.click(within(container.querySelectorAll('tbody tr')[0]).getAllByRole('button')[0]);
-        expect(clicks.length).toBe(1);
-        expect(clicks[0].rawHref).toBe('null');
-        expect(clicks[0].download).toBe('broken.pdf');
-        spy.mockRestore();
-    });
-
-    test('an empty document list swaps the rows for the No Document Found placeholder and hides the ZIP button', () => {
-        const { getByText, queryByText, container } = renderModal({ policiesdocument: [] });
-        getByText(/No Document Found/);
-        expect(container.querySelector('td.notfound').getAttribute('colspan')).toBe('3');
-        expect(container.querySelector('td.notfound img').getAttribute('src')).toBe('/images/nodata.png');
-        expect(queryByText(/Download All as ZIP/)).toBeNull();
-    });
-
-    test('an undefined document list takes the same not-found arm instead of throwing', () => {
-        const { getByText, queryByText } = renderModal({ policiesdocument: undefined });
-        getByText(/No Document Found/);
-        expect(queryByText(/Download All as ZIP/)).toBeNull();
-    });
-
-    test('a populated document list is the only case that offers the Download All as ZIP action', () => {
-        const { getByText } = renderModal();
-        expect(getByText(/Download All as ZIP/)).toBeTruthy();
-    });
-
-    // FINDING PDM-IDX-BOOL: useState(false) seeds the viewer index with a boolean. Before
-    // any eye click the child viewer is handed index=false, which it feeds straight into
-    // setCurIndex. It should be 0 (or null) so downstream arithmetic is well defined.
-    test('before any row is previewed the viewer is mounted closed and handed a boolean index _FINDING_PDM-IDX-BOOL', () => {
-        const { getByTestId } = renderModal();
-        expect(getByTestId('viewer').getAttribute('data-open')).toBe('false');
-        expect(getByTestId('viewer').getAttribute('data-index')).toBe('false');
-        expect(mockViewerProps[0].policiesdocument).toBe(files);
-    });
-
-    test('the eye button opens the viewer at the clicked row and re-targets it when another row is previewed', () => {
-        const { container, getByTestId } = renderModal();
-        const rows = container.querySelectorAll('tbody tr');
-        fireEvent.click(within(rows[4]).getAllByRole('button')[1]);
-        expect(getByTestId('viewer').getAttribute('data-open')).toBe('true');
-        expect(getByTestId('viewer').getAttribute('data-index')).toBe('4');
-        fireEvent.click(within(rows[1]).getAllByRole('button')[1]);
-        expect(getByTestId('viewer').getAttribute('data-index')).toBe('1');
-        expect(getByTestId('viewer').getAttribute('data-open')).toBe('true');
-    });
-
-    test('closing the viewer from its own close handler returns the modal to the list without touching the outer modal', () => {
-        const closeModal = jest.fn();
-        const { container, getByTestId } = renderModal({ closeModal });
-        fireEvent.click(within(container.querySelectorAll('tbody tr')[0]).getAllByRole('button')[1]);
-        expect(getByTestId('viewer').getAttribute('data-open')).toBe('true');
-        const viewerClose = mockViewerProps[mockViewerProps.length - 1].closeModal;
-        act(() => { viewerClose(); });
-        expect(getByTestId('viewer').getAttribute('data-open')).toBe('false');
-        expect(closeModal).not.toHaveBeenCalled();
-    });
-
-    test('Download All fetches every payload, zips it under its file name and downloads PoliciesDocuments.zip', async () => {
-        jest.useFakeTimers();
-        const { clicks, spy } = trackAnchorClicks();
-        const { getByText } = renderModal();
-        fireEvent.click(getByText(/Download All as ZIP/));
-
-        await flush();
-        expect(global.fetch).toHaveBeenCalledTimes(files.length);
-        expect(global.fetch).toHaveBeenCalledWith(files[0].FileData);
-        expect(mockZip.file).toHaveBeenCalledTimes(files.length);
-        expect(mockZip.file).toHaveBeenCalledWith('doc0.csv', 'FILEBLOB');
-
-        jest.advanceTimersByTime(1000);
-        await flush();
-        expect(mockZip.generateAsync).toHaveBeenCalledWith({ type: 'blob' });
-        expect(clicks[0].download).toBe('PoliciesDocuments.zip');
-        expect(clicks[0].href).toContain('blob:policies-zip');
-        spy.mockRestore();
-        jest.useRealTimers();
-    });
-
-    // FINDING PDM-ZIP-RACE: the archive is generated on a hard-coded 1000ms setTimeout
-    // instead of Promise.all over the fetches. If the network has not settled inside that
-    // window the user silently receives an EMPTY archive - no file was added, yet the
-    // download still fires and reports success.
-    test('when the fetches have not settled within the 1s window the archive downloads empty _FINDING_PDM-ZIP-RACE', async () => {
-        jest.useFakeTimers();
-        global.fetch = jest.fn(() => new Promise(() => {})); // never settles
-        const { clicks, spy } = trackAnchorClicks();
-        const { getByText } = renderModal();
-        fireEvent.click(getByText(/Download All as ZIP/));
-
-        jest.advanceTimersByTime(1000);
-        await flush();
-        expect(mockZip.file).not.toHaveBeenCalled();
-        expect(mockZip.generateAsync).toHaveBeenCalledWith({ type: 'blob' });
-        expect(clicks[0].download).toBe('PoliciesDocuments.zip');
-        spy.mockRestore();
-        jest.useRealTimers();
-    });
-
-    // FINDING PDM-ZIP-FAIL: a rejected fetch is swallowed by console.error. The zip is
-    // still built and handed to the user, so a partial archive is indistinguishable from
-    // a complete one. There is no user-facing error path at all.
-    test('a failed payload fetch is only logged and the partial archive is still delivered _FINDING_PDM-ZIP-FAIL', async () => {
-        jest.useFakeTimers();
-        global.fetch = jest.fn((url) =>
-            url === files[0].FileData
-                ? Promise.reject(new Error('network down'))
-                : Promise.resolve({ blob: () => Promise.resolve('FILEBLOB') })
-        );
-        const { clicks, spy } = trackAnchorClicks();
-        const { getByText } = renderModal();
-        fireEvent.click(getByText(/Download All as ZIP/));
-
-        await flush();
-        expect(mockZip.file).toHaveBeenCalledTimes(files.length - 1);
-        expect(mockZip.file).not.toHaveBeenCalledWith('doc0.csv', expect.anything());
-        expect(consoleErrors.some((m) => /Error fetching file/.test(m))).toBe(true);
-
-        jest.advanceTimersByTime(1000);
-        await flush();
-        expect(mockZip.generateAsync).toHaveBeenCalledWith({ type: 'blob' });
-        expect(clicks[0].download).toBe('PoliciesDocuments.zip');
-        spy.mockRestore();
-        jest.useRealTimers();
-    });
-});
+// PoliciesDocumentModal - Download Documents modal: removed (EVOX-715, remove Policies
+// Document Modal). components/PoliciesDocument/PoliciesDocumentModal.js no longer exists.
 
 // =====================================================================
 describe('PoliciesDocumentDownload - Download Policies Document page', () => {
@@ -690,13 +432,8 @@ describe('PoliciesDocumentDownload - Download Policies Document page', () => {
 // stay last in the file - React de-duplicates each warning after its first emit.
 describe('PoliciesDocument - React correctness warnings emitted by this feature', () => {
 
-    // FINDING PDM-NO-KEY: PoliciesDocumentModal maps its document rows to <tr> with no key
-    // prop. React falls back to index reconciliation, so re-ordering or filtering the list
-    // reuses the wrong row state. PoliciesDocumentDownload does key its rows - only the
-    // modal is affected.
-    test('the modal document rows are mapped without a React key _FINDING_PDM-NO-KEY', () => {
-        expect(consoleErrors.some((m) => /unique "key" prop/.test(m))).toBe(true);
-    });
+    // FINDING PDM-NO-KEY removed (EVOX-715, remove Policies Document Modal) — was about
+    // PoliciesDocumentModal.js, which no longer exists.
 
     // FINDING PD-DOM-CLASS: both files emit raw HTML `class=` (and the stray `tableheader`
     // prop) on buttons and <i> icons instead of `className=`. React 16 still forwards the
