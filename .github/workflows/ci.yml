@@ -100,7 +100,13 @@ jobs:
           EOF
 
       # -- both, via the existing orchestrator ----------------
+      # Coverage (COLLECT_COVERAGE) is reserved for the nightly scheduled run
+      # only - Xdebug coverage across the full ~4100-test suite OOM-killed the
+      # runner on a regular PR check (see scripts/run-all-tests.sh). The
+      # deploy gate only needs the critical-path pass/fail, not coverage.
       - name: Run full suite (PHPUnit -> Playwright -> Jest)
+        env:
+          COLLECT_COVERAGE: ${{ github.event_name == 'schedule' && 'true' || 'false' }}
         run: bash scripts/run-all-tests.sh
 
       - name: Publish PHPUnit results

@@ -54,7 +54,20 @@ if [ ! -f "$PHPUNIT_CMD" ]; then
     log_err "PHPUnit not found — run 'composer install' in server/"
     FAILED_SUITES+=("PHPUnit (composer not installed)")
 else
-    if php -m | grep -qi pcov; then
+    # Coverage collection is opt-in (2026-09-03) — Xdebug coverage instrumentation
+    # across the full ~4100-test suite previously OOM-killed the runner while
+    # writing the coverage report right after tests finished ("Killed" in the
+    # job log, 1.2GB+ PHPUnit memory usage). The deploy gate only needs the
+    # critical-path pass/fail (see phpunit-critical.xml below), not coverage —
+    # so regular runs skip coverage entirely and stay fast/memory-safe. Full
+    # coverage is reserved for the nightly scheduled run (COLLECT_COVERAGE=true
+    # set in ci.yml only for the schedule event). Set it yourself to collect
+    # coverage on a one-off local/manual run.
+    COLLECT_COVERAGE="${COLLECT_COVERAGE:-false}"
+    if [ "$COLLECT_COVERAGE" != "true" ]; then
+        log "Coverage collection disabled (set COLLECT_COVERAGE=true to enable — reserved for the nightly run, see SETUP.md)."
+        COVERAGE_FLAGS="--log-junit $COVERAGE_DIR/phpunit-results.xml"
+    elif php -m | grep -qi pcov; then
         log "PCOV detected — collecting coverage."
         COVERAGE_FLAGS="--coverage-php $COVERAGE_DIR/phpunit-coverage.php --coverage-clover $COVERAGE_DIR/clover.xml --log-junit $COVERAGE_DIR/phpunit-results.xml"
     elif php -m | grep -qi xdebug; then
@@ -65,10 +78,11 @@ else
         COVERAGE_FLAGS="--log-junit $COVERAGE_DIR/phpunit-results.xml"
     fi
 
-    # Full suite always runs, for coverage + full visibility into every test.
-    # Its own exit code does NOT by itself block deploy — see the critical-path
-    # re-check right below. (EVOX-18 policy: deploy blocks only on a real
-    # work-stopping issue — payroll/DTR/auth — not on every failure across the
+    # Full suite always runs, for full visibility into every test (coverage too,
+    # when COLLECT_COVERAGE=true). Its own exit code does NOT by itself block
+    # deploy — see the critical-path re-check right below. (EVOX-18 policy:
+    # deploy blocks only on a real work-stopping issue — payroll/DTR/auth —
+    # not on every failure across the
     # full ~4100-test suite. See server/phpunit-critical.xml for the exact
     # critical-path list and scripts/SETUP.md for the reasoning.)
     # shellcheck disable=SC2086

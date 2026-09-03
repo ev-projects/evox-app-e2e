@@ -96,6 +96,18 @@ cd server
 PCOV_ENABLED=1 ./vendor/bin/phpunit
 ```
 
+### Coverage collection — opt-in, nightly only (2026-09-03)
+`run-all-tests.sh` skips `--coverage-*` flags unless `COLLECT_COVERAGE=true` is
+set (`ci.yml` sets it only for the nightly `schedule` run). Xdebug coverage
+across the full ~4100-test suite OOM-killed the self-hosted runner while
+writing the coverage report right after tests finished ("Killed" in the job
+log, 1.2GB+ PHPUnit memory usage) — and the deploy gate only needs the
+critical-path pass/fail (see "Deploy gate" below), not coverage, so regular
+runs don't need it. To collect coverage on a one-off run:
+```bash
+COLLECT_COVERAGE=true ./scripts/run-all-tests.sh
+```
+
 ### Playwright (E2E) — disabled by default (2026-09-03)
 `run-all-tests.sh` skips Playwright unless `RUN_PLAYWRIGHT=true` is set. It was
 the dominant chunk of CI wall time (15 real role/geo logins against live
