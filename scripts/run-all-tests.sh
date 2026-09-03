@@ -49,6 +49,7 @@ log_sep
 cd "$SERVER_DIR"
 
 PHPUNIT_CMD="./vendor/bin/phpunit"
+NON_BLOCKING_ISSUES=()
 if [ ! -f "$PHPUNIT_CMD" ]; then
     log_err "PHPUnit not found — run 'composer install' in server/"
     FAILED_SUITES+=("PHPUnit (composer not installed)")
@@ -64,12 +65,37 @@ else
         COVERAGE_FLAGS="--log-junit $COVERAGE_DIR/phpunit-results.xml"
     fi
 
+    # Full suite always runs, for coverage + full visibility into every test.
+    # Its own exit code does NOT by itself block deploy — see the critical-path
+    # re-check right below. (EVOX-18 policy: deploy blocks only on a real
+    # work-stopping issue — payroll/DTR/auth — not on every failure across the
+    # full ~4100-test suite. See server/phpunit-critical.xml for the exact
+    # critical-path list and scripts/SETUP.md for the reasoning.)
     # shellcheck disable=SC2086
-    if $PHPUNIT_CMD $COVERAGE_FLAGS 2>&1 | tee "$COVERAGE_DIR/phpunit.log"; then
-        log_ok "PHPUnit PASSED"
+    $PHPUNIT_CMD $COVERAGE_FLAGS 2>&1 | tee "$COVERAGE_DIR/phpunit.log"
+    PHPUNIT_FULL_EXIT=${PIPESTATUS[0]}
+
+    # Critical-path re-check — THIS exit code is what actually gates deploy.
+    # Small subset (payroll calc, DTR/attendance writes, auth), no coverage
+    # flags needed, so it's fast even though it re-runs those tests.
+    PHPUNIT_CRITICAL_EXIT=0
+    if [ -f "phpunit-critical.xml" ]; then
+        $PHPUNIT_CMD --configuration phpunit-critical.xml 2>&1 | tee "$COVERAGE_DIR/phpunit-critical.log"
+        PHPUNIT_CRITICAL_EXIT=${PIPESTATUS[0]}
     else
-        log_err "PHPUnit FAILED"
-        FAILED_SUITES+=("PHPUnit")
+        log_err "phpunit-critical.xml missing — cannot verify the critical path, treating as a blocking failure"
+        PHPUNIT_CRITICAL_EXIT=1
+    fi
+
+    if [ "$PHPUNIT_CRITICAL_EXIT" -ne 0 ]; then
+        log_err "PHPUnit FAILED — critical path (payroll/attendance/auth) has a real failure. Blocking deploy."
+        FAILED_SUITES+=("PHPUnit (critical path — see $COVERAGE_DIR/phpunit-critical.log)")
+    elif [ "$PHPUNIT_FULL_EXIT" -ne 0 ]; then
+        log "WARN: PHPUnit — non-critical test(s) failed in the full suite. Not blocking deploy, but needs follow-up."
+        NON_BLOCKING_ISSUES+=("PHPUnit (non-critical failures — see $COVERAGE_DIR/phpunit.log)")
+        log_ok "PHPUnit PASSED (critical path clean)"
+    else
+        log_ok "PHPUnit PASSED"
     fi
 fi
 
@@ -173,7 +199,14 @@ log "                  TEST SUMMARY"
 log "======================================================"
 
 if [ ${#FAILED_SUITES[@]} -eq 0 ]; then
-    log_ok "All suites PASSED"
+    log_ok "All blocking checks PASSED — critical path (payroll/attendance/auth) is clean"
+    if [ ${#NON_BLOCKING_ISSUES[@]} -gt 0 ]; then
+        log ""
+        log "Non-blocking issues (does NOT block deploy — needs follow-up):"
+        for issue in "${NON_BLOCKING_ISSUES[@]}"; do
+            log "  - $issue"
+        done
+    fi
     log ""
     log "Coverage reports:"
     log "  Backend HTML   : $COVERAGE_DIR/html/index.html"

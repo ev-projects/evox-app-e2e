@@ -129,13 +129,37 @@ After a full run, reports are written to `evox-app/coverage/`:
 
 ---
 
+## Deploy gate: critical-path tests only (EVOX-18)
+
+A full run of the backend suite is ~4100 tests. Requiring every single one to
+pass before every deploy isn't realistic long-term (legacy tests, flaky
+edge cases, environment-dependent behaviour) — but silently ignoring
+failures isn't acceptable either. The policy here is deliberately **not** a
+pass-rate percentage (an "85% passing" threshold can't tell a payroll bug
+apart from a cosmetic one — it would let the former through exactly as
+easily as the latter). Instead:
+
+- **`server/phpunit-critical.xml`** lists the tests that cover payroll
+  calculations, DTR/attendance writes, and authentication/authorization —
+  the paths where wrong output has real financial, legal, or security
+  consequences. `run-all-tests.sh` re-runs just this subset after the full
+  suite, and **only a failure here blocks deploy**.
+- A failure anywhere else in the full suite is still run, still logged, and
+  still shown in the summary as a **non-blocking issue** — visible, tracked,
+  expected to get fixed — but it does not hold up a deploy on its own.
+- Adding a test to the critical list is a deliberate edit someone makes to
+  `phpunit-critical.xml`, reviewed like any other change — not automatic,
+  and not a number that can silently drift.
+
 ## Phase 6 — GitHub Actions
 
 These scripts are structured for direct use in GitHub Actions:
 
 - All paths are relative to the repo root (no hardcoded local paths)
 - Coverage artifacts are in a single `coverage/` directory (easy to upload)
-- Exit codes: scripts exit `1` on any test failure, `0` on all-pass
+- Exit codes: `run-all-tests.sh` exits `1` only if a *blocking* check fails
+  (critical-path PHPUnit, Playwright, or Jest) — non-critical PHPUnit
+  failures are reported but exit `0`. See "Deploy gate" above.
 - JUnit XML files are compatible with GitHub Actions test reporting
 
 See EVOX-18 (Epic) for the Phase 6 CI configuration ticket.

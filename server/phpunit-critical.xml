@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    EVOX-18 deploy gate: critical-path tests only.
+
+    Deploy blocks on a failure here (a real work-stopping issue), and only here.
+    A failure anywhere else in the full ~4100-test suite is reported but does
+    NOT block deploy - see scripts/run-all-tests.sh and scripts/SETUP.md for
+    the full policy and reasoning.
+
+    "Critical" = payroll calculations, DTR/attendance writes, and
+    authentication/authorization - wrong output here has real financial,
+    legal, or security consequences. Everything else (UI polish, non-critical
+    validation messages, reports) is lower stakes and shouldn't hold deploy
+    hostage while it's fixed.
+
+    Adding a test here is a deliberate call someone makes by editing this file
+    - not automatic, and not a percentage. Keep this list short and honest.
+-->
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false">
+    <testsuites>
+        <testsuite name="Critical">
+            <directory suffix="Test.php">./tests/Feature/BranchTests/Payroll</directory>
+            <directory suffix="Test.php">./tests/Feature/BranchTests/Attendance</directory>
+            <directory suffix="Test.php">./tests/Feature/BranchTests/Auth</directory>
+            <file>./tests/Feature/PayrollCutoffVerifiedApiTest.php</file>
+            <file>./tests/Feature/DtrSummaryVerifiedApiTest.php</file>
+        </testsuite>
+    </testsuites>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="BCRYPT_ROUNDS" value="4"/>
+        <env name="CACHE_DRIVER" value="array"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="QUEUE_DRIVER" value="sync"/>
+        <env name="MAIL_DRIVER" value="array"/>
+    </php>
+</phpunit>
