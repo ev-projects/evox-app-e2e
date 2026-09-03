@@ -9,56 +9,6 @@ import API from "../../services/API";
 import Formatter from "../../services/Formatter";
 import { fetchWorkSpaces } from '../../store/actions/freshservice/freshServiceActions';
 
-// Simple API helper
-const apiCall = function (endpoint, options) {
-  options = options || {};
-  let fullUrl = process.env.REACT_APP_FRESHSERVICE_API_BASE_URL + endpoint;
-  const urlObj = new URL(fullUrl);
-
-  if (Object.keys(options).length >= 1) {
-    urlObj.searchParams.set('userEmail', options.useremail);
-  }
-  fullUrl = urlObj.toString();
-
-  console.log('🌐 API Call:', fullUrl);
-
-  return fetch(fullUrl, {
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    credentials: 'omit',
-    method: options.method || 'GET',
-    body: options.body || undefined
-  })
-    .then(function (response) {
-      if (!response.ok) throw new Error('HTTP ' + response.status);
-      return response.json();
-    })
-    .catch(function (error) {
-      console.error('❌ API call failed:', error.message);
-      throw error;
-    });
-};
-
-// Helper function to get user avatar color
-const getUserAvatarClass = function (email) {
-  if (!email) return 'avatar-v';
-  const firstChar = email.charAt(0).toLowerCase();
-  const colorMap = {
-    'm': 'avatar-m', 'v': 'avatar-v', 'h': 'avatar-h', 'c': 'avatar-c',
-    's': 'avatar-s', 'd': 'avatar-d', 'e': 'avatar-e', 'r': 'avatar-r'
-  };
-  return colorMap[firstChar] || 'avatar-v';
-};
-
-// Helper function to get user initials
-const getUserInitials = function (email) {
-  if (!email) return 'U';
-  const parts = email.split('@')[0].split('.');
-  return parts.map(p => p.charAt(0).toUpperCase()).join('').substring(0, 2);
-};
-
 // Utility functions
 const sanitizeInput = function (input) {
   if (typeof input !== 'string') return input;
