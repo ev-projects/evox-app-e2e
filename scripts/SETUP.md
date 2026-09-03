@@ -96,6 +96,16 @@ cd server
 PCOV_ENABLED=1 ./vendor/bin/phpunit
 ```
 
+### Playwright (E2E) — disabled by default (2026-09-03)
+`run-all-tests.sh` skips Playwright unless `RUN_PLAYWRIGHT=true` is set. It was
+the dominant chunk of CI wall time (15 real role/geo logins against live
+staging plus full E2E specs), dwarfing the coverage-instrumented PHPUnit run
+and Jest combined. To run it again — locally or by adding it as a step `env`
+in `ci.yml` — set the flag:
+```bash
+RUN_PLAYWRIGHT=true ./scripts/run-all-tests.sh
+```
+
 ---
 
 ## Environment variables

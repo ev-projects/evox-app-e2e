@@ -106,7 +106,17 @@ log_sep
 
 cd "$CLIENT_DIR"
 
-if ! command -v npx &>/dev/null; then
+# Temporarily disabled by default (2026-09-03) — 15 real role/geo logins against
+# live staging plus full E2E specs was the dominant chunk of CI wall time,
+# dwarfing PHPUnit+coverage and Jest combined. Set RUN_PLAYWRIGHT=true (as a
+# step env in ci.yml, or in your shell before running this script locally) to
+# turn it back on the moment E2E coverage is actually needed again — nothing
+# below is deleted, just gated.
+RUN_PLAYWRIGHT="${RUN_PLAYWRIGHT:-false}"
+
+if [ "$RUN_PLAYWRIGHT" != "true" ]; then
+    log "SKIPPED — Playwright disabled (set RUN_PLAYWRIGHT=true to re-enable)"
+elif ! command -v npx &>/dev/null; then
     log_err "npx not found — Node.js ≥14 required"
     FAILED_SUITES+=("Playwright (Node.js missing)")
 elif [ ! -d "node_modules/@playwright" ]; then
