@@ -157,6 +157,31 @@ jobs:
       # the test job), not in-place in /var/www/html/evox-app-e2e - keeps this
       # workspace separate from the live deploy directory so a build never
       # touches the real app's files until the explicit swap step below.
+      # Create React App inlines every REACT_APP_* variable into the JS bundle
+      # AT BUILD TIME - if this file doesn't exist before `npm run build`,
+      # every process.env.REACT_APP_* reference in the source becomes the
+      # literal string "undefined", which is exactly what happened on the
+      # first real deploy: every API call went to "/undefined/auth/login"
+      # etc., breaking login (and everything else) for every user. This
+      # step never existed before - only client/.env.e2e (a different
+      # purpose: Playwright config) was ever written. URL/ID values below
+      # were extracted directly from the last known-good deployed bundle,
+      # not guessed. REACT_APP_API_KEY comes from a repo secret even though
+      # CRA ships all of these to every visitor's browser regardless (so
+      # none of this is actually secret) - just matching this repo's
+      # existing convention for anything credential-shaped.
+      - name: Write client/.env
+        working-directory: client
+        run: |
+          cat > .env <<EOF
+          REACT_APP_API_BASE_URL=https://evoxtest.eastvantage.com/server/api
+          REACT_APP_BACKED_ROOT_URL=https://evoxtest.eastvantage.com/server
+          REACT_APP_API_KEY=${{ secrets.REACT_APP_API_KEY }}
+          REACT_APP_GOOGLE_ANALYTICS_ID=UA-140684773-2
+          REACT_APP_GOOGLE_ANALYTICS_LINK=https://www.googletagmanager.com/gtag/js?id=UA-140684773-2
+          REACT_APP_BASE_URL=https://evoxtest.eastvantage.com
+          EOF
+
       - name: Build frontend (static assets)
         working-directory: client
         # react-scripts 3.3.0 (webpack 4) hashes chunks with md4, which OpenSSL 3
