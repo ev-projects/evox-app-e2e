@@ -159,7 +159,13 @@ jobs:
       # touches the real app's files until the explicit swap step below.
       - name: Build frontend (static assets)
         working-directory: client
+        # react-scripts 3.3.0 (webpack 4) hashes chunks with md4, which OpenSSL 3
+        # (default in Node 17+) removed from its default provider - crashes with
+        # "error:0308010C:digital envelope routines::unsupported" on Node 18
+        # otherwise. This never surfaced before because this build step only runs
+        # in the deploy job, and deploy had never actually triggered until now.
         run: |
+          export NODE_OPTIONS=--openssl-legacy-provider
           npm ci --legacy-peer-deps
           npm run build
 
