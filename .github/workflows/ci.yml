@@ -162,10 +162,19 @@ jobs:
         # react-scripts 3.3.0 (webpack 4) hashes chunks with md4, which OpenSSL 3
         # (default in Node 17+) removed from its default provider - crashes with
         # "error:0308010C:digital envelope routines::unsupported" on Node 18
-        # otherwise. This never surfaced before because this build step only runs
-        # in the deploy job, and deploy had never actually triggered until now.
+        # otherwise. Also: GitHub Actions sets CI=true on every runner
+        # (self-hosted included) by default, and CRA treats every ESLint
+        # warning as a fatal build error under CI=true ("Treating warnings
+        # as errors") - the repo has plenty of pre-existing warnings
+        # (unused vars etc.), so the build always failed here regardless of
+        # the OpenSSL fix. Neither ever surfaced before because this build
+        # step only runs in the deploy job, and deploy had never actually
+        # triggered until now. CI=false only suppresses that promotion, not
+        # ESLint output - warnings still print, they just do not fail the
+        # build, matching a normal local `npm run build`.
         run: |
           export NODE_OPTIONS=--openssl-legacy-provider
+          export CI=false
           npm ci --legacy-peer-deps
           npm run build
 
